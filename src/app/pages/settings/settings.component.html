@@ -1,0 +1,86 @@
+<main class="py-5 px-sm-5 px-4" >
+    <h3 class="mb-3">Ajustes</h3>
+    <form class="row g-4" [formGroup]="formUser">
+        <div class="text-center mx-auto mx-sm-0" style="width: 170px;">
+            <input type="file" (change)="addImg($event)" id="newImg" hidden>
+            <label for="newImg" class="rounded-circle border" role="button">
+                <img class="rounded-circle" width="100px" style="object-fit: cover;" height="100px" id="img">
+            </label>
+            <label class="mt-2 color-1 fw-500">Imagen de perfil</label>
+        </div>
+        <div class="col-xl-5 col-lg-7 col-md-8 col-sm">
+            <div class="form-floating">
+                <input class="form-control" formControlName="name" type="text" placeholder=" ">
+                <small class="text-danger" *ngIf="formUser.controls['name'].touched && formUser.controls['name'].errors?.required">El nombre es requerido</small>
+                <label>Nombre</label>
+            </div>
+        </div>
+        <div class="col-xl-5 col-md-6">
+            <div class="form-floating">
+                <input class="form-control" formControlName="lastname" type="text" placeholder=" ">
+                <small class="text-danger" *ngIf="formUser.controls['lastname'].touched && formUser.controls['lastname'].errors?.required">El apellido es requerido</small>
+                <label>Apellido</label>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="form-floating">
+                <input class="form-control" formControlName="username" type="text" placeholder=" ">
+                <small class="text-danger" *ngIf="formUser.controls['username'].touched && formUser.controls['username'].errors?.required">El nombre de usuario es requerido</small>
+                <label>Nombre de usuario</label>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="form-floating">
+                <input type="email" class="form-control" formControlName="email" placeholder=" ">
+                <small class="text-danger" *ngIf="formUser.controls['email'].touched && formUser.controls['email'].errors?.required">El correo es requerido</small>
+                <small class="text-danger" *ngIf="formUser.controls['email'].errors?.pattern">El email no es valido</small>
+                <label>Correo</label>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="form-floating">
+                <input class="form-control" type="number" formControlName="phone" placeholder=" ">
+                <label>telefono</label>
+            </div>
+        </div>
+        <!-- <div>
+            <h5>Enlaces</h5>
+        </div>
+        <div class="col-xl-4 col-md-6 m-0">
+            <div class="form-floating">
+                <input class="form-control" type="url" formControlName="instagram" placeholder=" ">
+                <label>Instagram</label>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 m-md-0">
+            <div class="form-floating">
+                <input class="form-control" type="url" formControlName="web" placeholder=" ">
+                <label>Sitio web</label>
+            </div>
+        </div> -->
+        <div>
+            <label class="labelPass fw-500 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collPass" aria-expanded="false" aria-controls="collapseExample"></label>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="collapse" id="collPass">
+                <div class="form-floating">
+                    <input class="form-control" formControlName="password" type="password" placeholder=" ">
+                    <small class="text-danger" *ngIf="formUser.controls['password'].touched && formUser.controls['password'].errors?.required">La contraseña es requerida</small>
+                    <label>Contraseña actual</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="collapse" id="collPass">
+                <div class="form-floating">
+                    <input class="form-control" formControlName="newpassword" type="password" placeholder=" ">
+                    <small class="text-danger" *ngIf="formUser.controls['newpassword'].touched && formUser.controls['newpassword'].errors?.required">La nueva contraseña es requerida</small>
+                    <label>Nueva contraseña</label>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-1">Guardar</button>
+        </div>
+    </form>
+</main>

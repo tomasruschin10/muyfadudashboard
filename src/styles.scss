@@ -1,0 +1,218 @@
+* {
+  // font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(102, 102, 102, 0.582);
+  border-radius: 20px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+input {
+  // caret-color: #1f2fed;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  padding-right: 20px;
+}
+
+.table> :not(:first-child) {
+  border-top: 0 !important;
+}
+
+th,
+td {
+  border-bottom-color: #c7c7c7a4 !important;
+  padding: 14px 20px !important;
+}
+
+th {
+  font-weight: 500
+}
+
+textarea {
+  resize: none !important;
+  height: 91px !important
+}
+
+.title-alert {
+  font-size: 18px !important;
+  background: #ff0000;
+  color: #fff !important;
+  border-radius: 4px 4px 0 0;
+  padding: 10px !important;
+}
+
+.title-done {
+  font-size: 18px !important;
+  background: #306EED;
+  color: #fff !important;
+  border-radius: 4px 4px 0 0;
+  padding: 10px !important;
+}
+
+.content-alert {
+  margin: 10px 10px 0 !important;
+}
+.pagination li{
+  user-select: none;
+  -webkit-user-select: none;
+}
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$front-osmos-primary: mat-palette($mat-indigo);
+$front-osmos-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$front-osmos-warn: mat-palette($mat-red);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$front-osmos-ligth-theme: mat-light-theme((color: (primary: $front-osmos-primary,
+        accent: $front-osmos-accent,
+        warn: $front-osmos-warn,
+      )));
+
+$front-osmos-dark-theme: mat-dark-theme((color: (primary: $front-osmos-primary,
+        accent: $front-osmos-accent,
+        warn: $front-osmos-warn,
+      )));
+
+.dark-theme {
+  @include angular-material-theme($front-osmos-dark-theme);
+}
+
+.ligth-theme {
+  @include angular-material-theme($front-osmos-ligth-theme);
+}
+
+@include angular-material-theme($front-osmos-ligth-theme);
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+
+
+/* You can add global styles to this file, and also import other style files */
+
+
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
+/* Importing animate CSS */
+@import '~animate.css/animate.min';
+
+/* colores fijos */
+.color-1{
+  color: #306EED
+}
+.color-gray{
+  color: #aaa;
+}
+.text-danger {
+  color: #ff0000 !important;
+}
+.bg-1{
+  background-color: #306EED;
+}
+.bg-gray {
+  background-color: #e2e2e2;
+}
+.bg-gray2{
+  background-color: #eeeeee;
+}
+.btn-1{
+  background-color: #306EED !important;
+  color: #fff !important;
+  &:hover{
+    background-color: #2664df !important;
+  }
+  &:focus{
+    box-shadow: 0 0 0 3.5px #306fed6f !important
+  }
+}
+.btn-danger{
+  background-color: #ff0000 !important;
+  &:hover{
+    background-color: #f10505 !important;
+  }
+  &:focus{
+    box-shadow: 0 0 0 3.5px #ff000076 !important;
+  }
+}
+.btn-gray{
+  background-color: #e2e2e2 !important;
+  border-color: #e2e2e2 !important;
+}
+.btn-gray:hover{
+  background-color: #d2cfcf !important;
+}
+.btn-gray:focus{
+  box-shadow: 0 0 0 3.5px #e2e2e270 !important;
+}
+/* estilos generales */
+
+.rounded-7 {
+  border-radius: 7px;
+}
+.fw-500 {
+  font-weight: 500
+}
+.btn-transparent {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+}
+.form-control, .form-select{
+  border: none;
+  border-bottom: 1px solid #ccc;
+  box-shadow: none !important;
+}
+.fa-plus{
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  -webkit-text-stroke: 1px #306eed;
+}
+.changeImg{
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0.5;
+}
+div:hover > .changeImg{
+  opacity: 1;
+}
+.view{
+  animation-name: view;
+  animation-duration: 0.4s;
+}
+
+@keyframes view {
+  0%{opacity: 0;}
+  100%{opacity: 1;}
+}

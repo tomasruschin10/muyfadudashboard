@@ -1,0 +1,16 @@
+.fa-file-upload{
+    padding: 10px;
+    font-size: 30px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+div:hover > .changeImg{
+    opacity: 1;
+}
+.ctn-name{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 140px;
+    text-align: center;
+    white-space: nowrap;
+}

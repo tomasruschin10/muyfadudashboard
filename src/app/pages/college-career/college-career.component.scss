@@ -1,0 +1,15 @@
+.accordion-button{
+    box-shadow: none !important;
+    background: transparent !important;
+    border-left: 1px solid #ccc
+}
+.accordion-button:after{
+    zoom: 0.7;
+    margin-left: 10px
+}
+.ctn-trash > .fa-trash-alt{
+    display: none;
+}
+.ctn-trash:hover > .fa-trash-alt{
+    display: block;
+}

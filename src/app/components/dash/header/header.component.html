@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg px-4 py-3 shadow-sm">
+  <img class="logo" width="50px" role="button" src="assets/img/logo.png" routerLink="/dash/home">
+  <div class="ms-auto d-flex align-items-center gap-4">
+    <div class="dropdown">
+      <img class="rounded-circle border-1" width="48px" height="48px" [src]="userData.image.url" role="button" data-bs-toggle="dropdown">
+      <ul class="dropdown-menu pt-0 shadow-sm" aria-labelledby="dropdownMenuButton1">
+        <li class="d-flex gap-3 p-3 mb-2 align-items-center" style="border-radius: 7px 7px 0 0; background: #a5b7e2;">
+          <img class="rounded-circle img-user bg-white" width="60px" height="60px" [src]="userData.image.url">
+          <div>
+            <h5 class="text-nowrap mb-0">{{userData.username}}</h5>
+            <span>{{userData.email}}</span>
+          </div>
+        </li>
+        <!-- <li>
+          <a class="dropdown-options d-flex align-items-center gap-2" routerLink="/dash/configuraciones">
+            <i class="fas fa-cog fs-5"></i> Ajustes
+          </a>
+        </li> -->
+        <li>
+          <a class="dropdown-options d-flex align-items-center gap-2" (click)="logout()">
+            <i class="fas fa-sign-out-alt fs-5"></i> Cerra Sesión
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

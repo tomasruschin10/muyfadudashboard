@@ -1,0 +1,37 @@
+<div class="d-flex justify-content-center bg-auth">
+  <div class="my-auto mx-3 p-4 rounded-7 shadow card-auth ">
+    <div class="d-flex mb-4">
+      <img class="mx-auto" width="100px" src="assets/img/logo.png">
+    </div>
+    <form class="row g-3" autocomplete="off" [formGroup]="SignInForm">
+      <div>
+        <div class="form-floating">
+          <input class="form-control" type="email" formControlName="userOrEmail" placeholder=" ">
+          <label>Correo electronico</label>
+        </div>
+        <small class="text-danger" *ngIf="SignInForm.controls['userOrEmail'].touched && SignInForm.controls['userOrEmail'].errors?.required">El nombre de usuario es requerido</small>
+      </div>
+      <div>
+        <div class="form-floating">
+          <input class="form-control" [type]="view ? 'text' : 'password'" formControlName="password" placeholder=" ">
+          <i class="far {{view ? 'fa-eye-slash' : 'fa-eye'}} position-absolute top-0 end-0 mx-3 my-4" (click)="view = !view" role="button"></i>
+          <label>Contraseña</label>
+        </div>
+        <small class="text-danger" *ngIf="SignInForm.controls['password'].touched && SignInForm.controls['password'].errors?.required">La contraseña es requerida</small>
+      </div>
+      <div>
+        <div class="form-check">
+          <input class="form-check-input" formControlName="remember" type="checkbox" id="remember">
+          <label class="form-check-label" for="remember">
+            Recuerdame
+          </label>
+        </div>
+      </div>
+      <div class="mt-4">
+        <button class="btn btn-1 w-100" type="submit" (click)="login()">
+          Ingresar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

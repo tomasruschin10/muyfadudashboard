@@ -1,0 +1,15 @@
+.cnt-ellipsis{
+    display: inline;
+    -webkit-line-clamp: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 250px;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
+img{
+    user-select: none;
+    -webkit-user-select: none;
+}

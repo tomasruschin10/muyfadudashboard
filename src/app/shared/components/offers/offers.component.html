@@ -1,0 +1,130 @@
+<main class="px-sm-5 px-4 py-5">
+    <section class="view" *ngIf="!form">
+        <h3>{{category == 1 ? 'Ofertas laborales' : category == 2 ? 'Cursos & Workshops' : 'Ofertas'}}</h3>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: 'create'}">Nueva oferta</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Titulo</th>
+                        <th>Enlace</th>
+                        <th>Patrocinador</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of offers | slice: (page-1) * 10 : page * 10, let i = index">
+                        <td>{{item.title}}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <a class="cnt-ellipsis" [href]="item.url" target="_blank">{{item.url}}</a>
+                            </div>
+                        </td>
+                        <td>{{item.partner.name}}</td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center position-relative">
+                                <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: (i+((page-1)*10))}">Ver</button>
+                                <button class="btn btn-danger" (click)="delete(item.id, i+((page-1)*10), category == 1 ? 'esta oferta laboral' : category == 2 ? 'este curso' : 'esta oferta')">Eliminar</button>
+                                <button class="btn btn-gray" (click)="copyOffer(item)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ngb-pagination [(page)]="page" [pageSize]="10" [maxSize]="5" [collectionSize]="offers.length"></ngb-pagination>
+    </section>
+    <section class="view" *ngIf="form">
+        <h3 class="mb-3">{{offer ? 'Informacion de '+[category == 2 ? 'Curso' : 'Oferta']  : category == 2 ? 'Nuevo Curso' : 'Nueva Oferta'}}</h3>
+        <form class="row g-3" [formGroup]="formOffer">
+            <div class="col-xxl-5 col-lg-6">
+                <div class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative" style="height: 400px">
+                    <img height="100%" width="100%" id="img" style="object-fit: cover;" [src]="formOffer.get('image')?.value.url" *ngIf="formOffer.get('image')?.value">
+                    <input type="file" id="file" accept="image/*" (change)="addImg($event)" hidden>
+                    <label class="fas fa-plus btn-1 m-3" [ngClass]="{'changeImg' : formOffer.get('image')?.value}" for="file"></label>
+                    <span *ngIf="!formOffer.get('image')?.value">Imagen de carrera</span>
+                </div>
+                <small class="text-danger" *ngIf="formOffer.get('image')?.touched && formOffer.get('image')?.errors?.required">La imagen es requerida</small>
+            </div>
+            <div class="col-md">
+                <div class="row g-4">
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="title" type="text" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['title'].touched && formOffer.controls['title'].errors?.required">El titulo es requerido</small>
+                            <label>Titulo</label>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="url" type="url" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['url'].touched && formOffer.controls['url'].errors?.required">El enlace es requerido</small>
+                            <label>Enlace</label>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="point" type="number" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['point'].touched && formOffer.controls['point'].errors?.required">Los puntos son requeridos</small>
+                            <label>Puntos</label>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
+                        <div class="form-floating">
+                            <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
+                            <input class="form-control pe-5" type="text" id="offer_category_id" [value]="offer?.offerCategory?.name" placeholder=" " (input)="filterList('offer_category_id', categoriesFilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
+                            <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
+                                <li class="position-relative dropdown-item p-0" *ngFor="let item of categories, let i = index">
+                                    <button type="button" class="dropdown-item pe-4" id="item_offer_category_id" (click)="filterList('offer_category_id', categoriesFilter, item)" [value]="item.id">{{item.name}}</button>
+                                    <i class="far fa-trash-alt position-absolute top-0 m-2 end-0 text-danger" role="button" (click)="delete(item.id, i, 'categoria')"></i>
+                                </li>
+                            </ul>
+                            <label>Categoria</label>
+                            <small class="text-danger" *ngIf="formOffer.controls['offer_category_id'].touched && formOffer.controls['offer_category_id'].errors?.required">La categoria es requerida</small>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
+                            <input class="form-control pe-5" type="text" id="partner_id" [value]="offer?.partner?.name" placeholder=" " (input)="filterList('partner_id', partnersFilter)" (focus)="partner.click()" (click)="partner.classList.contains('show') && partner.click()" data-bs-toggle="dropdown" autocomplete="off" #partner>
+                            <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
+                                <li class="position-relative dropdown-item p-0" *ngFor="let item of partners, let i = index">
+                                    <button type="button" class="dropdown-item pe-4" id="item_partner_id" (click)="filterList('partner_id', partnersFilter, item)" [value]="item.id">{{item.name}}</button>
+                                    <i class="far fa-trash-alt position-absolute top-0 m-2 end-0 text-danger" role="button" (click)="delete(item.id, i, 'patrocinador')"></i>
+                                </li>
+                            </ul>
+                            <label>Patrocinador</label>
+                            <small class="text-danger" *ngIf="formOffer.controls['partner_id'].touched && formOffer.controls['partner_id'].errors?.required">La patrocinador es requerido</small>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" formControlName="career_id">
+                                <option [value]="null" selected disabled>- Seleccione -</option>
+                                <option *ngFor="let item of careers" [value]="item.id">{{item.name}}</option>
+                            </select>
+                            <small class="text-danger" *ngIf="formOffer.controls['career_id'].touched && formOffer.controls['career_id'].errors?.required">La carrera es requerida</small>
+                            <label>Carrera</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating pt-4">
+                            <textarea class="form-control mt-1 pt-0" formControlName="description" type="text" placeholder=" "></textarea>
+                            <small class="text-danger" *ngIf="formOffer.controls['description'].touched && formOffer.controls['description'].errors?.required">La descripcion es requerida</small>
+                            <label>Descripcion</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-1" (click)="createOrEdit(formOffer.value, offer?.id)">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </section>
+</main>

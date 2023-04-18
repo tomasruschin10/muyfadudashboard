@@ -1,0 +1,7 @@
+[
+  {
+      "origin": ["fadu-1c40d.firebaseapp.com", "*"],
+      "method": ["GET"],
+      "maxAgeSeconds": 3600
+  }
+]

@@ -1,0 +1,19 @@
+.cnt-ellipsis{
+    max-height: 67px;
+    display: inline;
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
+.alert{
+    animation: view2 1s;
+    opacity: 0;
+}
+@keyframes view2 {
+    0%{opacity: 1;}
+    70%{opacity: 1;}
+    100%{opacity: 0;}
+}

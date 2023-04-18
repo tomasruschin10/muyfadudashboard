@@ -1,0 +1,27 @@
+.fa-plus{
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    -webkit-text-stroke: 1px #306eed;
+}
+.changeImg{
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0.5;
+}
+div:hover > .changeImg{
+    opacity: 1;
+}
+.cnt-ellipsis{
+    display: inline;
+    -webkit-line-clamp: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 350px;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}

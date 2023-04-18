@@ -1,0 +1,8 @@
+.labelPass::after{
+    content: 'Cambiar contraseña';
+    color: #306eed;
+}
+.labelPass:not(.collapsed):after{
+    content: 'Cancelar';
+    color: #ff0000;
+}

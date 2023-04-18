@@ -1,0 +1,93 @@
+<main class="px-sm-5 px-4 py-5">
+    <section class="view" *ngIf="!form">
+        <h3>Recursos y herramientas</h3>
+        <div class="text-end mb-3">
+            <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: 'create'}">Nuevo recurso</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Subido por</th>
+                        <th>Categoria</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of resources | slice: (page-1) * 10 : page * 10, let i = index">
+                        <td>{{item.name}}</td>
+                        <td>{{item.user.name}}</td>
+                        <td>{{item.resourceCategory.name}}</td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center position-relative">
+                                <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: i+((page-1)*10)}">Ver</button>
+                                <button class="btn btn-danger" (click)="delete(item.id, i+((page-1)*10), 'este recurso')">Eliminar</button>
+                                <button class="btn btn-gray" (click)="copy(item)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ngb-pagination [(page)]="page" [pageSize]="10" [maxSize]="5" [collectionSize]="resources.length"></ngb-pagination>
+    </section>
+    <section class="view" *ngIf="form">
+        <h3>Nuevo recurso</h3>
+        <form class="row g-3" [formGroup]="formResource">
+            <div class="col-xl-4 col-md-6">
+                <div class="form-floating">
+                    <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
+                    <input class="form-control pe-5" type="text" id="resource_category_id" [value]="resource?.resourceCategory?.name" placeholder=" " (input)="filterList('resource_category_id', resourceCategoryfilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
+                    <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
+                        <li class="position-relative dropdown-item p-0" *ngFor="let item of resourceCategory, let i = index">
+                            <button type="button" class="dropdown-item item_resource_category_id pe-4" (click)="filterList('resource_category_id', resourceCategoryfilter, item)" [value]="item.id">{{item.name}}</button>
+                            <i class="far fa-trash-alt position-absolute top-0 m-2 end-0 text-danger" role="button" (click)="delete(item.id, i, 'esta categoria')"></i>
+                        </li>
+                    </ul>
+                    <label>Categoria</label>
+                    <small class="text-danger" *ngIf="formResource.controls['resource_category_id'].touched && formResource.controls['resource_category_id'].errors?.required">La categoria es requerida</small>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="form-floating">
+                    <select class="form-select" (change)="careerId = selectCareer.value" #selectCareer>
+                        <option [value]="null" selected disabled>- Seleccione -</option>
+                        <option *ngFor="let item of careers" [value]="item.id" [selected]="careerId == item.id">{{item.name}}</option>
+                    </select>
+                    <label>Carrera</label>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="form-floating">
+                    <select class="form-select" formControlName="subject_id" (change)="filterCareer()">
+                        <option [value]="null" selected disabled>- Seleccione -</option>
+                        <ng-container *ngFor="let item of subjects">
+                            <option *ngIf="!careerId || item.subjectCategory.career_id == careerId" [value]="item.id">{{item.name}}</option>
+                        </ng-container>
+                    </select>
+                    <label>Materia</label>
+                    <small class="text-danger" *ngIf="formResource.controls['subject_id'].touched && formResource.controls['subject_id'].errors?.required">La materia es requerida</small>
+                </div>
+            </div>
+            <div class="d-flex border rounded-7 p-2 gap-3 align-items-center justify-content-center flex-column flex-sm-row position-relative">
+                <div class="d-flex justify-content-center p-2 align-items-center flex-column border rounded-7 position-relative">
+                    <input type="file" id="file" (change)="addImg($event)" hidden>
+                    <label class="fas fa-file-upload {{formResource.controls.image.value ? 'btn-1 text-white' : 'btn-gray color-gray'}} m-2" for="file"></label>
+                    <span class="ctn-name">{{formResource.controls.image.value ? formResource.controls.image.value.name.includes('resources/') ? formResource.controls.image.value.name.slice(23) : formResource.controls.image.value.name : 'Imagen de carrera'}}</span>
+                    <small class="text-danger" *ngIf="formResource.controls['image'].touched && formResource.controls['image'].errors?.required">El archivo es requerido</small>
+                </div>
+                <div class="form-floating col-sm col-12">
+                    <input class="form-control" type="text" formControlName="name" placeholder=" ">
+                    <label>Nombre del recurso</label>
+                    <small class="text-danger" *ngIf="formResource.controls['name'].touched && formResource.controls['name'].errors?.required">El nombre es requerido</small>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-1" (click)="createOrEdit(formResource.value, resource?.id)">Guardar</button>
+            </div>
+        </form>
+    </section>
+</main>

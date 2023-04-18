@@ -1,0 +1,19 @@
+image: node
+
+pipelines:
+  default:
+    - step:
+        script: 
+          -  echo "This default script will run when something is pushed to this branch"
+  branches:
+    develop:
+    - step:
+        name: Build & Deploy to Firebase
+        deployment: staging
+        script:
+          - export NODE_OPTIONS=--openssl-legacy-provider
+          - yarn install && yarn build
+          - pipe: atlassian/firebase-deploy:0.2.1
+            variables:
+              FIREBASE_TOKEN: $FIREBASE_TOKEN
+              PROJECT_ID: $FIREBASE_PROJECT      

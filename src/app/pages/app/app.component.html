@@ -1,0 +1,30 @@
+<main class="px-sm-5 px-4 py-5 text-md-start text-center">
+    <img class="position-fixed top-0 end-0 start-0 bottom-0 h-100 w-100" style="object-fit: contain; z-index: -1; opacity: .15; padding: 10%;" src="assets/img/logo.png" alt="">
+    <section *ngIf="offer">
+        <h3 class="bg-gray2 p-3 rounded-7 text-center mb-4">{{offer.title}}</h3>
+        <div style="min-height: 350px;">
+            <img class="float-md-start border rounded-7 my-3 mx-sm-3 shadow-sm" style="width: 100%; max-width: 400px;" [src]="offer.image.url" alt="imgOffer">
+            <p style="text-align: justify;">
+                {{offer.description}}
+            </p>
+        </div>
+        <div class="fw-500 mb-2">Patrocinador:</div>
+        <a class="btn btn-gray" [href]="offer.url" target="_blank">
+            <div class="fw-500">{{offer.partner.name}}</div>
+            <small class="cnt-ellipsis">{{offer.url}}</small>
+        </a>
+        <div class="d-flex gap-3 justify-content-md-end mt-3 justify-content-center flex-wrap">
+            <span class="p-2 text-white rounded-7 fw-500" style="background-color: #f06d6d;">Categoria: {{offer.offerCategory.name}}</span>
+            <span class="bg-1 p-2 text-white rounded-7 fw-500">Puntaje: {{offer.point}}</span>
+        </div>
+        <div>
+            <div class="d-flex gap-2 justify-content-md-start mt-3 justify-content-center flex-wrap">
+                <img src="assets/img/google-play.png" width="150px" alt="google-play">
+                <img src="assets/img/app-store.png" width="145px" alt="app-store">
+            </div>
+        </div>
+    </section>
+    <section *ngIf="!offer">
+        <h3 class="text-center p-4 rounded-7 bg-gray2">No se ha encontrado la oferta :(</h3>
+    </section>
+</main>

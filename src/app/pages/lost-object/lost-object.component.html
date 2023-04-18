@@ -1,0 +1,69 @@
+<main class="px-sm-5 px-4 py-5">
+    <section class="view" *ngIf="!form">
+        <h3>Objetos perdidos</h3>
+        <div class="text-end mb-3">
+            <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: 'create'}">Nuevo objecto</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Titulo</th>
+                        <th>Subido por</th>
+                        <th>Fecha</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of lostObjects | slice: (page-1) * 10 : page * 10, let i = index">
+                        <td>{{item.title}}</td>
+                        <td>{{item.user.name}}</td>
+                        <td>{{item.created_at | date: 'dd/MM/yy'}}</td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: i+((page-1)*10)}">Ver</button>
+                                <button class="btn btn-danger" (click)="delete(item.id, i+((page-1)*10))">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ngb-pagination [(page)]="page" [pageSize]="10" [maxSize]="5" [collectionSize]="lostObjects.length"></ngb-pagination>
+    </section>
+    <section class="view" *ngIf="form">
+        <h3>Nuevo objeto</h3>
+        <form class="row g-3" [formGroup]="formLostObject">
+            <div class="col-xxl-5 col-lg-6">
+                <div class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative" style="height: 400px">
+                    <img height="100%" width="100%" id="img" style="object-fit: cover;" [src]="formLostObject.get('image')?.value.url" *ngIf="formLostObject.get('image')?.value">
+                    <input type="file" id="file" accept="image/*" (change)="addImg($event)" hidden>
+                    <label class="fas fa-plus btn-1 m-3" [ngClass]="{'changeImg' : formLostObject.get('image')?.value}" for="file"></label>
+                    <span *ngIf="!formLostObject.get('image')?.value">Imagen del objeto</span>
+                </div>
+                <small class="text-danger" *ngIf="formLostObject.get('image')?.touched && formLostObject.get('image')?.errors?.required">La imagen es requerida</small>
+            </div>
+            <div class="col-md">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="title" type="text" placeholder=" ">
+                            <small class="text-danger" *ngIf="formLostObject.controls['title'].touched && formLostObject.controls['title'].errors?.required">El titulo es requerido</small>
+                            <label>Titulo</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating pt-4">
+                            <textarea class="form-control mt-1 pt-0" formControlName="description" placeholder=" "></textarea>
+                            <small class="text-danger" *ngIf="formLostObject.controls['description'].touched && formLostObject.controls['description'].errors?.required">La descripcion es requerida</small>
+                            <label>Descripcion</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-1" (click)="createOrEdit(formLostObject.value)">Guardar</button>
+            </div>
+        </form>
+    </section>
+</main>

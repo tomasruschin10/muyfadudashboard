@@ -1,0 +1,56 @@
+<aside class="pt-4 shadow-sm" [ngClass]="{'show': show}" id="menu-left">
+  <div class="ctn-pin">
+    <i class="fas fa-thumbtack position-absolute end-0 top-0 m-2 text-secondary" (click)="show = !show" role="button"></i>
+    <i class="fas fa-slash position-absolute end-0 top-0 my-2 mx-1 text-secondary" (click)="show = !show" *ngIf="show" role="button"></i>
+  </div>
+  <small class="user-select-none position-absolute end-0 top-0 me-2 mt-1" (click)="show = !show" id="btn-hide" role="button"><b>╳</b></small>
+  <a routerLink="/dash/balance" class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLinkActive="active">
+    <i class="far fa-chart-bar"></i>
+    <div><span>Balance</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/usuarios" routerLinkActive="active">
+    <i class="fas fa-users-cog"></i>
+    <div><span>Manejo de usuarios</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/estudiantes" routerLinkActive="active">
+    <i class="fas fa-users"></i>
+    <div><span>Estudiantes</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/carreras" routerLinkActive="active">
+    <i class="fas fa-chalkboard-teacher"></i>
+    <div><span>Carreras</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/recursos" routerLinkActive="active">
+    <i class="fas fa-folder-plus"></i>
+    <div><span>Recursos y herramientas</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/objestos-perdidos" routerLinkActive="active">
+    <i class="fas fa-search"></i>
+    <div><span>Objetos perdidos</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/cursoss&Workshops" routerLinkActive="active">
+    <i class="fas fa-graduation-cap"></i>
+    <div><span>Cursos & Workshops</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/ofertas" routerLinkActive="active">
+    <i class="fas fa-bullhorn"></i>
+    <div><span>Ofertas</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/ofertas-laborales" routerLinkActive="active">
+    <i class="fas fa-briefcase"></i>
+    <div><span>Ofertas laborales</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/noticias" routerLinkActive="active">
+    <i class="far fa-newspaper"></i>
+    <div><span>Noticias</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/anuncios" routerLinkActive="active">
+    <i class="fas fa-ad"></i>
+    <div><span>Anuncios</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/opiniones" routerLinkActive="active">
+    <i class="far fa-comment-dots"></i>
+    <div><span>Opiniones</span></div>
+  </a>
+</aside>
+<div class="backdrop" (click)="show = !show"></div>
