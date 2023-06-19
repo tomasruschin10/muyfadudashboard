@@ -216,3 +216,10 @@ div:hover > .changeImg{
   0%{opacity: 0;}
   100%{opacity: 1;}
 }
+
+
+.status-input-custom-width{
+  height: 2rem !important;
+  width: 3.5rem !important;
+  cursor: pointer;
+}

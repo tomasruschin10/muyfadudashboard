@@ -11,6 +11,7 @@
                         <th>Titulo</th>
                         <th>Enlace</th>
                         <th>Patrocinador</th>
+                        <th>Estado</th>
                         <th>Accion</th>
                     </tr>
                 </thead>
@@ -22,9 +23,15 @@
                                 <a class="cnt-ellipsis" [href]="item.url" target="_blank">{{item.url}}</a>
                             </div>
                         </td>
-                        <td>{{item.partner.name}}</td>
+                        <td>{{item?.partner?.name}}</td>
+                        <td>
+                            <div class="form-check form-switch d-flex justify-content-center status-input-custom-width-container">
+                                <input class="form-check-input status-input-custom-width" [checked]="item.approved" (change)="changeAprovedStatus(item.id)" [value]="item.approved" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                        </td>
                         <td>
                             <div class="d-flex gap-2 justify-content-center position-relative">
+           
                                 <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: (i+((page-1)*10))}">Ver</button>
                                 <button class="btn btn-danger" (click)="delete(item.id, i+((page-1)*10), category == 1 ? 'esta oferta laboral' : category == 2 ? 'este curso' : 'esta oferta')">Eliminar</button>
                                 <button class="btn btn-gray" (click)="copyOffer(item)">
@@ -90,7 +97,7 @@
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
-                            <input class="form-control pe-5" type="text" id="partner_id" [value]="offer?.partner?.name" placeholder=" " (input)="filterList('partner_id', partnersFilter)" (focus)="partner.click()" (click)="partner.classList.contains('show') && partner.click()" data-bs-toggle="dropdown" autocomplete="off" #partner>
+                            <input class="form-control pe-5" type="text" id="partner_id" [value]="offer?.partner?.name" placeholder=" " (input)="filterList('partner_id', partnersFilter)" (focus)="partner?.click()" (click)="partner?.classList?.contains('show') && partner?.click()" data-bs-toggle="dropdown" autocomplete="off" #partner>
                             <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
                                 <li class="position-relative dropdown-item p-0" *ngFor="let item of partners, let i = index">
                                     <button type="button" class="dropdown-item pe-4" id="item_partner_id" (click)="filterList('partner_id', partnersFilter, item)" [value]="item.id">{{item.name}}</button>

@@ -46,6 +46,14 @@ export class OffersComponent implements OnInit {
     this.listCareer()
   }
 
+  async changeAprovedStatus(offerId) {
+    try {
+      const response = await this.offertsSv.changeApprovedStatus(offerId).toPromise();
+      console.log(response)
+    } catch (error) {
+      console.error("error ", error)
+    }
+  }
   initFormOffer(){
     this.offer = null
     this.formOffer = new FormGroup({
@@ -74,11 +82,11 @@ export class OffersComponent implements OnInit {
   async listOffers(){
     let data
     if(this.category == 1){
-      data = await this.offertsSv.getOffersWork().toPromise()
+      data = await this.offertsSv.getAdminOffersWork().toPromise()
     }else if(this.category == 2){
-      data = await this.offertsSv.getOffersCourse().toPromise()
+      data = await this.offertsSv.getAdminOffersCourse().toPromise()
     }else{
-      data = await this.offertsSv.getOffers().toPromise()
+      data = await this.offertsSv.getAdminOffers().toPromise()
     }
     this.offers = data.body
     this.initFormOffer()
@@ -86,6 +94,7 @@ export class OffersComponent implements OnInit {
 
   listPartner(){
     this.offertsSv.getPartner().subscribe((data:any) =>{
+      console.log("data ", data)
       this.partners = data.body
       this.partnersFilter = data.body
     })
