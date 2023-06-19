@@ -17,6 +17,13 @@ export class OffersService {
       observe: 'response'
     })
   }
+
+  changeApprovedStatus(id){
+    return this.http.patch(`${this.BASE_URL}/offer/${id}/change-approved-status`, {
+      observe: 'response'
+    })
+  }
+
   getByIdOffer(id){
     return this.http.get(`${this.BASE_URL}/offer/${id}`, {
       observe: 'response'
@@ -27,8 +34,25 @@ export class OffersService {
       observe: 'response'
     })
   }
+
   getOffersCourse(){
-    return this.http.get(`${this.BASE_URL}/offer/all/course`, {
+  return this.http.get(`${this.BASE_URL}/offer/all/course`, {
+      observe: 'response'
+    })
+  }
+  
+  getAdminOffersCourse(){
+    return this.http.get(`${this.BASE_URL}/offer/admin/all/course`, {
+      observe: 'response'
+    })
+  }
+  getAdminOffersWork(){
+    return this.http.get(`${this.BASE_URL}/offer/admin/all/work`, {
+      observe: 'response'
+    })
+  }
+  getAdminOffers(){
+    return this.http.get(`${this.BASE_URL}/offer/all/admin/`, {
       observe: 'response'
     })
   }

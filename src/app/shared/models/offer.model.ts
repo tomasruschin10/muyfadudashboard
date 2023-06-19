@@ -13,7 +13,8 @@ export interface Offer{
     "updated_at": Date,
     "offerCategory": OfferCategory,
     "image": Image,
-    "partner": Partner
+    "partner": Partner,
+    "approved": boolean
 }
 export interface OfferCategory{
     "id": number,
