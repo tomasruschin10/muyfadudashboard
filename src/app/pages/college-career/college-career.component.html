@@ -50,10 +50,18 @@
             <div *ngFor="let item of subjects, let i = index">
               <div class="accordion-item border-0">
                 <div class="position-relative ctn-trash">
-                  <div class="form-floating">
-                    <input class="form-control" style="padding-right: 135px" [value]="subjects[i].name" (input)="setValue(level.value, i)" type="text" placeholder=" " #level>
-                    <label>Nivel</label>
+             
+                  <div class="row">
+                    <div class="form-floating col-4">
+                      <input class="form-control" style="padding-right: 135px" [value]="subjects[i].name" (input)="setValue(level.value, i)" type="text" placeholder=" " #level>
+                      <label>Nivel</label>
+                    </div>
+                    <div class="form-floating col-6">
+                      <input class="form-control" maxlength="20" style="padding-right: 135px" [value]="subjects[i].description" (input)="setDescription(description.value, i)" type="text" placeholder=" " #description>
+                      <label>description</label>
+                    </div>
                   </div>
+                  
                   <div class="position-absolute top-0 end-0">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#coll'+i">
                       Materias
