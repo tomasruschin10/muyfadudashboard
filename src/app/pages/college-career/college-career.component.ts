@@ -120,6 +120,7 @@ export class CollegeCareerComponent implements OnInit {
       if (i < this.subjects.length) {
         const form = {
           name: this.subjects[i].name,
+          description: this.subjects[i].description,
           career_id: id,
         };
         try {
@@ -165,38 +166,6 @@ export class CollegeCareerComponent implements OnInit {
       }
     }, 800);
   }
-
-  // createSubject(i, id){
-  //   let interval
-  //   let iS = 0
-  //   this.spinnerSv.show()
-  //   interval = setInterval(async() =>{
-  //     this.spinnerSv.show()
-  //     if(iS < this.subjects[i].subject.length){
-  //       const form = {
-  //         name: this.subjects[i].subject[iS].name,
-  //         subject_category_id: id
-  //       }
-  //       try {
-  //         if(this.subjects[i].subject[iS]?.edit){
-  //           await this.careerSv.putSubject(form, this.subjects[i].subject[iS].id).toPromise()
-  //         }else if(!this.subjects[i].subject[iS]?.id){
-  //           await this.careerSv.postSubject(form).toPromise()
-  //         }
-  //       } catch (error:any) {
-  //         clearInterval(interval)
-  //         return MyAlert.alert(error.error.message, true)
-  //       }
-  //       iS++
-  //     }else if(i == this.last){
-  //       clearInterval(interval)
-  //       MyAlert.alert(this.careerId ? 'Carrera editada!' : 'Carrera creada!')
-  //       this.route.navigate([])
-  //     }else{
-  //       clearInterval(interval)
-  //     }
-  //   }, 300)
-  // }
 
   delete(id, i) {
     Swal.fire({
@@ -244,7 +213,17 @@ export class CollegeCareerComponent implements OnInit {
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
-
+  setDescription(value, i, iS?) {
+    if (iS !== undefined) {
+      this.subjects[i].subject[iS].description = value;
+      if (this.subjects[i].subject[iS]?.id)
+        this.subjects[i].subject[iS].edit = true;
+    } else {
+      this.subjects[i].description = value;
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
   selectCorrelative(i, iS, value) {
     if (value.includes('index')) {
       value = value.replace('index', '');
