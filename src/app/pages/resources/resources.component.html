@@ -11,6 +11,7 @@
                         <th>Nombre</th>
                         <th>Subido por</th>
                         <th>Categoria</th>
+                        <th>Estado</th>
                         <th>Accion</th>
                     </tr>
                 </thead>
@@ -19,6 +20,11 @@
                         <td>{{item.name}}</td>
                         <td>{{item.user.name}}</td>
                         <td>{{item.resourceCategory.name}}</td>
+                        <td>
+                            <div class="form-check form-switch d-flex justify-content-center status-input-custom-width-container">
+                                <input class="form-check-input status-input-custom-width" [checked]="item.active" (change)="changeAprovedStatus(item.id)" [value]="item.active" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                        </td>
                         <td>
                             <div class="d-flex gap-2 justify-content-center position-relative">
                                 <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: i+((page-1)*10)}">Ver</button>

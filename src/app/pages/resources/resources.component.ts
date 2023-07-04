@@ -192,4 +192,12 @@ export class ResourcesComponent implements OnInit {
     this.createOrEdit(this.formResource.value, null)
   }
 
+  async changeAprovedStatus(id) {
+    try {
+      const response = await this.resourceSv.changeApprovedStatus(id).toPromise();
+      console.log(response)
+    } catch (error) {
+      console.error("error ", error)
+    }
+  }
 }
