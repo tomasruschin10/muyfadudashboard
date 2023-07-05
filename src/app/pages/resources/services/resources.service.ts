@@ -48,4 +48,10 @@ export class ResourcesService {
       observe: 'response'
     })
   }
+
+  changeApprovedStatus(id){
+    return this.http.patch(`${this.BASE_URL}/resource/${id}/change-approved-status`, {
+      observe: 'response'
+    })
+  }
 }

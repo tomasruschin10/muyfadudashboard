@@ -6,6 +6,7 @@ export interface Resource {
     "image_id": number,
     "subject_id": number,
     "resource_category_id": number,
+    "active"?: boolean,
     "created_at": Date,
     "updated_at": Date,
     "user": User,
