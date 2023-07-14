@@ -63,8 +63,10 @@
                   </div>
                   
                   <div class="position-absolute top-0 end-0">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#coll'+i">
+                    <button class="accordion-button collapsed d-none d-sm-flex" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#coll'+i">
                       Materias
+                    </button>
+                    <button class="accordion-button collapsed  d-sm-none custom-button-sm-arrow" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#coll'+i">
                     </button>
                   </div>
                   <i class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger" style="top: 13px; right: -20px" role="button" (click)="deleteLevel(i, item)" *ngIf="subjects.length > 1"></i>
