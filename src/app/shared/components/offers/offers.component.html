@@ -66,6 +66,12 @@
                             <label>Titulo</label>
                         </div>
                     </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6"  *ngIf="category == 1" >
+                        <div class="form-floating">
+                            <input class="form-control" [value]="offer.name" formControlName="name" type="text" placeholder=" ">
+                            <label>Nombre</label>
+                        </div>
+                    </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="url" type="url" placeholder=" ">
@@ -108,6 +114,21 @@
                             <small class="text-danger" *ngIf="formOffer.controls['partner_id'].touched && formOffer.controls['partner_id'].errors?.required">La patrocinador es requerido</small>
                         </div>
                     </div>
+
+                    <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="phone" [value]="offer.phone" type="text" placeholder=" ">
+                            <label> Nro de Teléfono</label>
+                        </div>
+                    </div>
+
+                    <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
+                            <label>Empresa</label>
+                        </div>
+                    </div>
+
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
