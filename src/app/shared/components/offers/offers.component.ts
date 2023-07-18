@@ -62,6 +62,8 @@ export class OffersComponent implements OnInit {
       partner_id: new FormControl('', Validators.required),
       career_id: new FormControl(null, Validators.required),
       description: new FormControl('', Validators.required),
+      phone: new FormControl(''),
+      name: new FormControl(''),
       point: new FormControl(0, Validators.required),
       url: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required)
