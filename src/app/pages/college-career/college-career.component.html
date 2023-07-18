@@ -86,6 +86,10 @@
                         </select>
                         <label>Materia correlativa</label>
                       </div>
+                      <div class="form-floating">
+                        <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].prefix" (input)="setPrefix(prefix.value, i, iS)" placeholder=" " #prefix>
+                        <label>Prefijo</label>
+                      </div>
                     </div>
                     <div class="text-end">
                       <button class="btn btn-1" (click)="subjects[i].subject.push({name: ''})">

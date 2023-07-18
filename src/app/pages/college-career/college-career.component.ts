@@ -202,6 +202,18 @@ export class CollegeCareerComponent implements OnInit {
     this.subjects[i].subject.splice(iS, 1);
   }
 
+  setPrefix(value, i, iS?) {
+    if (iS !== undefined) {
+      this.subjects[i].subject[iS].prefix = value;
+      if (this.subjects[i].subject[iS]?.id)
+        this.subjects[i].subject[iS].edit = true;
+    } else {
+      this.subjects[i].prefix = value;
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
+
   setValue(value, i, iS?) {
     if (iS !== undefined) {
       this.subjects[i].subject[iS].name = value;
