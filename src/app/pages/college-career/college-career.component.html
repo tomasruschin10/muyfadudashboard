@@ -52,11 +52,11 @@
                 <div class="position-relative ctn-trash">
              
                   <div class="row">
-                    <div class="form-floating col-4">
+                    <div class="form-floating col-12 col-sm-4">
                       <input class="form-control" style="padding-right: 135px" [value]="subjects[i].name" (input)="setValue(level.value, i)" type="text" placeholder=" " #level>
                       <label>Nivel</label>
                     </div>
-                    <div class="form-floating col-6">
+                    <div class="form-floating col-12 col-sm-6">
                       <input class="form-control" maxlength="50" style="padding-right: 135px" [value]="subjects[i].description || ''" (input)="setDescription(description.value, i)" type="text" placeholder=" " #description>
                       <label>descripción</label>
                     </div>
