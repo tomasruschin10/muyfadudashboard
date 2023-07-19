@@ -213,7 +213,17 @@ export class CollegeCareerComponent implements OnInit {
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
-
+  setSubjectDescription(value, i, iS?) {
+    if (iS !== undefined) {
+      this.subjects[i].subject[iS].info = value;
+      if (this.subjects[i].subject[iS]?.id)
+        this.subjects[i].subject[iS].edit = true;
+    } else {
+      this.subjects[i].info = value;
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
   setValue(value, i, iS?) {
     if (iS !== undefined) {
       this.subjects[i].subject[iS].name = value;
