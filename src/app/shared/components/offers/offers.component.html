@@ -74,16 +74,15 @@
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="url" type="url" placeholder=" ">
+                            <input class="form-control"  [value]="offer.url"  formControlName="url" type="url" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['url'].touched && formOffer.controls['url'].errors?.required">El enlace es requerido</small>
                             <label>Enlace</label>
                         </div>
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="point" type="number" placeholder=" ">
-                            <small class="text-danger" *ngIf="formOffer.controls['point'].touched && formOffer.controls['point'].errors?.required">Los puntos son requeridos</small>
-                            <label>Puntos</label>
+                            <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
+                            <label>Patrocinador</label>
                         </div>
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
@@ -100,7 +99,7 @@
                             <small class="text-danger" *ngIf="formOffer.controls['offer_category_id'].touched && formOffer.controls['offer_category_id'].errors?.required">La categoria es requerida</small>
                         </div>
                     </div>
-                    <div class="col-xxl-6 col-lg-12 col-md-6">
+<!--                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
                             <input class="form-control pe-5" type="text" id="partner_id" [value]="offer?.partner?.name" placeholder=" " (input)="filterList('partner_id', partnersFilter)" (focus)="partner?.click()" (click)="partner?.classList?.contains('show') && partner?.click()" data-bs-toggle="dropdown" autocomplete="off" #partner>
@@ -113,7 +112,7 @@
                             <label>Patrocinador</label>
                             <small class="text-danger" *ngIf="formOffer.controls['partner_id'].touched && formOffer.controls['partner_id'].errors?.required">La patrocinador es requerido</small>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
@@ -125,10 +124,17 @@
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
-                            <label>Empresa</label>
+                            <label>Patrocinador</label>
                         </div>
                     </div>
 
+                    <div class="col-12">
+                        <div class="form-floating pt-4">
+                            <textarea class="form-control mt-1 pt-0" formControlName="description" type="text" placeholder=" "></textarea>
+                            <small class="text-danger" *ngIf="formOffer.controls['description'].touched && formOffer.controls['description'].errors?.required">La descripcion es requerida</small>
+                            <label>Descripcion</label>
+                        </div>
+                    </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
@@ -137,13 +143,6 @@
                             </select>
                             <small class="text-danger" *ngIf="formOffer.controls['career_id'].touched && formOffer.controls['career_id'].errors?.required">La carrera es requerida</small>
                             <label>Carrera</label>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="form-floating pt-4">
-                            <textarea class="form-control mt-1 pt-0" formControlName="description" type="text" placeholder=" "></textarea>
-                            <small class="text-danger" *ngIf="formOffer.controls['description'].touched && formOffer.controls['description'].errors?.required">La descripcion es requerida</small>
-                            <label>Descripcion</label>
                         </div>
                     </div>
                 </div>
