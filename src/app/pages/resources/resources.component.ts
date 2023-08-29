@@ -70,6 +70,7 @@ export class ResourcesComponent implements OnInit {
 
   listResources(){
     this.resourceSv.getResources().subscribe((data:any) =>{
+      console.log(data.body)
       this.resources = data.body
       this.initFormResource()
     })
