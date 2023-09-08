@@ -6,6 +6,7 @@ export interface Offer{
     "career_id": number,
     "partner_id": number,
     "description": string,
+    "email"?: string
     "point": number,
     "url": string,
     "image_id": number,

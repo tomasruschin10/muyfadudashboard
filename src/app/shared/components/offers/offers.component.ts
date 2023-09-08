@@ -66,6 +66,7 @@ export class OffersComponent implements OnInit {
       name: new FormControl(''),
       point: new FormControl(0, Validators.required),
       url: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required)
     })
     if(this.offers?.length > 0 && this.form != 'create' && this.form){
@@ -116,6 +117,7 @@ export class OffersComponent implements OnInit {
   }
 
   async createOrEdit(form, id){
+    console.log(this.formOffer.invalid)
     if(this.formOffer.invalid) return this.formOffer.markAllAsTouched()
     try {
       if(form.offer_category_id === true){

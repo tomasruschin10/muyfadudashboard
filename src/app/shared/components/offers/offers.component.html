@@ -74,15 +74,17 @@
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="url" type="url" placeholder=" ">
+                            <input class="form-control"  [value]="offer.url"  formControlName="url" type="url" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['url'].touched && formOffer.controls['url'].errors?.required">El enlace es requerido</small>
                             <label>Enlace</label>
                         </div>
                     </div>
-                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                    <div *ngIf="category === 2" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
-                            <label>Patrocinador</label>
+                            <input class="form-control" formControlName="name" [value]="offer.name" type="text" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['name'].touched && formOffer.controls['name'].errors?.required">El enlace es requerido</small>
+
+                            <label>¿Quién lo dicta?</label>
                         </div>
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
@@ -97,6 +99,13 @@
                             </ul>
                             <label>Categoria</label>
                             <small class="text-danger" *ngIf="formOffer.controls['offer_category_id'].touched && formOffer.controls['offer_category_id'].errors?.required">La categoria es requerida</small>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
+                        <div class="form-floating">
+                            <input class="form-control"  [value]="offer.email || ''"  formControlName="email" type="email" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['email'].touched && formOffer.controls['email'].errors?.required">El enlace es requerido</small>
+                            <label>Email</label>
                         </div>
                     </div>
 <!--                     <div class="col-xxl-6 col-lg-12 col-md-6">
@@ -124,6 +133,8 @@
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
+                            <small class="text-danger" *ngIf="formOffer.controls['company'].touched && formOffer.controls['company'].errors?.required">El enlace es requerido</small>
+
                             <label>Patrocinador</label>
                         </div>
                     </div>
