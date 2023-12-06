@@ -4,10 +4,10 @@
     <i class="fas fa-slash position-absolute end-0 top-0 my-2 mx-1 text-secondary" (click)="show = !show" *ngIf="show" role="button"></i>
   </div>
   <small class="user-select-none position-absolute end-0 top-0 me-2 mt-1" (click)="show = !show" id="btn-hide" role="button"><b>╳</b></small>
-  <a routerLink="/dash/balance" class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLinkActive="active">
+  <!-- <a routerLink="/dash/balance" class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLinkActive="active">
     <i class="far fa-chart-bar"></i>
     <div><span>Balance</span></div>
-  </a>
+  </a> -->
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/usuarios" routerLinkActive="active">
     <i class="fas fa-users-cog"></i>
     <div><span>Manejo de usuarios</span></div>
@@ -24,17 +24,17 @@
     <i class="fas fa-folder-plus"></i>
     <div><span>Recursos y herramientas</span></div>
   </a>
-  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/objestos-perdidos" routerLinkActive="active">
+  <!-- <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/objestos-perdidos" routerLinkActive="active">
     <i class="fas fa-search"></i>
     <div><span>Objetos perdidos</span></div>
-  </a>
+  </a> -->
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/cursoss&Workshops" routerLinkActive="active">
     <i class="fas fa-graduation-cap"></i>
     <div><span>Cursos & Workshops</span></div>
   </a>
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/ofertas" routerLinkActive="active">
     <i class="fas fa-bullhorn"></i>
-    <div><span>Ofertas</span></div>
+    <div><span>Mercado</span></div>
   </a>
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/ofertas-laborales" routerLinkActive="active">
     <i class="fas fa-briefcase"></i>
