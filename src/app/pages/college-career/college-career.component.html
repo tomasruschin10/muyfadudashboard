@@ -53,11 +53,11 @@
              
                   <div class="row">
                     <div class="form-floating col-12 col-sm-4">
-                      <input class="form-control" style="padding-right: 135px" [value]="subjects[i].name" (input)="setValue(level.value, i)" type="text" placeholder=" " #level>
+                      <input class="form-control" style="padding-right: 10px" [value]="subjects[i].name" (input)="setValue(level.value, i)" type="text" placeholder=" " #level>
                       <label>Nivel</label>
                     </div>
                     <div class="form-floating col-12 col-sm-6">
-                      <input class="form-control" maxlength="50" style="padding-right: 135px" [value]="subjects[i].description || ''" (input)="setDescription(description.value, i)" type="text" placeholder=" " #description>
+                      <input class="form-control" maxlength="100" style="padding-right: 10px" [value]="subjects[i].description || ''" (input)="setDescription(description.value, i)" type="text" placeholder=" " #description>
                       <label>descripción</label>
                     </div>
                   </div>
@@ -87,11 +87,11 @@
                         <label>Materia correlativa</label>
                       </div>
                       <div class="form-floating">
-                        <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].prefix" (input)="setPrefix(prefix.value, i, iS)" placeholder=" " #prefix>
+                        <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].prefix ? subjects[i].subject[iS].prefix : ''" (input)="setPrefix(prefix.value, i, iS)" placeholder=" " #prefix>
                         <label>Prefijo</label>
                       </div>
                       <div class="form-floating">
-                        <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].info" (input)="setSubjectDescription(info.value, i, iS)" placeholder=" " #info>
+                        <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].info ? subjects[i].subject[iS].info : ''" (input)="setSubjectDescription(info.value, i, iS)" placeholder=" " #info>
                         <label>descripción</label>
                       </div>
                     </div>

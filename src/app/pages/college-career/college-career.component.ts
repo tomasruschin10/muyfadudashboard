@@ -145,6 +145,7 @@ export class CollegeCareerComponent implements OnInit {
             };
             for (let item of this.subjects[i].subject) {
               item.subject_category_id = data.body.id;
+              item.url = '';
               if (item?.edit || !item?.id) formsubject.data.push(item);
             }
             this.careerSv.putSubject(formsubject).toPromise();
