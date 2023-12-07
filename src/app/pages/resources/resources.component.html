@@ -58,10 +58,10 @@
             <div class="col-xl-4 col-md-6">
                 <div class="form-floating">
                     <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
-                    <input class="form-control pe-5" type="text" id="resource_category_id" [value]="resource?.resourceCategory?.name" placeholder=" " (input)="filterList('resource_category_id', resourceCategoryfilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
+                    <input class="form-control pe-5" type="text" id="resource_category_id" placeholder=" " (input)="filterList('resource_category_id', resourceCategoryfilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
                     <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
                         <li class="position-relative dropdown-item p-0" *ngFor="let item of resourceCategory, let i = index">
-                            <button type="button" class="dropdown-item item_resource_category_id pe-4" (click)="filterList('resource_category_id', resourceCategoryfilter, item)" [value]="item.id">{{item.name}}</button>
+                            <button type="button" class="dropdown-item item_resource_category_id pe-4" (click)="filterList('resource_category_id', resourceCategoryfilter, item)">{{item.name}}</button>
                             <i class="far fa-trash-alt position-absolute top-0 m-2 end-0 text-danger" role="button" (click)="delete(item.id, i, 'esta categoria')"></i>
                         </li>
                     </ul>
@@ -72,8 +72,8 @@
             <div class="col-xl-4 col-md-6">
                 <div class="form-floating">
                     <select class="form-select" (change)="careerId = selectCareer.value" #selectCareer>
-                        <option [value]="null" selected disabled>- Seleccione -</option>
-                        <option *ngFor="let item of careers" [value]="item.id" [selected]="careerId == item.id">{{item.name}}</option>
+                        <option selected disabled>- Seleccione -</option>
+                        <option *ngFor="let item of careers" [selected]="careerId == item.id">{{item.name}}</option>
                     </select>
                     <label>Carrera</label>
                 </div>
@@ -81,9 +81,9 @@
             <div class="col-xl-4 col-md-6">
                 <div class="form-floating">
                     <select class="form-select" formControlName="subject_id" (change)="filterCareer()">
-                        <option [value]="null" selected disabled>- Seleccione -</option>
+                        <option selected disabled>- Seleccione -</option>
                         <ng-container *ngFor="let item of subjects">
-                            <option *ngIf="!careerId || item.subjectCategory.career_id == careerId" [value]="item.id">{{item.name}}</option>
+                            <option *ngIf="!careerId || item.subjectCategory.career_id == careerId">{{item.name}}</option>
                         </ng-container>
                     </select>
                     <label>Materia</label>

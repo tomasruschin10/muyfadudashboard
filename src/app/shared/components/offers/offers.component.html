@@ -10,7 +10,7 @@
                     <tr>
                         <th>Titulo</th>
                         <th>Enlace</th>
-                        <th>Patrocinador</th>
+                        <th>Categoria</th>
                         <th>Estado</th>
                         <th>Accion</th>
                     </tr>
@@ -23,10 +23,10 @@
                                 <a class="cnt-ellipsis" [href]="item.url" target="_blank">{{item.url}}</a>
                             </div>
                         </td>
-                        <td>{{item?.partner?.name}}</td>
+                        <td>{{item?.offerCategory?.name}}</td>
                         <td>
                             <div class="form-check form-switch d-flex justify-content-center status-input-custom-width-container">
-                                <input class="form-check-input status-input-custom-width" [checked]="item.approved" (change)="changeAprovedStatus(item.id)" [value]="item.approved" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                                <input class="form-check-input status-input-custom-width" [checked]="item.approved" (change)="changeAprovedStatus(item.id)" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                             </div>
                         </td>
                         <td>
@@ -68,20 +68,20 @@
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6"  *ngIf="category == 1" >
                         <div class="form-floating">
-                            <input class="form-control" [value]="offer.name" formControlName="name" type="text" placeholder=" ">
+                            <input class="form-control" formControlName="name" type="text" placeholder=" ">
                             <label>Nombre</label>
                         </div>
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control"  [value]="offer.url"  formControlName="url" type="url" placeholder=" ">
+                            <input class="form-control" formControlName="url" type="url" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['url'].touched && formOffer.controls['url'].errors?.required">El enlace es requerido</small>
                             <label>Enlace</label>
                         </div>
                     </div>
                     <div *ngIf="category === 2" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="name" [value]="offer.name" type="text" placeholder=" ">
+                            <input class="form-control" formControlName="name" type="text" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['name'].touched && formOffer.controls['name'].errors?.required">El enlace es requerido</small>
 
                             <label>¿Quién lo dicta?</label>
@@ -90,7 +90,7 @@
                     <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
                         <div class="form-floating">
                             <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
-                            <input class="form-control pe-5" type="text" id="offer_category_id" [value]="offer?.offerCategory?.name" placeholder=" " (input)="filterList('offer_category_id', categoriesFilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
+                            <input class="form-control pe-5" type="text" id="offer_category_id"  [value]="offer?.offerCategory?.name" placeholder=" " (input)="filterList('offer_category_id', categoriesFilter)" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
                             <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
                                 <li class="position-relative dropdown-item p-0" *ngFor="let item of categories, let i = index">
                                     <button type="button" class="dropdown-item pe-4" id="item_offer_category_id" (click)="filterList('offer_category_id', categoriesFilter, item)" [value]="item.id">{{item.name}}</button>
@@ -103,7 +103,7 @@
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6" *ngIf="category == 3">
                         <div class="form-floating">
-                            <input class="form-control"  [value]="offer.email || ''"  formControlName="email" type="email" placeholder=" ">
+                            <input class="form-control" formControlName="email" type="email" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['email'].touched && formOffer.controls['email'].errors?.required">El enlace es requerido</small>
                             <label>Email</label>
                         </div>
@@ -125,14 +125,14 @@
 
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="phone" [value]="offer.phone" type="text" placeholder=" ">
+                            <input class="form-control" formControlName="phone" type="text" placeholder=" ">
                             <label> Nro de Teléfono</label>
                         </div>
                     </div>
 
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" formControlName="company" [value]="offer.company" type="text" placeholder=" ">
+                            <input class="form-control" formControlName="company" type="text" placeholder=" ">
                             <small class="text-danger" *ngIf="formOffer.controls['company'].touched && formOffer.controls['company'].errors?.required">El enlace es requerido</small>
 
                             <label>Patrocinador</label>
@@ -149,13 +149,13 @@
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
-                                <option [value]="null" selected disabled>- Seleccione -</option>
-                                <option *ngFor="let item of careers" [value]="item.id">{{item.name}}</option>
+                                <option selected disabled>- Seleccione -</option>
+                                <option *ngFor="let item of careers" [ngValue]="item.id">{{item.name}}</option>
                             </select>
                             <small class="text-danger" *ngIf="formOffer.controls['career_id'].touched && formOffer.controls['career_id'].errors?.required">La carrera es requerida</small>
                             <label>Carrera</label>
                         </div>
-                    </div>
+                    </div>                    
                 </div>
             </div>
             <div>
