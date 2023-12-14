@@ -68,6 +68,7 @@ export class OffersComponent implements OnInit {
       description: new FormControl(''),
       phone: new FormControl(''),
       name: new FormControl(''),
+      company: new FormControl('', this.category === 1 ? Validators.required : null),
       point: new FormControl(0, Validators.required),
       url: new FormControl(''),
       email: new FormControl(''),
@@ -135,7 +136,7 @@ export class OffersComponent implements OnInit {
       const formData = new FormData();
       if (!id) formData.append('partner_id', form.partner_id);
       Object.keys(this.formOffer.controls).forEach((key) => {
-        const controlValue =  form[key] ?? this.formOffer.get(key)?.value;
+        const controlValue = form[key] ?? this.formOffer.get(key)?.value;
         if (controlValue instanceof File) {
           formData.append(key, controlValue, controlValue.name);
         } else {

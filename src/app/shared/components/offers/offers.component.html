@@ -133,9 +133,8 @@
                     <div  *ngIf="category == 1" class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="company" type="text" placeholder=" ">
-                            <small class="text-danger" *ngIf="formOffer.controls['company'].touched && formOffer.controls['company'].errors?.required">El enlace es requerido</small>
-
-                            <label>Patrocinador</label>
+                            <small class="text-danger" *ngIf="formOffer.controls['company'].touched && formOffer.controls['company'].errors?.required">La empresa es requerida</small>
+                            <label>Empresa</label>
                         </div>
                     </div>
 
@@ -149,7 +148,7 @@
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
-                                <option selected disabled>- Seleccione -</option>
+                                <option [value]="null" selected disabled>- Seleccione -</option>
                                 <option *ngFor="let item of careers" [ngValue]="item.id">{{item.name}}</option>
                             </select>
                             <small class="text-danger" *ngIf="formOffer.controls['career_id'].touched && formOffer.controls['career_id'].errors?.required">La carrera es requerida</small>
