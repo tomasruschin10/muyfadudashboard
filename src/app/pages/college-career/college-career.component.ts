@@ -225,6 +225,46 @@ export class CollegeCareerComponent implements OnInit {
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
+  setSubjectSelective(value, i, iS?) {
+    if (iS !== undefined) {
+      this.subjects[i].subject[iS].selective = value;
+      if (this.subjects[i].subject[iS]?.id)
+        this.subjects[i].subject[iS].edit = true;
+    } else {
+      this.subjects[i].selective = value;
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
+  addSelectiveSubject(value, i, iS?) {
+    if (iS !== undefined) {
+      const subject = this.subjects[i].subject[iS];
+      if (value.trim()) {
+        if (!subject.selectiveSubjects) {
+          subject.selectiveSubjects = [];
+        }
+        const materiasArray = value
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item); // Filtra las materias válidas
+        subject.selectiveSubjects.push(...materiasArray);
+      }
+      subject.selectiveSubject = ''; // Limpia el campo de entrada
+    } else {
+      if (!this.subjects[i].selectiveSubjects) {
+        this.subjects[i].selectiveSubjects = [];
+      }
+      if (value.trim()) {
+        const materiasArray = value
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item); // Filtra las materias válidas
+        this.subjects[i].selectiveSubjects.push(...materiasArray);
+      }
+      this.subjects[i].selectiveSubject = ''; // Limpia el campo de entrada
+    }
+  }
+
   setValue(value, i, iS?) {
     if (iS !== undefined) {
       this.subjects[i].subject[iS].name = value;
