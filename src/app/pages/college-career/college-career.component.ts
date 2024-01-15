@@ -227,7 +227,7 @@ export class CollegeCareerComponent implements OnInit {
   }
   setSubjectSelective(value, i, iS?) {
     const isSelective = value === 'true';
-
+    if (!isSelective) this.subjects[i].subject[iS].selectiveSubjects = [];
     if (iS !== undefined) {
       this.subjects[i].subject[iS].selective = isSelective;
       if (this.subjects[i].subject[iS]?.id) {
@@ -250,10 +250,10 @@ export class CollegeCareerComponent implements OnInit {
         const materiasArray = value
           .split(',')
           .map((item) => item.trim())
-          .filter((item) => item); // Filtra las materias válidas
+          .filter((item) => item);
         subject.selectiveSubjects.push(...materiasArray);
       }
-      subject.selectiveSubject = ''; // Limpia el campo de entrada
+      subject.selectiveSubject = '';
     } else {
       if (!this.subjects[i].selectiveSubjects) {
         this.subjects[i].selectiveSubjects = [];
@@ -262,10 +262,10 @@ export class CollegeCareerComponent implements OnInit {
         const materiasArray = value
           .split(',')
           .map((item) => item.trim())
-          .filter((item) => item); // Filtra las materias válidas
+          .filter((item) => item);
         this.subjects[i].selectiveSubjects.push(...materiasArray);
       }
-      this.subjects[i].selectiveSubject = ''; // Limpia el campo de entrada
+      this.subjects[i].selectiveSubject = '';
     }
   }
 

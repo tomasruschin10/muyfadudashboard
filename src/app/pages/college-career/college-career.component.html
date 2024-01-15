@@ -242,12 +242,28 @@
                         (change)="setSubjectSelective(selective.value, i, iS)"
                         #selective
                       >
-                        <option value="true">Sí</option>
-                        <option value="false" selected>No</option>
+                        <option
+                          value="true"
+                          [selected]="
+                            subjects[i].subject[iS]?.selective === true
+                          "
+                        >
+                          Sí
+                        </option>
+                        <option
+                          value="false"
+                          [selected]="
+                            subjects[i].subject[iS]?.selective === false ||
+                            subjects[i].subject[iS]?.selective === null
+                          "
+                        >
+                          No
+                        </option>
                       </select>
                       <label>¿Es selectiva?</label>
                     </div>
-                    <div *ngIf="subjects[i].subject[iS]?.selective === 'yes'">
+
+                    <div *ngIf="subjects[i].subject[iS]?.selective === true">
                       <div class="input-group">
                         <input
                           class="form-control bg-transparent"
@@ -271,18 +287,14 @@
                         </button>
                       </div>
                       <div>
-                        Materias Agregadas:
+                        <div style="margin-left: 10px;">Materias Agregadas:</div>
                         <ul>
-                          <li
-                            *ngFor="
-                              let materia of subjects[i].subject[iS]
-                                ?.selectiveSubjects
-                            "
-                          >
+                          <li *ngFor="let materia of subjects[i].subject[iS]?.selectiveSubjects">
                             {{ materia }}
                           </li>
                         </ul>
                       </div>
+                      
                     </div>
 
                     <div class="form-floating">
