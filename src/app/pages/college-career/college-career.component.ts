@@ -226,15 +226,19 @@ export class CollegeCareerComponent implements OnInit {
       this.subjects[i].edit = true;
   }
   setSubjectSelective(value, i, iS?) {
+    const isSelective = value === 'true';
+
     if (iS !== undefined) {
-      this.subjects[i].subject[iS].selective = value;
-      if (this.subjects[i].subject[iS]?.id)
+      this.subjects[i].subject[iS].selective = isSelective;
+      if (this.subjects[i].subject[iS]?.id) {
         this.subjects[i].subject[iS].edit = true;
+      }
     } else {
-      this.subjects[i].selective = value;
+      this.subjects[i].selective = isSelective;
     }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
       this.subjects[i].edit = true;
+    }
   }
   addSelectiveSubject(value, i, iS?) {
     if (iS !== undefined) {
