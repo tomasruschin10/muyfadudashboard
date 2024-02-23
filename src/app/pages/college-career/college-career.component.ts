@@ -122,6 +122,8 @@ export class CollegeCareerComponent implements OnInit {
           name: this.subjects[i].name,
           description: this.subjects[i].description,
           career_id: id,
+          selectiveSubject: this.subjects[i].selectiveSubject,
+          chairs: this.subjects[i].chairs
         };
         try {
           if (!this.subjects[i]?.id) {
@@ -139,6 +141,7 @@ export class CollegeCareerComponent implements OnInit {
             const data: any = await this.careerSv
               .putSubjectCategory(form, this.subjects[i].id)
               .toPromise();
+
             const formsubject: any = {
               data: [],
               deleteData: this.deleteSubjects,
@@ -242,6 +245,9 @@ export class CollegeCareerComponent implements OnInit {
   }
   addSelectiveSubject(value, i, iS?) {
     if (iS !== undefined) {
+      if (this.subjects[i].subject[iS]?.id) {
+        this.subjects[i].subject[iS].edit = true;
+      }
       const subject = this.subjects[i].subject[iS];
       if (value.trim()) {
         if (!subject.selectiveSubjects) {
@@ -268,6 +274,72 @@ export class CollegeCareerComponent implements OnInit {
       this.subjects[i].selectiveSubject = '';
     }
   }
+
+  removeSelectiveSubject(i: number, iS: number, j: number) {
+    if (iS !== undefined) {
+      const subject = this.subjects[i].subject[iS];
+      if (subject?.selectiveSubjects && subject.selectiveSubjects.length > j) {
+        subject.selectiveSubjects.splice(j, 1);
+        this.subjects[i].subject[iS].edit = true;
+      }
+    } else {
+      if (this.subjects[i]?.selectiveSubjects && this.subjects[i].selectiveSubjects.length > j) {
+        this.subjects[i].selectiveSubjects.splice(j, 1);
+        this.subjects[i].edit = true;
+      }
+    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
+
+  addChair(value, i, iS?) {
+    if (iS !== undefined) {
+      if (this.subjects[i].subject[iS]?.id) {
+        this.subjects[i].subject[iS].edit = true;
+      }
+      const subject = this.subjects[i].subject[iS];
+      if (value.trim()) {
+        if (!subject.chairs) {
+          subject.chairs = [];
+        }
+        const materiasArray = value
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item);
+        subject.chairs.push(...materiasArray);
+      }
+      subject.selectiveSubject = '';
+    } else {
+      if (!this.subjects[i].chairs) {
+        this.subjects[i].chairs = [];
+      }
+      if (value.trim()) {
+        const materiasArray = value
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item);
+        this.subjects[i].chairs.push(...materiasArray);
+      }
+      this.subjects[i].chairs = '';
+    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
+
+  removeChair(i: number, iS: number, j: number) {
+    if (iS !== undefined) {
+      const subject = this.subjects[i].subject[iS];
+      if (subject?.chairs && subject.chairs.length > j) {
+        subject.chairs.splice(j, 1);
+        this.subjects[i].subject[iS].edit = true;
+      }
+    } else {
+      if (this.subjects[i]?.chairs && this.subjects[i].chairs.length > j) {
+        this.subjects[i].chairs.splice(j, 1);
+        this.subjects[i].edit = true;
+      }
+    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+  }
+
 
   setValue(value, i, iS?) {
     if (iS !== undefined) {
