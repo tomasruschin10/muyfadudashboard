@@ -2,13 +2,23 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoggedGuard } from './core/guards/logged.guard';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { DashLayoutComponent } from "./layouts/dash-layout/dash-layout.component";
+import { DashLayoutComponent } from './layouts/dash-layout/dash-layout.component';
+import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
+import { HomeLayoutModule } from './layouts/home-layout/home-layout.module';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth/sign-in',
-    pathMatch: 'full',
+    component: HomeLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./layouts/home-layout/home-layout.module').then(
+            (m) => m.HomeLayoutModule
+          ),
+      },
+    ],
   },
   {
     path: 'auth',
@@ -16,9 +26,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./layouts/auth-layout/auth-layout.module').then(m => m.AuthLayoutModule)
-      }
-    ]
+        loadChildren: () =>
+          import('./layouts/auth-layout/auth-layout.module').then(
+            (m) => m.AuthLayoutModule
+          ),
+      },
+    ],
   },
   {
     path: 'dash',
@@ -26,14 +39,19 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./layouts/dash-layout/dash-layout.module').then(m => m.DashLayoutModule),
+        loadChildren: () =>
+          import('./layouts/dash-layout/dash-layout.module').then(
+            (m) => m.DashLayoutModule
+          ),
         canLoad: [LoggedGuard],
-        canActivate: [LoggedGuard]
-      }
-    ]
-  },{
+        canActivate: [LoggedGuard],
+      },
+    ],
+  },
+  {
     path: 'app',
-    loadChildren: () => import('./pages/app/app.module').then(m => m.AppModule)
+    loadChildren: () =>
+      import('./pages/app/app.module').then((m) => m.AppModule),
   },
   {
     path: '**',
@@ -43,11 +61,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    relativeLinkResolution: 'legacy',
-    useHash: false,
-
-  })],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, {
+      relativeLinkResolution: 'legacy',
+      useHash: false,
+    }),
+  ],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
