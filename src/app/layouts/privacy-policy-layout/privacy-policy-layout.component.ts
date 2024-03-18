@@ -3,13 +3,13 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-home-layout',
-  templateUrl: './home-layout.component.html',
-  styleUrls: ['./home-layout.component.scss'],
+  selector: 'app-privacy-policy-layout',
+  templateUrl: './privacy-policy-layout.component.html',
+  styleUrls: ['./privacy-policy-layout.component.scss'],
 })
-export class HomeLayoutComponent {
+export class PrivacyPolicyLayoutComponent {
   title = 'front-osmos';
-  externalUrl: string = 'https://tomsr13.sg-host.com/';
+  externalUrl: string = 'https://tomsr13.sg-host.com/privacy-policy/';
   safeExternalUrl: SafeResourceUrl;
 
   constructor(private sanitizer: DomSanitizer) {

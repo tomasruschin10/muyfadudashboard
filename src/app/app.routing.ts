@@ -5,6 +5,7 @@ import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component
 import { DashLayoutComponent } from './layouts/dash-layout/dash-layout.component';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 import { HomeLayoutModule } from './layouts/home-layout/home-layout.module';
+import { PrivacyPolicyLayoutComponent } from './layouts/privacy-policy-layout/privacy-policy-layout.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,19 @@ const routes: Routes = [
           import('./layouts/home-layout/home-layout.module').then(
             (m) => m.HomeLayoutModule
           ),
+      },
+    ],
+  },
+  {
+    path: 'privacy-policy',
+    component: PrivacyPolicyLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import(
+            './layouts/privacy-policy-layout/privacy-policy-layout.module'
+          ).then((m) => m.PrivacyPolicyLayoutModule),
       },
     ],
   },
