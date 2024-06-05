@@ -19,6 +19,7 @@ export class CollegeCareerComponent implements OnInit {
   form;
   careerId: number | null;
   subjects: Array<any>;
+  allSubjects: Array<any> = [];
   deleteSubjects: Array<any> = [];
   deleteLevels: Array<any> = [];
   page: number = 1;
@@ -56,11 +57,18 @@ export class CollegeCareerComponent implements OnInit {
         .getSubjectCategory(this.careers[this.form].id)
         .subscribe((data: any) => {
           this.subjects = data.body;
+          this.allSubjects = this.getAllSubjects(this.subjects);
         });
       setTimeout(() => {
         $('#img').attr('src', this.careers[this.form].image.url);
       }, 10);
     }
+  }
+
+  getAllSubjects(subjects: any[]): any[] {
+    return subjects.reduce((acc, subjectGroup) => {
+      return acc.concat(subjectGroup.subject);
+    }, []);
   }
 
   listCareer() {
@@ -123,7 +131,7 @@ export class CollegeCareerComponent implements OnInit {
           description: this.subjects[i].description,
           career_id: id,
           selectiveSubject: this.subjects[i].selectiveSubject,
-          chairs: this.subjects[i].chairs
+          chairs: this.subjects[i].chairs,
         };
         try {
           if (!this.subjects[i]?.id) {
@@ -283,11 +291,15 @@ export class CollegeCareerComponent implements OnInit {
         this.subjects[i].subject[iS].edit = true;
       }
     } else {
-      if (this.subjects[i]?.selectiveSubjects && this.subjects[i].selectiveSubjects.length > j) {
+      if (
+        this.subjects[i]?.selectiveSubjects &&
+        this.subjects[i].selectiveSubjects.length > j
+      ) {
         this.subjects[i].selectiveSubjects.splice(j, 1);
         this.subjects[i].edit = true;
       }
-    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
 
@@ -320,7 +332,8 @@ export class CollegeCareerComponent implements OnInit {
         this.subjects[i].chairs.push(...materiasArray);
       }
       this.subjects[i].chairs = '';
-    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
 
@@ -336,10 +349,10 @@ export class CollegeCareerComponent implements OnInit {
         this.subjects[i].chairs.splice(j, 1);
         this.subjects[i].edit = true;
       }
-    } if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
-
 
   setValue(value, i, iS?) {
     if (iS !== undefined) {

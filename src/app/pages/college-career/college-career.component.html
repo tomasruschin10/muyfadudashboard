@@ -199,7 +199,7 @@
                         *ngIf="subjects[i].subject.length > 1"
                       ></i>
                     </div>
-                    <div class="form-floating" *ngIf="iS > 0">
+                    <div class="form-floating" *ngIf="allSubjects.length > 1">
                       <select
                         class="form-select bg-transparent"
                         (change)="selectCorrelative(i, iS, selectCor.value)"
@@ -209,11 +209,8 @@
                           - Sin materia correlativa -
                         </option>
                         <option
-                          *ngFor="
-                            let subjectCor of subjects[i].subject;
-                            let iSc = index
-                          "
-                          [selected]="subject.subject_id"
+                          *ngFor="let subjectCor of allSubjects; let iSc = index"
+                          [selected]="subject.subject_id === subjectCor?.id"
                           [value]="subjectCor?.id || 'index' + iSc"
                         >
                           {{ subjectCor.name }}
@@ -221,6 +218,7 @@
                       </select>
                       <label>Materia correlativa</label>
                     </div>
+                    
                     <div class="form-floating">
                       <input
                         class="form-control bg-transparent"
