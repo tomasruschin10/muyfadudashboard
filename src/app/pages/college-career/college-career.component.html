@@ -2,7 +2,11 @@
   <section class="view" *ngIf="!form">
     <h3>Carreras</h3>
     <div class="d-flex justify-content-end">
-      <button class="btn btn-1" [routerLink]="[]" [queryParams]="{ form: 'create' }">
+      <button
+        class="btn btn-1"
+        [routerLink]="[]"
+        [queryParams]="{ form: 'create' }"
+      >
         Nueva carrera
       </button>
     </div>
@@ -15,17 +19,26 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="
+          <tr
+            *ngFor="
               let item of careers | slice : (page - 1) * 10 : page * 10;
               let i = index
-            ">
+            "
+          >
             <td>{{ item.name }}</td>
             <td>
               <div class="d-flex gap-2 justify-content-center">
-                <button class="btn btn-1" [routerLink]="[]" [queryParams]="{ form: i + (page - 1) * 10 }">
+                <button
+                  class="btn btn-1"
+                  [routerLink]="[]"
+                  [queryParams]="{ form: i + (page - 1) * 10 }"
+                >
                   Ver
                 </button>
-                <button class="btn btn-danger" (click)="delete(item.id, i + (page - 1) * 10)">
+                <button
+                  class="btn btn-danger"
+                  (click)="delete(item.id, i + (page - 1) * 10)"
+                >
                   Eliminar
                 </button>
               </div>
@@ -34,7 +47,12 @@
         </tbody>
       </table>
     </div>
-    <ngb-pagination [(page)]="page" [pageSize]="10" [maxSize]="5" [collectionSize]="careers.length"></ngb-pagination>
+    <ngb-pagination
+      [(page)]="page"
+      [pageSize]="10"
+      [maxSize]="5"
+      [collectionSize]="careers.length"
+    ></ngb-pagination>
   </section>
   <section class="view" *ngIf="form">
     <h3 class="mb-3">
@@ -42,25 +60,55 @@
     </h3>
     <form class="row g-3" [formGroup]="formCareer">
       <div class="col-xxl-5 col-lg-6">
-        <div class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative"
-          style="height: 400px">
-          <img height="100%" width="100%" id="img" style="object-fit: cover" [src]="formCareer.get('image')?.value.url"
-            *ngIf="formCareer.get('image')?.value" />
-          <input type="file" id="file" accept="image/*" (change)="addImg($event)" hidden />
-          <label class="fas fa-plus btn-1 m-3" [ngClass]="{ changeImg: formCareer.get('image')?.value }"
-            for="file"></label>
+        <div
+          class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative"
+          style="height: 400px"
+        >
+          <img
+            height="100%"
+            width="100%"
+            id="img"
+            style="object-fit: cover"
+            [src]="formCareer.get('image')?.value.url"
+            *ngIf="formCareer.get('image')?.value"
+          />
+          <input
+            type="file"
+            id="file"
+            accept="image/*"
+            (change)="addImg($event)"
+            hidden
+          />
+          <label
+            class="fas fa-plus btn-1 m-3"
+            [ngClass]="{ changeImg: formCareer.get('image')?.value }"
+            for="file"
+          ></label>
           <span *ngIf="!formCareer.get('image')?.value">Imagen de carrera</span>
         </div>
-        <small class="text-danger" *ngIf="
+        <small
+          class="text-danger"
+          *ngIf="
             formCareer.get('image')?.touched &&
             formCareer.get('image')?.errors?.required
-          ">La imagen es requerida</small>
+          "
+          >La imagen es requerida</small
+        >
         <div class="form-floating my-3">
-          <input class="form-control" formControlName="name" type="text" placeholder=" " />
-          <small class="text-danger" *ngIf="
+          <input
+            class="form-control"
+            formControlName="name"
+            type="text"
+            placeholder=" "
+          />
+          <small
+            class="text-danger"
+            *ngIf="
               formCareer.controls['name'].touched &&
               formCareer.controls['name'].errors?.required
-            ">El nombre es requerido</small>
+            "
+            >El nombre es requerido</small
+          >
           <label>Nombre</label>
         </div>
       </div>
@@ -72,138 +120,262 @@
               <div class="position-relative ctn-trash">
                 <div class="row">
                   <div class="form-floating col-12 col-sm-4">
-                    <input class="form-control" style="padding-right: 10px" [value]="subjects[i].name"
-                      (input)="setValue(level.value, i)" type="text" placeholder=" " #level />
+                    <input
+                      class="form-control"
+                      style="padding-right: 10px"
+                      [value]="subjects[i].name"
+                      (input)="setValue(level.value, i)"
+                      type="text"
+                      placeholder=" "
+                      #level
+                    />
                     <label>Nivel</label>
                   </div>
                   <div class="form-floating col-12 col-sm-6">
-                    <input class="form-control" maxlength="100" style="padding-right: 10px"
-                      [value]="subjects[i].description || ''" (input)="setDescription(description.value, i)" type="text"
-                      placeholder=" " #description />
+                    <input
+                      class="form-control"
+                      maxlength="100"
+                      style="padding-right: 10px"
+                      [value]="subjects[i].description || ''"
+                      (input)="setDescription(description.value, i)"
+                      type="text"
+                      placeholder=" "
+                      #description
+                    />
                     <label>descripción</label>
                   </div>
                 </div>
 
                 <div class="position-absolute top-0 end-0">
-                  <button class="accordion-button collapsed d-none d-sm-flex" type="button" data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#coll' + i">
+                  <button
+                    class="accordion-button collapsed d-none d-sm-flex"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#coll' + i"
+                  >
                     Materias
                   </button>
-                  <button class="accordion-button collapsed d-sm-none custom-button-sm-arrow" type="button"
-                    data-bs-toggle="collapse" [attr.data-bs-target]="'#coll' + i"></button>
+                  <button
+                    class="accordion-button collapsed d-sm-none custom-button-sm-arrow"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#coll' + i"
+                  ></button>
                 </div>
-                <i class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
-                  style="top: 13px; right: -20px" role="button" (click)="deleteLevel(i, item)"
-                  *ngIf="subjects.length > 1"></i>
+                <i
+                  class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
+                  style="top: 13px; right: -20px"
+                  role="button"
+                  (click)="deleteLevel(i, item)"
+                  *ngIf="subjects.length > 1"
+                ></i>
               </div>
-              <div [id]="'coll' + i" class="accordion-collapse collapse" data-bs-parent="#accSubjects">
+              <div
+                [id]="'coll' + i"
+                class="accordion-collapse collapse"
+                data-bs-parent="#accSubjects"
+              >
                 <div class="accordion-body border-bottom">
-                  <div class="p-2 rounded-7 mb-3 ctn-trash" *ngFor="let subject of item.subject; let iS = index"
-                    style="background: #cdf3">
+                  <div
+                    class="p-2 rounded-7 mb-3 ctn-trash"
+                    *ngFor="let subject of item.subject; let iS = index"
+                    style="background: #cdf3"
+                  >
                     <div class="form-floating">
-                      <input class="form-control bg-transparent" type="text" [value]="subjects[i].subject[iS].name"
-                        (input)="setValue(subjectname.value, i, iS)" placeholder=" " #subjectname />
+                      <input
+                        class="form-control bg-transparent"
+                        type="text"
+                        [value]="subjects[i].subject[iS].name"
+                        (input)="setValue(subjectname.value, i, iS)"
+                        placeholder=" "
+                        #subjectname
+                      />
                       <label>Materia {{ iS + 1 }}</label>
-                      <i class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
-                        style="top: 10px; right: -3px" role="button" (click)="deleteSubject(i, subject, iS)"
-                        *ngIf="subjects[i].subject.length > 1"></i>
+                      <i
+                        class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
+                        style="top: 10px; right: -3px"
+                        role="button"
+                        (click)="deleteSubject(i, subject, iS)"
+                        *ngIf="subjects[i].subject.length > 1"
+                      ></i>
                     </div>
                     <div class="form-floating" *ngIf="iS > 0">
-                      <select class="form-select bg-transparent" (change)="selectCorrelative(i, iS, selectCor.value)"
-                        #selectCor>
+                      <select
+                        class="form-select bg-transparent"
+                        (change)="selectCorrelative(i, iS, selectCor.value)"
+                        #selectCor
+                      >
                         <option [value]="''" selected>
                           - Sin materia correlativa -
                         </option>
-                        <option *ngFor="
-                            let subjectCor of subjects[i].subject.slice(0, iS);
+                        <option
+                          *ngFor="
+                            let subjectCor of subjects[i].subject;
                             let iSc = index
-                          " [selected]="subject.subject_id" [value]="subjectCor?.id || 'index' + iSc">
+                          "
+                          [selected]="subject.subject_id"
+                          [value]="subjectCor?.id || 'index' + iSc"
+                        >
                           {{ subjectCor.name }}
                         </option>
                       </select>
                       <label>Materia correlativa</label>
                     </div>
                     <div class="form-floating">
-                      <input class="form-control bg-transparent" type="text" [value]="
+                      <input
+                        class="form-control bg-transparent"
+                        type="text"
+                        [value]="
                           subjects[i].subject[iS].prefix
                             ? subjects[i].subject[iS].prefix
                             : ''
-                        " (input)="setPrefix(prefix.value, i, iS)" placeholder=" " #prefix />
+                        "
+                        (input)="setPrefix(prefix.value, i, iS)"
+                        placeholder=" "
+                        #prefix
+                      />
                       <label>Prefijo</label>
                     </div>
-                    <div class="form-floating" style="margin-bottom: 20px; margin-top: 20px;">
-                      <select class="form-select bg-transparent" (change)="setSubjectSelective(selective.value, i, iS)"
-                        #selective>
-                        <option value="true" [selected]="subjects[i].subject[iS]?.selective === true">Sí</option>
-                        <option value="false"
-                          [selected]="subjects[i].subject[iS]?.selective === false || subjects[i].subject[iS]?.selective === null">
-                          No</option>
+                    <div
+                      class="form-floating"
+                      style="margin-bottom: 20px; margin-top: 20px"
+                    >
+                      <select
+                        class="form-select bg-transparent"
+                        (change)="setSubjectSelective(selective.value, i, iS)"
+                        #selective
+                      >
+                        <option
+                          value="true"
+                          [selected]="
+                            subjects[i].subject[iS]?.selective === true
+                          "
+                        >
+                          Sí
+                        </option>
+                        <option
+                          value="false"
+                          [selected]="
+                            subjects[i].subject[iS]?.selective === false ||
+                            subjects[i].subject[iS]?.selective === null
+                          "
+                        >
+                          No
+                        </option>
                       </select>
                       <label>¿Es selectiva?</label>
                     </div>
 
                     <div *ngIf="subjects[i].subject[iS]?.selective === true">
                       <div class="input-group">
-                        <input class="form-control bg-transparent" type="text" [value]="
+                        <input
+                          class="form-control bg-transparent"
+                          type="text"
+                          [value]="
                             subjects[i].subject[iS].selectiveSubject
                               ? subjects[i].subject[iS].selectiveSubject
                               : ''
-                          " #selectiveSubject placeholder=" " />
-                        <button class="btn btn-primary" (click)="
+                          "
+                          #selectiveSubject
+                          placeholder=" "
+                        />
+                        <button
+                          class="btn btn-primary"
+                          (click)="
                             addSelectiveSubject(selectiveSubject.value, i, iS)
-                          " style="margin-top: 5px">
+                          "
+                          style="margin-top: 5px"
+                        >
                           Agregar
                         </button>
                       </div>
                       <div>
-                        <div style="margin-left: 10px;">Materias Agregadas:</div>
+                        <div style="margin-left: 10px">Materias Agregadas:</div>
                         <ul>
-                          <li style="margin-bottom: 10px;"
-                            *ngFor="let materia of subjects[i].subject[iS]?.selectiveSubjects; let s = index">
+                          <li
+                            style="margin-bottom: 10px"
+                            *ngFor="
+                              let materia of subjects[i].subject[iS]
+                                ?.selectiveSubjects;
+                              let s = index
+                            "
+                          >
                             {{ materia }}
-                            <span class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
+                            <span
+                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
                               style="margin-left: 10px; cursor: pointer"
-                              (click)="removeSelectiveSubject(i, iS, s)"></span>
+                              (click)="removeSelectiveSubject(i, iS, s)"
+                            ></span>
                           </li>
                         </ul>
                       </div>
-
                     </div>
 
                     <div>
                       <div class="input-group">
-                        <input class="form-control bg-transparent" type="text"
-                          [value]="subjects[i].subject[iS]?.chair ? subjects[i].subject[iS].chair : ''" #chair
-                          placeholder=" " />
-                        <button class="btn btn-primary" (click)="addChair(chair.value, i, iS); chair.value = ''"
-                          style="margin-top: 5px">
+                        <input
+                          class="form-control bg-transparent"
+                          type="text"
+                          [value]="
+                            subjects[i].subject[iS]?.chair
+                              ? subjects[i].subject[iS].chair
+                              : ''
+                          "
+                          #chair
+                          placeholder=" "
+                        />
+                        <button
+                          class="btn btn-primary"
+                          (click)="
+                            addChair(chair.value, i, iS); chair.value = ''
+                          "
+                          style="margin-top: 5px"
+                        >
                           Agregar
                         </button>
                       </div>
                       <div>
-                        <div style="margin-left: 10px;">Catedras Agregadas:</div>
+                        <div style="margin-left: 10px">Catedras Agregadas:</div>
                         <ul>
-                          <li style="margin-bottom: 10px;"
-                            *ngFor="let chair of subjects[i].subject[iS]?.chairs; let j = index">
+                          <li
+                            style="margin-bottom: 10px"
+                            *ngFor="
+                              let chair of subjects[i].subject[iS]?.chairs;
+                              let j = index
+                            "
+                          >
                             {{ chair }}
-                            <span class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                              style="margin-left: 10px; cursor: pointer" (click)="removeChair(i, iS, j)"></span>
+                            <span
+                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
+                              style="margin-left: 10px; cursor: pointer"
+                              (click)="removeChair(i, iS, j)"
+                            ></span>
                           </li>
                         </ul>
                       </div>
                     </div>
 
                     <div class="form-floating">
-                      <input class="form-control bg-transparent" type="text" [value]="
+                      <input
+                        class="form-control bg-transparent"
+                        type="text"
+                        [value]="
                           subjects[i].subject[iS].info
                             ? subjects[i].subject[iS].info
                             : ''
-                        " (input)="setSubjectDescription(info.value, i, iS)" placeholder=" " #info />
+                        "
+                        (input)="setSubjectDescription(info.value, i, iS)"
+                        placeholder=" "
+                        #info
+                      />
                       <label>descripción</label>
                     </div>
                   </div>
                   <div class="text-end">
-                    <button class="btn btn-1" (click)="subjects[i].subject.push({ name: '' })">
+                    <button
+                      class="btn btn-1"
+                      (click)="subjects[i].subject.push({ name: '' })"
+                    >
                       Agregar otra materia
                     </button>
                   </div>
@@ -212,14 +384,20 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-1 mt-3" (click)="
+        <button
+          class="btn btn-1 mt-3"
+          (click)="
             subjects.push({ name: '', career_id: '', subject: [{ name: '' }] })
-          ">
+          "
+        >
           Agregar otro nivel
         </button>
       </div>
       <div>
-        <button class="btn btn-1" (click)="createOrEdit(formCareer.value, careerId)">
+        <button
+          class="btn btn-1"
+          (click)="createOrEdit(formCareer.value, careerId)"
+        >
           Guardar
         </button>
       </div>
