@@ -132,6 +132,7 @@ export class CollegeCareerComponent implements OnInit {
           career_id: id,
           selectiveSubject: this.subjects[i].selectiveSubject,
           chairs: this.subjects[i].chairs,
+          subjectParent: this.subjects[i].subjectParent,
         };
         try {
           if (!this.subjects[i]?.id) {
@@ -376,6 +377,7 @@ export class CollegeCareerComponent implements OnInit {
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
   }
+
   selectCorrelative(i, iS, value) {
     if (value.includes('index')) {
       value = value.replace('index', '');
@@ -389,6 +391,37 @@ export class CollegeCareerComponent implements OnInit {
       this.subjects[i].edit = true;
     if (this.subjects[i].subject[iS]?.id)
       this.subjects[i].subject[iS].edit = true;
+  }
+
+  addCorrelative(value, i, iS) {
+    if (value) {
+      const selectedSubject = this.allSubjects.find(
+        (subject) => subject.id === parseInt(value)
+      );
+      if (selectedSubject) {
+        this.subjects[i].subject[iS].subjectParent =
+          this.subjects[i].subject[iS].subjectParent || [];
+        this.subjects[i].subject[iS].subjectParent.push({
+          subject_id: this.subjects[i].subject[iS].id,
+          subject_parent_id: parseInt(value), // Asegurarse de que value sea un número
+          created_at: new Date().toISOString(),
+          parent: selectedSubject,
+        });
+      }
+    }
+  }
+
+  removeCorrelative(i, iS, j) {
+    this.subjects[i].subject[iS].subjectParent.splice(j, 1);
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+    if (this.subjects[i].subject[iS]?.id)
+      this.subjects[i].subject[iS].edit = true;
+  }
+
+  getSubjectNameById(id: number): string {
+    const subject = this.allSubjects.find((subject) => subject.id === id);
+    return subject ? subject.name : 'Materia no encontrada';
   }
 
   addImg(event) {

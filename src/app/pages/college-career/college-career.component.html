@@ -199,26 +199,61 @@
                         *ngIf="subjects[i].subject.length > 1"
                       ></i>
                     </div>
-                    <div class="form-floating" *ngIf="allSubjects.length > 1">
-                      <select
-                        class="form-select bg-transparent"
-                        (change)="selectCorrelative(i, iS, selectCor.value)"
-                        #selectCor
-                      >
-                        <option [value]="''" selected>
-                          - Sin materia correlativa -
-                        </option>
-                        <option
-                          *ngFor="let subjectCor of allSubjects; let iSc = index"
-                          [selected]="subject.subject_id === subjectCor?.id"
-                          [value]="subjectCor?.id || 'index' + iSc"
+                    <div>
+                      <div class="input-group">
+                        <select
+                          class="form-select bg-transparent"
+                          (change)="selectCorrelative(i, iS, selectCor.value)"
+                          #selectCor
                         >
-                          {{ subjectCor.name }}
-                        </option>
-                      </select>
-                      <label>Materia correlativa</label>
+                          <option [value]="''" selected>
+                            - Sin materia correlativa -
+                          </option>
+                          <option
+                            *ngFor="
+                              let subjectCor of allSubjects;
+                              let iSc = index
+                            "
+                            [value]="subjectCor?.id"
+                          >
+                            {{ subjectCor.name }}
+                          </option>
+                        </select>
+                        <button
+                          class="btn btn-primary"
+                          (click)="
+                            addCorrelative(selectCor.value, i, iS);
+                            selectCor.value = ''
+                          "
+                          style="margin-top: 5px"
+                        >
+                          Agregar
+                        </button>
+                      </div>
+                      <div>
+                        <div style="margin-left: 10px">
+                          Correlativas Agregadas:
+                        </div>
+                        <ul>
+                          <li
+                            style="margin-bottom: 10px"
+                            *ngFor="
+                              let correlative of subjects[i].subject[iS]
+                                ?.subjectParent;
+                              let j = index
+                            "
+                          >
+                            {{ correlative.parent.name }}
+                            <span
+                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
+                              style="margin-left: 10px; cursor: pointer"
+                              (click)="removeCorrelative(i, iS, j)"
+                            ></span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                    
+
                     <div class="form-floating">
                       <input
                         class="form-control bg-transparent"
