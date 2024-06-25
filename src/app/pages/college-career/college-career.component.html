@@ -216,7 +216,7 @@
                             "
                             [value]="subjectCor?.id"
                           >
-                            {{ subjectCor.name }}
+                            {{ subjectCor.name }} - {{ subjectCor.level }}
                           </option>
                         </select>
                         <button
@@ -243,7 +243,12 @@
                               let j = index
                             "
                           >
-                            {{ correlative.parent.name }}
+                            {{ correlative.parent.name }} -
+                            {{
+                              getSubjectNameById(
+                                correlative.parent.subject_category_id
+                              )
+                            }}
                             <span
                               class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
                               style="margin-left: 10px; cursor: pointer"

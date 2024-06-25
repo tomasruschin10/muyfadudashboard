@@ -58,6 +58,7 @@ export class CollegeCareerComponent implements OnInit {
         .subscribe((data: any) => {
           this.subjects = data.body;
           this.allSubjects = this.getAllSubjects(this.subjects);
+          console.log(this.allSubjects, 'hola');
         });
       setTimeout(() => {
         $('#img').attr('src', this.careers[this.form].image.url);
@@ -67,7 +68,12 @@ export class CollegeCareerComponent implements OnInit {
 
   getAllSubjects(subjects: any[]): any[] {
     return subjects.reduce((acc, subjectGroup) => {
-      return acc.concat(subjectGroup.subject);
+      return acc.concat(
+        subjectGroup.subject.map((subject: any) => ({
+          ...subject,
+          level: subjectGroup.name,
+        }))
+      );
     }, []);
   }
 
@@ -420,8 +426,12 @@ export class CollegeCareerComponent implements OnInit {
   }
 
   getSubjectNameById(id: number): string {
-    const subject = this.allSubjects.find((subject) => subject.id === id);
-    return subject ? subject.name : 'Materia no encontrada';
+    for (let subjectGroup of this.subjects) {
+      if (subjectGroup.id === id) {
+        return subjectGroup.name;
+      }
+    }
+    return '';
   }
 
   addImg(event) {
