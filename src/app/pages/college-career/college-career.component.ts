@@ -20,7 +20,9 @@ export class CollegeCareerComponent implements OnInit {
   careerId: number | null;
   subjects: Array<any>;
   allSubjects: Array<any> = [];
+  allLabels: Array<string> = [];
   deleteSubjects: Array<any> = [];
+  selectedOrCorrelative: { [key: string]: string } = {};
   deleteLevels: Array<any> = [];
   page: number = 1;
   last: number;
@@ -58,7 +60,7 @@ export class CollegeCareerComponent implements OnInit {
         .subscribe((data: any) => {
           this.subjects = data.body;
           this.allSubjects = this.getAllSubjects(this.subjects);
-          console.log(this.allSubjects, 'hola');
+          this.allLabels = this.getAllLabels(this.subjects);
         });
       setTimeout(() => {
         $('#img').attr('src', this.careers[this.form].image.url);
@@ -75,6 +77,19 @@ export class CollegeCareerComponent implements OnInit {
         }))
       );
     }, []);
+  }
+
+  getAllLabels(subjects: any[]): string[] {
+    const labelsSet = subjects.reduce((acc, subjectGroup) => {
+      subjectGroup.subject.forEach((subject: any) => {
+        if (subject.label) {
+          acc.add(subject.label);
+        }
+      });
+      return acc;
+    }, new Set<string>());
+
+    return Array.from(labelsSet);
   }
 
   listCareer() {
@@ -138,6 +153,7 @@ export class CollegeCareerComponent implements OnInit {
           career_id: id,
           selectiveSubject: this.subjects[i].selectiveSubject,
           chairs: this.subjects[i].chairs,
+          label: this.subjects[i].label,
           subjectParent: this.subjects[i].subjectParent,
         };
         try {
@@ -409,9 +425,10 @@ export class CollegeCareerComponent implements OnInit {
           this.subjects[i].subject[iS].subjectParent || [];
         this.subjects[i].subject[iS].subjectParent.push({
           subject_id: this.subjects[i].subject[iS].id,
-          subject_parent_id: parseInt(value), // Asegurarse de que value sea un número
+          subject_parent_id: parseInt(value),
           created_at: new Date().toISOString(),
           parent: selectedSubject,
+          orSubjects: [],
         });
       }
     }
@@ -419,6 +436,55 @@ export class CollegeCareerComponent implements OnInit {
 
   removeCorrelative(i, iS, j) {
     this.subjects[i].subject[iS].subjectParent.splice(j, 1);
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
+      this.subjects[i].edit = true;
+    if (this.subjects[i].subject[iS]?.id)
+      this.subjects[i].subject[iS].edit = true;
+  }
+
+  selectOrCorrelative(i: number, iS: number, j: number, value) {
+    if (value.includes('index')) {
+      value = value.replace('index', '');
+      delete this.subjects[i].subject[iS].subjectParent[j].orSubject_id;
+      this.subjects[i].subject[iS].subjectParent[j].orSubject_key = value;
+    } else {
+      delete this.subjects[i].subject[iS].subjectParent[j].orSubject_key;
+      this.subjects[i].subject[iS].subjectParent[j].orSubject_id = value;
+    }
+
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].edit = true;
+    }
+    if (this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].subject[iS].edit = true;
+    }
+  }
+
+  addOrCorrelative(value: string, i: number, iS: number, j: number) {
+    if (value) {
+      const newOrCorrelativeIdParsed = parseInt(value);
+      if (!isNaN(newOrCorrelativeIdParsed)) {
+        const selectedOrSubject = this.allSubjects.find(
+          (subject) => subject.id === newOrCorrelativeIdParsed
+        );
+        if (selectedOrSubject) {
+          if (!this.subjects[i].subject[iS].subjectParent[j].orSubjects) {
+            this.subjects[i].subject[iS].subjectParent[j].orSubjects = [];
+          }
+          this.subjects[i].subject[iS].subjectParent[j].orSubjects.push({
+            subject_id: this.subjects[i].subject[iS].id,
+            subject_parent_id: newOrCorrelativeIdParsed,
+            parent: selectedOrSubject,
+          });
+        }
+      } else {
+        console.error('Invalid ID entered');
+      }
+    }
+  }
+
+  removeOrCorrelative(i: number, iS: number, j: number, k: number) {
+    this.subjects[i].subject[iS].subjectParent[j].orSubjects.splice(k, 1);
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
     if (this.subjects[i].subject[iS]?.id)
@@ -442,6 +508,21 @@ export class CollegeCareerComponent implements OnInit {
       setTimeout(() => {
         $('#img').attr('src', imgURL);
       }, 10);
+    }
+  }
+
+  setLabelValue(value, i, iS?): void {
+    if (iS !== undefined) {
+      this.subjects[i].subject[iS].label = value;
+      if (this.subjects[i].subject[iS]?.id) {
+        this.subjects[i].subject[iS].edit = true;
+      }
+    } else {
+      this.subjects[i].label = value;
+    }
+
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].edit = true;
     }
   }
 }

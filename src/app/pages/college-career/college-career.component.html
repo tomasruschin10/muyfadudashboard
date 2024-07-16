@@ -59,7 +59,7 @@
       {{ careerId ? "Informacion de carrera" : "Nueva carrera" }}
     </h3>
     <form class="row g-3" [formGroup]="formCareer">
-      <div >
+      <div>
         <div
           class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative"
           style="height: 400px"
@@ -199,6 +199,19 @@
                         *ngIf="subjects[i].subject.length > 1"
                       ></i>
                     </div>
+                    <div class="form-floating mt-3">
+                      <input
+                        class="form-control bg-transparent"
+                        type="text"
+                        style="margin-bottom: 10px"
+                        placeholder="Etiquetas"
+                        [value]="subjects[i].subject[iS]?.label"
+                        (input)="setLabelValue(labelInput.value, i, iS)"
+                        #labelInput
+                      />
+                      <label>Etiqueta</label>
+                    </div>
+
                     <div>
                       <div class="input-group">
                         <select
@@ -230,7 +243,11 @@
                           Agregar
                         </button>
                       </div>
-                      <div>
+                      <div
+                        *ngIf="
+                          subjects[i].subject[iS].subjectParent?.length > 0
+                        "
+                      >
                         <div style="margin-left: 10px">
                           Correlativas Agregadas:
                         </div>
@@ -239,21 +256,71 @@
                             style="margin-bottom: 10px"
                             *ngFor="
                               let correlative of subjects[i].subject[iS]
-                                ?.subjectParent;
+                                .subjectParent;
                               let j = index
                             "
                           >
-                            {{ correlative.parent.name }} -
-                            {{
-                              getSubjectNameById(
-                                correlative.parent.subject_category_id
-                              )
-                            }}
+                            <span>{{ correlative.parent.name }}</span>
                             <span
                               class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
                               style="margin-left: 10px; cursor: pointer"
                               (click)="removeCorrelative(i, iS, j)"
                             ></span>
+                            <div class="input-group" style="margin-top: 5px">
+                              <select
+                                class="form-select bg-transparent"
+                                (change)="
+                                  selectOrCorrelative(
+                                    i,
+                                    iS,
+                                    j,
+                                    selectOrCor.value
+                                  )
+                                "
+                                #selectOrCor
+                              >
+                                <option [value]="''" selected>
+                                  - Sin materia correlativa -
+                                </option>
+                                <option
+                                  *ngFor="
+                                    let subjectCor of allSubjects;
+                                    let iSc = index
+                                  "
+                                  [value]="subjectCor?.id"
+                                >
+                                  {{ subjectCor.name }} - {{ subjectCor.level }}
+                                </option>
+                              </select>
+                              <button
+                                class="btn btn-secondary"
+                                (click)="
+                                  addOrCorrelative(selectOrCor.value, i, iS, j)
+                                "
+                                style="margin-left: 5px"
+                              >
+                                Agregar O
+                              </button>
+                            </div>
+                            <ul
+                              *ngIf="correlative.orSubjects?.length > 0"
+                              style="margin-top: 10px"
+                            >
+                              <li
+                                style="margin-bottom: 5px"
+                                *ngFor="
+                                  let orCor of correlative.orSubjects;
+                                  let k = index
+                                "
+                              >
+                                {{ orCor.name }} - {{ orCor.level }}
+                                <span
+                                  class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
+                                  style="margin-left: 10px; cursor: pointer"
+                                  (click)="removeOrCorrelative(i, iS, j, k)"
+                                ></span>
+                              </li>
+                            </ul>
                           </li>
                         </ul>
                       </div>
