@@ -303,17 +303,18 @@
                               </button>
                             </div>
                             <ul
-                              *ngIf="correlative.orSubjects?.length > 0"
+                              *ngIf="correlative.orSubjectParents?.length > 0"
                               style="margin-top: 10px"
                             >
                               <li
                                 style="margin-bottom: 5px"
                                 *ngFor="
-                                  let orCor of correlative.orSubjects;
+                                  let orCor of correlative.orSubjectParents;
                                   let k = index
                                 "
                               >
-                                {{ orCor.name }} - {{ orCor.level }}
+                                {{ orCor.parent.name }} -
+                                {{ orCor.parent.level }}
                                 <span
                                   class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
                                   style="margin-left: 10px; cursor: pointer"
@@ -460,7 +461,7 @@
                       </div>
                     </div>
 
-                    <div class="form-floating">
+                    <div class="form-floating" style="margin-bottom: 10px">
                       <input
                         class="form-control bg-transparent"
                         type="text"
@@ -474,6 +475,81 @@
                         #info
                       />
                       <label>descripción</label>
+                    </div>
+
+                    <div [formGroup]="myGroup">
+                      <div
+                        *ngFor="
+                          let condition of subjects[i].subject[iS].conditions;
+                          let j = index
+                        "
+                        style="margin-bottom: 5px"
+                      >
+                        <label style="margin-right: 5px" for="number"
+                          >Si aprobó</label
+                        >
+                        <input
+                          style="margin-right: 5px"
+                          type="number"
+                          [(ngModel)]="condition.number"
+                          [ngModelOptions]="{ standalone: true }"
+                          name="number{{ i }}{{ iS }}{{ j }}"
+                        />
+
+                        <label style="margin-right: 5px" for="approvedLabel"
+                          >materias de tipo</label
+                        >
+                        <select
+                          style="margin-right: 5px"
+                          [(ngModel)]="condition.approvedLabel"
+                          [ngModelOptions]="{ standalone: true }"
+                          name="approvedLabel{{ i }}{{ iS }}{{ j }}"
+                        >
+                          <option
+                            *ngFor="let label of allLabels"
+                            [value]="label"
+                          >
+                            {{ label }}
+                          </option>
+                        </select>
+
+                        <label style="margin-right: 5px" for="exemptedLabel"
+                          >no debe dar materias de tipo</label
+                        >
+                        <select
+                          style="margin-right: 10px"
+                          [(ngModel)]="condition.exemptedLabel"
+                          [ngModelOptions]="{ standalone: true }"
+                          name="exemptedLabel{{ i }}{{ iS }}{{ j }}"
+                        >
+                          <option
+                            *ngFor="let label of allLabels"
+                            [value]="label"
+                          >
+                            {{ label }}
+                          </option>
+                        </select>
+
+                        <button
+                          style="margin-right: 5px"
+                          class="btn btn-primary"
+                          (click)="saveCondition(i, iS, j)"
+                        >
+                          Guardar
+                        </button>
+                        <button
+                          class="btn btn-secondary"
+                          (click)="removeCondition(i, iS, j)"
+                        >
+                          Eliminar Condición
+                        </button>
+                      </div>
+                      <button
+                        class="btn btn-primary"
+                        (click)="addCondition(i, iS)"
+                      >
+                        Agregar Condición
+                      </button>
                     </div>
                   </div>
                   <div class="text-end">

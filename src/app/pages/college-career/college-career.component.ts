@@ -15,6 +15,7 @@ declare var $: any;
 })
 export class CollegeCareerComponent implements OnInit {
   careers: Career[] = [];
+  myGroup: FormGroup;
   formCareer: FormGroup;
   form;
   careerId: number | null;
@@ -22,7 +23,6 @@ export class CollegeCareerComponent implements OnInit {
   allSubjects: Array<any> = [];
   allLabels: Array<string> = [];
   deleteSubjects: Array<any> = [];
-  selectedOrCorrelative: { [key: string]: string } = {};
   deleteLevels: Array<any> = [];
   page: number = 1;
   last: number;
@@ -153,6 +153,7 @@ export class CollegeCareerComponent implements OnInit {
           career_id: id,
           selectiveSubject: this.subjects[i].selectiveSubject,
           chairs: this.subjects[i].chairs,
+          conditions: this.subjects[i].conditions,
           label: this.subjects[i].label,
           subjectParent: this.subjects[i].subjectParent,
         };
@@ -428,7 +429,7 @@ export class CollegeCareerComponent implements OnInit {
           subject_parent_id: parseInt(value),
           created_at: new Date().toISOString(),
           parent: selectedSubject,
-          orSubjects: [],
+          orSubjectParents: [],
         });
       }
     }
@@ -445,11 +446,9 @@ export class CollegeCareerComponent implements OnInit {
   selectOrCorrelative(i: number, iS: number, j: number, value) {
     if (value.includes('index')) {
       value = value.replace('index', '');
-      delete this.subjects[i].subject[iS].subjectParent[j].orSubject_id;
-      this.subjects[i].subject[iS].subjectParent[j].orSubject_key = value;
-    } else {
-      delete this.subjects[i].subject[iS].subjectParent[j].orSubject_key;
-      this.subjects[i].subject[iS].subjectParent[j].orSubject_id = value;
+      delete this.subjects[i].subject[iS].subjectParent[j].orSubjectParents_id;
+      this.subjects[i].subject[iS].subjectParent[j].orSubjectParents_key =
+        value;
     }
 
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
@@ -468,10 +467,10 @@ export class CollegeCareerComponent implements OnInit {
           (subject) => subject.id === newOrCorrelativeIdParsed
         );
         if (selectedOrSubject) {
-          if (!this.subjects[i].subject[iS].subjectParent[j].orSubjects) {
-            this.subjects[i].subject[iS].subjectParent[j].orSubjects = [];
+          if (!this.subjects[i].subject[iS].subjectParent[j].orSubjectParents) {
+            this.subjects[i].subject[iS].subjectParent[j].orSubjectParents = [];
           }
-          this.subjects[i].subject[iS].subjectParent[j].orSubjects.push({
+          this.subjects[i].subject[iS].subjectParent[j].push({
             subject_id: this.subjects[i].subject[iS].id,
             subject_parent_id: newOrCorrelativeIdParsed,
             parent: selectedOrSubject,
@@ -521,6 +520,52 @@ export class CollegeCareerComponent implements OnInit {
       this.subjects[i].label = value;
     }
 
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].edit = true;
+    }
+  }
+
+  addCondition(i: number, iS: number) {
+    if (!this.subjects[i].subject[iS].conditions) {
+      this.subjects[i].subject[iS].conditions = [];
+    }
+    this.subjects[i].subject[iS].conditions.push({
+      number: null,
+      approvedLabel: '',
+      exemptedLabel: '',
+    });
+
+    if (this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].subject[iS].edit = true;
+    }
+
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].edit = true;
+    }
+  }
+
+  removeCondition(i: number, iS: number, j: number) {
+    this.subjects[i].subject[iS].conditions.splice(j, 1);
+    if (this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].subject[iS].edit = true;
+    }
+    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].edit = true;
+    }
+  }
+
+  saveCondition(i: number, iS: number, j: number) {
+    const condition = this.subjects[i].subject[iS].conditions[j];
+
+    this.subjects[i].subject[iS].conditions[j] = {
+      number: condition.number,
+      approvedLabel: condition.approvedLabel,
+      exemptedLabel: condition.exemptedLabel,
+    };
+
+    if (this.subjects[i].subject[iS]?.id) {
+      this.subjects[i].subject[iS].edit = true;
+    }
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
       this.subjects[i].edit = true;
     }
