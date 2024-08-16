@@ -26,6 +26,7 @@ export class CollegeCareerComponent implements OnInit {
   deleteLevels: Array<any> = [];
   page: number = 1;
   last: number;
+  selectedOrCorrelative: string | null = null;
 
   constructor(
     private careerSv: CareerService,
@@ -443,39 +444,26 @@ export class CollegeCareerComponent implements OnInit {
       this.subjects[i].subject[iS].edit = true;
   }
 
-  selectOrCorrelative(i: number, iS: number, j: number, value) {
-    if (value.includes('index')) {
-      value = value.replace('index', '');
-      delete this.subjects[i].subject[iS].subjectParent[j].orSubjectParents_id;
-      this.subjects[i].subject[iS].subjectParent[j].orSubjectParents_key =
-        value;
-    }
-
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
-    if (this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].subject[iS].edit = true;
-    }
+  selectOrCorrelative(value: string) {
+    this.selectedOrCorrelative = value;
   }
 
-  addOrCorrelative(value: string, i: number, iS: number, j: number) {
+  addOrCorrelative(i: number, iS: number, j: number) {
+    const value = this.selectedOrCorrelative;
     if (value) {
       const newOrCorrelativeIdParsed = parseInt(value);
       if (!isNaN(newOrCorrelativeIdParsed)) {
-        const selectedOrSubject = this.allSubjects.find(
-          (subject) => subject.id === newOrCorrelativeIdParsed
-        );
-        if (selectedOrSubject) {
-          if (!this.subjects[i].subject[iS].subjectParent[j].orSubjectParents) {
-            this.subjects[i].subject[iS].subjectParent[j].orSubjectParents = [];
-          }
-          this.subjects[i].subject[iS].subjectParent[j].push({
-            subject_id: this.subjects[i].subject[iS].id,
-            subject_parent_id: newOrCorrelativeIdParsed,
-            parent: selectedOrSubject,
-          });
+        if (!this.subjects[i].subject[iS].subjectParent[j].orCorrelative) {
+          this.subjects[i].subject[iS].subjectParent[j].orCorrelative = [];
         }
+        this.subjects[i].subject[iS].subjectParent[j].orCorrelative.push(
+          newOrCorrelativeIdParsed
+        );
+
+        this.subjects[i].edit = true;
+        this.subjects[i].subject[iS].edit = true;
+
+        this.selectedOrCorrelative = null; 
       } else {
         console.error('Invalid ID entered');
       }
@@ -483,7 +471,7 @@ export class CollegeCareerComponent implements OnInit {
   }
 
   removeOrCorrelative(i: number, iS: number, j: number, k: number) {
-    this.subjects[i].subject[iS].subjectParent[j].orSubjects.splice(k, 1);
+    this.subjects[i].subject[iS].subjectParent[j].orCorrelative.splice(k, 1);
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
       this.subjects[i].edit = true;
     if (this.subjects[i].subject[iS]?.id)
@@ -569,5 +557,17 @@ export class CollegeCareerComponent implements OnInit {
     if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
       this.subjects[i].edit = true;
     }
+  }
+
+  getSubjectNameAndLevel(id: number | string): string {
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+    const subject = this.allSubjects.find(
+      (subject) => subject.id === numericId
+    );
+
+    return subject
+      ? `${subject.name} - ${subject.level}`
+      : 'Materia no encontrada';
   }
 }

@@ -269,24 +269,14 @@
                             <div class="input-group" style="margin-top: 5px">
                               <select
                                 class="form-select bg-transparent"
-                                (change)="
-                                  selectOrCorrelative(
-                                    i,
-                                    iS,
-                                    j,
-                                    selectOrCor.value
-                                  )
-                                "
+                                (change)="selectOrCorrelative(selectOrCor.value)"
                                 #selectOrCor
                               >
                                 <option [value]="''" selected>
-                                  - Sin materia correlativa -
+                                  - Sin otra materia correlativa -
                                 </option>
                                 <option
-                                  *ngFor="
-                                    let subjectCor of allSubjects;
-                                    let iSc = index
-                                  "
+                                  *ngFor="let subjectCor of allSubjects; let iSc = index"
                                   [value]="subjectCor?.id"
                                 >
                                   {{ subjectCor.name }} - {{ subjectCor.level }}
@@ -294,34 +284,37 @@
                               </select>
                               <button
                                 class="btn btn-secondary"
-                                (click)="
-                                  addOrCorrelative(selectOrCor.value, i, iS, j)
-                                "
+                                (click)="addOrCorrelative(i, iS, j)"
                                 style="margin-left: 5px"
                               >
                                 Agregar O
                               </button>
                             </div>
-                            <ul
-                              *ngIf="correlative.orSubjectParents?.length > 0"
-                              style="margin-top: 10px"
+                            
+                            <div
+                              *ngIf="
+                                subjects[i]?.subject[iS]?.subjectParent[j]
+                                  ?.orCorrelative?.length > 0
+                              "
                             >
-                              <li
-                                style="margin-bottom: 5px"
-                                *ngFor="
-                                  let orCor of correlative.orSubjectParents;
-                                  let k = index
-                                "
-                              >
-                                {{ orCor.parent.name }} -
-                                {{ orCor.parent.level }}
-                                <span
-                                  class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                                  style="margin-left: 10px; cursor: pointer"
-                                  (click)="removeOrCorrelative(i, iS, j, k)"
-                                ></span>
-                              </li>
-                            </ul>
+                              <ul style="margin-top: 10px">
+                                <li
+                                  *ngFor="
+                                    let id of subjects[i].subject[iS]
+                                      .subjectParent[j].orCorrelative;
+                                    let k = index
+                                  "
+                                  style="margin-bottom: 5px"
+                                >
+                                  {{ getSubjectNameAndLevel(id) }}
+                                  <span
+                                    class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
+                                    style="margin-left: 10px; cursor: pointer"
+                                    (click)="removeOrCorrelative(i, iS, j, k)"
+                                  ></span>
+                                </li>
+                              </ul>
+                            </div>
                           </li>
                         </ul>
                       </div>
