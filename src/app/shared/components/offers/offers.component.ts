@@ -68,7 +68,10 @@ export class OffersComponent implements OnInit {
       description: new FormControl(''),
       phone: new FormControl(''),
       name: new FormControl(''),
-      company: new FormControl('', this.category === 1 ? Validators.required : null),
+      company: new FormControl(
+        '',
+        this.category === 1 ? Validators.required : null
+      ),
       point: new FormControl(0, Validators.required),
       url: new FormControl(''),
       email: new FormControl(''),
@@ -119,20 +122,38 @@ export class OffersComponent implements OnInit {
   async createOrEdit(form, id) {
     try {
       if (this.formOffer.invalid) return this.formOffer.markAllAsTouched();
-      if (form.offer_category_id === true) {
-        let dataCategory: any = await this.offertsSv
-          .postCategories({ name: $('#offer_category_id').val() })
-          .toPromise();
-        form.offer_category_id = dataCategory?.body?.id;
-        this.categoriesFilter.push(dataCategory.body);
+
+      // Verifica si se seleccionó "Todas"
+      if (form.career_id === 'all') {
+        // Hacer una solicitud por cada carrera
+        const requests = this.careers.map(async (career) => {
+          const formData = new FormData();
+          formData.append('career_id', career.id.toString()); // Asigna el ID actual
+          Object.keys(this.formOffer.controls).forEach((key) => {
+            const controlValue = form[key] ?? this.formOffer.get(key)?.value;
+            if (controlValue instanceof File) {
+              formData.append(key, controlValue, controlValue.name);
+            } else if (key !== 'career_id') {
+              formData.append(key, controlValue);
+            }
+          });
+
+          // Realizar la solicitud para cada carrera
+          return this.offertsSv.postOffers(formData).toPromise();
+        });
+
+        try {
+          await Promise.all(requests); // Esperar que todas las solicitudes se completen
+          MyAlert.alert('Todas las ofertas han sido creadas!');
+          this.route.navigate([]);
+        } catch (error) {
+          console.error('Error al crear ofertas:', error);
+          MyAlert.alert('Ha ocurrido un error al crear las ofertas!', true);
+        }
+        return;
       }
-      if (!form.partner_id && !id) {
-        let dataPartner: any = await this.offertsSv
-          .postPartner({ name: 'partner' })
-          .toPromise();
-        form.partner_id = dataPartner?.body?.id;
-        this.partnersFilter.push(dataPartner.body);
-      }
+
+      // Lógica existente si no se selecciona "Todas"
       const formData = new FormData();
       if (!id) formData.append('partner_id', form.partner_id);
       Object.keys(this.formOffer.controls).forEach((key) => {
@@ -143,33 +164,18 @@ export class OffersComponent implements OnInit {
           formData.append(key, controlValue);
         }
       });
+
       if (id) {
-        this.offertsSv
-          .putOffers(formData, id)
-          .toPromise()
-          .then((data: any) => {
-            this.offers[this.form] = data.body;
-            MyAlert.alert('Oferta editada!');
-            this.route.navigate([]);
-          })
-          .catch((error) => {
-            MyAlert.alert(error.error.message, true);
-          });
+        await this.offertsSv.putOffers(formData, id).toPromise();
+        MyAlert.alert('Oferta editada!');
       } else {
-        this.offertsSv
-          .postOffers(formData)
-          .toPromise()
-          .then((data: any) => {
-            this.offers.unshift(data.body);
-            MyAlert.alert('Oferta creada!');
-            this.route.navigate([]);
-          })
-          .catch((error) => {
-            MyAlert.alert(error.error.message, true);
-          });
+        await this.offertsSv.postOffers(formData).toPromise();
+        MyAlert.alert('Oferta creada!');
       }
+      this.route.navigate([]);
     } catch (error) {
-      return MyAlert.alert('Ha ocurrido un error!', true);
+      console.error('Error general:', error);
+      MyAlert.alert('Ha ocurrido un error!', true);
     }
   }
 

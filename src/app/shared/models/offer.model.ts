@@ -13,6 +13,7 @@ export interface Offer{
     "created_at": Date,
     "updated_at": Date,
     "offerCategory": OfferCategory,
+    "career": Career,
     "image": Image,
     "partner": Partner,
     "approved": boolean
@@ -22,6 +23,14 @@ export interface OfferCategory{
     "name": string,
     "created_at": Date,
     "updated_at": Date
+}
+export interface Career{
+    "id": number,
+    "name": string,
+    "created_at": Date,
+    "updated_at": Date
+    "image_id": number,
+    "description_url": string;
 }
 export interface Partner{
     "id": number,
