@@ -139,7 +139,7 @@ export class OffersComponent implements OnInit {
           const response = await this.offertsSv
             .postOffers(formData)
             .toPromise();
-          this.offers.unshift(response.body);
+          this.offers.unshift(response.body as Offer);
           return response;
         });
 
