@@ -136,7 +136,11 @@ export class OffersComponent implements OnInit {
             }
           });
 
-          return this.offertsSv.postOffers(formData).toPromise();
+          const response = await this.offertsSv
+            .postOffers(formData)
+            .toPromise();
+          this.offers.unshift(response.body);
+          return response;
         });
 
         try {
@@ -200,6 +204,7 @@ export class OffersComponent implements OnInit {
           });
       }
     } catch (error) {
+      console.error('Error general:', error);
       return MyAlert.alert('Ha ocurrido un error!', true);
     }
   }
