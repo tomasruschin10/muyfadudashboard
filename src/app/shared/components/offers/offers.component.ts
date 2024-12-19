@@ -123,12 +123,10 @@ export class OffersComponent implements OnInit {
     try {
       if (this.formOffer.invalid) return this.formOffer.markAllAsTouched();
 
-      // Verifica si se seleccionó "Todas"
       if (form.career_id === 'all') {
-        // Hacer una solicitud por cada carrera
         const requests = this.careers.map(async (career) => {
           const formData = new FormData();
-          formData.append('career_id', career.id.toString()); // Asigna el ID actual
+          formData.append('career_id', career.id.toString());
           Object.keys(this.formOffer.controls).forEach((key) => {
             const controlValue = form[key] ?? this.formOffer.get(key)?.value;
             if (controlValue instanceof File) {
@@ -138,12 +136,11 @@ export class OffersComponent implements OnInit {
             }
           });
 
-          // Realizar la solicitud para cada carrera
           return this.offertsSv.postOffers(formData).toPromise();
         });
 
         try {
-          await Promise.all(requests); // Esperar que todas las solicitudes se completen
+          await Promise.all(requests);
           MyAlert.alert('Todas las ofertas han sido creadas!');
           this.route.navigate([]);
         } catch (error) {
@@ -153,7 +150,20 @@ export class OffersComponent implements OnInit {
         return;
       }
 
-      // Lógica existente si no se selecciona "Todas"
+      if (form.offer_category_id === true) {
+        let dataCategory: any = await this.offertsSv
+          .postCategories({ name: $('#offer_category_id').val() })
+          .toPromise();
+        form.offer_category_id = dataCategory?.body?.id;
+        this.categoriesFilter.push(dataCategory.body);
+      }
+      if (!form.partner_id && !id) {
+        let dataPartner: any = await this.offertsSv
+          .postPartner({ name: 'partner' })
+          .toPromise();
+        form.partner_id = dataPartner?.body?.id;
+        this.partnersFilter.push(dataPartner.body);
+      }
       const formData = new FormData();
       if (!id) formData.append('partner_id', form.partner_id);
       Object.keys(this.formOffer.controls).forEach((key) => {
@@ -164,18 +174,33 @@ export class OffersComponent implements OnInit {
           formData.append(key, controlValue);
         }
       });
-
       if (id) {
-        await this.offertsSv.putOffers(formData, id).toPromise();
-        MyAlert.alert('Oferta editada!');
+        this.offertsSv
+          .putOffers(formData, id)
+          .toPromise()
+          .then((data: any) => {
+            this.offers[this.form] = data.body;
+            MyAlert.alert('Oferta editada!');
+            this.route.navigate([]);
+          })
+          .catch((error) => {
+            MyAlert.alert(error.error.message, true);
+          });
       } else {
-        await this.offertsSv.postOffers(formData).toPromise();
-        MyAlert.alert('Oferta creada!');
+        this.offertsSv
+          .postOffers(formData)
+          .toPromise()
+          .then((data: any) => {
+            this.offers.unshift(data.body);
+            MyAlert.alert('Oferta creada!');
+            this.route.navigate([]);
+          })
+          .catch((error) => {
+            MyAlert.alert(error.error.message, true);
+          });
       }
-      this.route.navigate([]);
     } catch (error) {
-      console.error('Error general:', error);
-      MyAlert.alert('Ha ocurrido un error!', true);
+      return MyAlert.alert('Ha ocurrido un error!', true);
     }
   }
 
