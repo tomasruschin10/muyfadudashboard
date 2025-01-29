@@ -1,0 +1,51 @@
+<main class="overflow-auto py-5 px-sm-5 px-4">
+    <section class="view" *ngIf="!form">
+      <h3>Solicitudes de Canjeo</h3>
+      <form class="d-flex flex-wrap justify-content-end gap-3 mb-3">
+        <div class="form-floating">
+          <select class="form-select" style="max-width: 250px;" (change)="filterByStatus($event)">
+            <option value="">Todos los estados</option>
+            <option *ngFor="let status of rewardRequestStatuses" [value]="status">
+              {{translate(status)}}
+            </option>
+          </select>
+
+          <label>Estado</label>
+        </div>
+      </form>
+      <section class="d-flex flex-column gap-3" id="rewardRequests">
+        <div class="row g-3">
+          <div class="col-xxl-4 col-lg-6" *ngFor="let request of rewardRequests">
+            <div class="d-flex flex-column h-100 bg-gray2 rounded-7 p-4">
+                <div class="d-flex gap-3 mb-2">
+                  <h5 class="m-0"><span>Premio:</span>  {{request.reward.name}}</h5>
+                </div>
+                <div><span class="fw-500">Solicitado por: </span> {{request.user.username}}</div>
+                <div><span class="fw-500">Puntos requeridos: </span> {{request.reward.points_to_be_claimed}}</div>
+                <div><span class="fw-500">Estado: </span> <span [ngClass]="getStatusClass(request.status)">{{translate(request.status)}}</span></div>
+                <p class="my-2 cnt-ellipsis">{{request.reward.description}}</p>
+                <div class="d-flex gap-2 py-3 flex-wrap">
+                  <small class="bg-gray px-3 py-2 rounded-pill">
+                    <i class="far fa-calendar-alt color-1 fs-6 me-1"></i>
+                    {{request.created_at | date: 'dd/MM/YY | HH:mm'}}
+                  </small>
+                </div>
+                <div class="d-flex gap-2 flex-wrap mt-auto">
+                  <button class="btn btn-success col" (click)="approveRequest(request)" [disabled]="request.status !== 'PENDING'">Aprobar</button>
+                  <button class="btn btn-danger col" (click)="rejectRequest(request)" [disabled]="request.status !== 'PENDING'">Rechazar</button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="text-center pt-4">
+        <div class="mb-3" *ngIf="showAlert">
+          <small class="alert alert-danger d-inline-block p-2 rounded-7">No hay más resultados</small>
+        </div>
+        <button class="btn btn-1" (click)="loadMoreRewardRequests()" *ngIf="!showAlert">
+          Ver más
+        </button>
+      </section>
+
+    </section>
+</main>

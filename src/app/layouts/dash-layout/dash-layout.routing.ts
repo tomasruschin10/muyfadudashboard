@@ -13,6 +13,8 @@ export const DashLayoutRoutes: Routes = [
     { path: 'recursos', loadChildren: () => import('../../pages/resources/resources.module').then(m => m.ResourcesModule) },
     { path: 'noticias', loadChildren: () => import('../../pages/notice/notice.module').then(m => m.NoticeModule) },
     { path: 'anuncios', loadChildren: () => import('../../pages/ad-page/ad-page.module').then(m => m.AdPageModule) },
+    { path: 'premios', loadChildren: () => import('../../pages/rewards/rewards.module').then(m => m.RewardsModule) },
+    { path: 'solicitudes-canjeo', loadChildren: () => import('../../pages/reward-requests/reward-requests.module').then(m => m.RewardsRequestModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];

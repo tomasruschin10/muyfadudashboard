@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-layout',
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeLayoutComponent {
   title = 'front-osmos';
-  externalUrl: string = 'https://tomsr13.sg-host.com/';
+  externalUrl: string = environment.API_URL;
   safeExternalUrl: SafeResourceUrl;
 
   constructor(private sanitizer: DomSanitizer) {
