@@ -17,7 +17,7 @@ export class AdPageService {
     }
 
     getRewards(page:number, perPage:number): Observable<PaginatedEp<Reward[]>> {
-      return this.http.get<PaginatedEp<Reward[]>>(`${this.BASE_URL}/rewards?page${page}&per_page${perPage}`).pipe(
+      return this.http.get<PaginatedEp<Reward[]>>(`${this.BASE_URL}/rewards?page=${page}&per_page=${perPage}`).pipe(
         map(response => response || null)
       )
     }

@@ -21,7 +21,7 @@ export class RewardsComponent implements OnInit {
   reward: Reward | null
   meta: Meta
   pageSize = 10
-  page:number = 2
+  page:number = 1
   totalItems:number = 0
 
   constructor(
