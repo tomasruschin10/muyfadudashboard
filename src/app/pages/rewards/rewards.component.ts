@@ -21,7 +21,7 @@ export class RewardsComponent implements OnInit {
   reward: Reward | null
   meta: Meta
   pageSize = 10
-  page:number = 1
+  page:number = 2
   totalItems:number = 0
 
   constructor(
@@ -36,7 +36,7 @@ export class RewardsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listRewards()
+    this.listRewards(this.page)
   }
 
   initFormAdvertisement(){
@@ -60,14 +60,14 @@ export class RewardsComponent implements OnInit {
     }
   }
 
-  listRewards(page: number = 1, pageSize = this.pageSize){
+  listRewards(page: number, pageSize = this.pageSize){
     this.adPageSv.getRewards(page, pageSize).subscribe(
       (response) => {
         this.rewards = response.data
         this.meta = response.meta
-        this.totalItems = this.meta.total_elements
-        this.page = this.meta.current_page
-        this.initFormAdvertisement()
+        this.totalItems = response.meta.total_elements
+        this.page = page
+        // this.initFormAdvertisement()
       },
       (error) => {
         MyAlert.alert('Error al cargar los premios', true)
@@ -76,8 +76,8 @@ export class RewardsComponent implements OnInit {
   }
 
   onPageChange(page: number) {
-    this.page = page
-    this.listRewards(page)
+    this.page = +page
+    this.listRewards(+page)
   }
 
   async createOrEdit(form, id){
@@ -91,7 +91,7 @@ export class RewardsComponent implements OnInit {
       }else{
         const data = await this.adPageSv.createReward(form as unknown as RewardPayload).toPromise()
         if(data) {
-          this.onPageChange(1)
+          this.listRewards
         }
       }
       this.route.navigate([])

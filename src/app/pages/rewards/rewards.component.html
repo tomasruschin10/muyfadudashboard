@@ -14,7 +14,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of rewards | slice: (page-1) * 10 : page * 10, let i = index">
+                    <tr *ngFor="let item of rewards, let i = index">
                         <td>{{item.name}}</td>
                         <td>{{item.points_to_be_claimed}}</td>
                         <td>
@@ -30,9 +30,9 @@
         </div>
         <ngb-pagination
             [(page)]="page"
-            [pageSize]="10"
-            [maxSize]="5"
-            [collectionSize]="rewards.length">
+            [collectionSize]="totalItems"
+            (pageChange)="onPageChange($event)"
+            >
         </ngb-pagination>
     </section>
     <section class="view" *ngIf="form">
