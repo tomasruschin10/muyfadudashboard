@@ -52,5 +52,13 @@
     <i class="far fa-comment-dots"></i>
     <div><span>Opiniones</span></div>
   </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/premios" routerLinkActive="active">
+    <i class="fas fa-award"></i>
+    <div><span>Premios</span></div>
+  </a>
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/solicitudes-canjeo" routerLinkActive="active">
+    <i class="fas fa-file-alt"></i>
+    <div><span>Solicitudes de canjeo</span></div>
+  </a>
 </aside>
 <div class="backdrop" (click)="show = !show"></div>
