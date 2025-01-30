@@ -10,16 +10,19 @@ import { PrivacyPolicyLayoutComponent } from './layouts/privacy-policy-layout/pr
 const routes: Routes = [
   {
     path: '',
-    component: HomeLayoutComponent,
-    children: [
-      {
-        path: '',
-        loadChildren: () =>
-          import('./layouts/home-layout/home-layout.module').then(
-            (m) => m.HomeLayoutModule
-          ),
-      },
-    ],
+    pathMatch: 'full',
+    redirectTo: 'dash',
+
+    // component: HomeLayoutComponent,
+    // children: [
+    //   {
+    //     path: '',
+    //     loadChildren: () =>
+    //       import('./layouts/home-layout/home-layout.module').then(
+    //         (m) => m.HomeLayoutModule
+    //       ),
+    //   },
+    // ],
   },
   {
     path: 'privacy-policy',
