@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OpinionsService } from './services/opinions.service';
 import { Opinion, OpinionAnswer, Tag } from '../../shared/models/opinion.model';
 import { CareerService } from '../college-career/services/career.service';
-import { Subject } from 'src/app/shared/models/career.model';
+import { Career, Subject } from 'src/app/shared/models/career.model';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -28,6 +28,7 @@ export class OpinionsComponent implements OnInit {
   form
   searchValue = ''
   selectSubjectValue
+  carrers: Career[] = []
 
   constructor(
     private opinionSv: OpinionsService,
@@ -47,6 +48,7 @@ export class OpinionsComponent implements OnInit {
     this.listOpinions('', '')
     this.listSubjects()
     this.listTags()
+    this.getCarrers()
   }
 
   initFormOpinions(){
@@ -129,6 +131,24 @@ export class OpinionsComponent implements OnInit {
     this.careerSv.getSubject().subscribe((data:any) =>{
       this.subjects = data.body
     })
+  }
+
+  getCarrers(){
+    this.careerSv.getCareer().subscribe(
+      (res:any) => {
+        if (res.body) {
+          this.carrers = res.body
+        }
+      },
+      (err) => {
+        
+      }
+    )
+  }
+
+  getCareerName(careerId: number): string {
+    const career = this.carrers.find(c => c.id === careerId);
+    return career ? career.name : 'No especificada';
   }
 
   listTags(){
