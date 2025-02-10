@@ -387,6 +387,45 @@
             </div>
           </div>
         </div>
+        <div class="col-12 mt-3">
+          <div class="accordion" id="accordionDates">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingDates">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDates" aria-expanded="false" aria-controls="collapseDates">
+                  Fechas de la oferta (opcional)
+                </button>
+              </h2>
+              <div id="collapseDates" class="accordion-collapse collapse" aria-labelledby="headingDates" data-bs-parent="#accordionDates">
+                <div class="accordion-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="form-floating">
+                        <input
+                          class="form-control"
+                          formControlName="start_date"
+                          type="date"
+                          placeholder=" "
+                        />
+                        <label>Fecha de inicio</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-floating">
+                        <input
+                          class="form-control"
+                          formControlName="end_date"
+                          type="date"
+                          placeholder=" "
+                        />
+                        <label>Fecha final</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div>
         <button

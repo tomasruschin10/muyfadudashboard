@@ -1,0 +1,67 @@
+<main class="px-sm-5 px-4 py-5">
+    <section class="view" *ngIf="!form">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Notificaciones</h3>
+            <button class="btn btn-primary" [routerLink]="[]" [queryParams]="{form: 'create'}">Crear Nueva Notificación</button>
+        </div>
+        <div class="table-responsive">
+
+            <table class="table align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of notifications, let i = index">
+                        <td>{{item.title}}</td>
+                        <td>{{item.description}}</td>
+                        <td>{{item.date | date:'medium'}}</td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center" *ngif="!item.sent">
+                                <button class="btn btn-danger" (click)="delete(item.id, i, 'notificacion')">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ngb-pagination
+            [(page)]="page"
+            [collectionSize]="totalItems"
+            (pageChange)="onPageChange($event)"
+            [pageSize]="pageSize"
+        >
+        </ngb-pagination>
+    </section>
+
+    <section class="view" *ngIf="form">
+        <h3 class="mb-3">{{notification?.id ? 'Editar Notificación' : 'Crear Nueva Notificación'}}</h3>
+        <form [formGroup]="formNotification">
+            <div class="mb-3">
+                <label for="title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="title" formControlName="title">
+                <small class="text-danger" *ngIf="formNotification.get('title')?.touched && formNotification.get('title')?.errors?.required">
+                    El título es requerido
+                </small>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+                <small class="text-danger" *ngIf="formNotification.get('description')?.touched && formNotification.get('description')?.errors?.required">
+                    La descripción es requerida
+                </small>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Fecha</label>
+                <input type="datetime-local" class="form-control" id="date" formControlName="date">
+            </div>
+            <button type="submit" class="btn btn-primary me-2" [disabled]="formNotification.invalid" (click)="createOrEdit(formNotification.value, notification?.id)">
+                {{notification?.id ? 'Actualizar' : 'Crear'}}
+            </button>
+        </form>
+    </section>
+</main>

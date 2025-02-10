@@ -76,6 +76,8 @@ export class OffersComponent implements OnInit {
       url: new FormControl(''),
       email: new FormControl(''),
       image: new FormControl('', Validators.required),
+      start_date: new FormControl(''),
+      end_date: new FormControl(''),
     });
     if (this.offers?.length > 0 && this.form != 'create' && this.form) {
       this.offer = this.offers[this.form];
