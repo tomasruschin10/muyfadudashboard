@@ -16,7 +16,9 @@ export interface Offer{
     "career": Career,
     "image": Image,
     "partner": Partner,
-    "approved": boolean
+    "approved": boolean,
+    start_date?: string,
+    end_date?: string
 }
 export interface OfferCategory{
     "id": number,
