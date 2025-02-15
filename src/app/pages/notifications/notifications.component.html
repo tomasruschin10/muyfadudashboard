@@ -21,7 +21,7 @@
                         <td>{{item.description}}</td>
                         <td>{{item.date | date:'medium'}}</td>
                         <td>
-                            <div class="d-flex gap-2 justify-content-center" *ngif="!item.sent">
+                            <div class="d-flex gap-2 justify-content-center" *ngIf="!item.sent">
                                 <button class="btn btn-danger" (click)="delete(item.id, i, 'notificacion')">Eliminar</button>
                             </div>
                         </td>
