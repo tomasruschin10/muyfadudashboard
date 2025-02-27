@@ -36,7 +36,7 @@
         </span>
       </div>
     
-      <!      <!-- Lista de opiniones -->
+      <!-- Lista de opiniones -->
       <section id="accOpinion">
         <ul class="list-group">
           <li class="list-group-item bg-gray2 rounded-3 p-2 my-1" *ngFor="let item of opinions; let i = index">
@@ -76,7 +76,7 @@
         </ul>
       </section>
     
-      <!-- Botón "Ver más" (ligeramente modificado) -->
+      <!-- Botón "Ver más" -->
       <section class="text-center position-relative mt-3">
         <small class="text-danger d-block mb-2" *ngIf="showAlert">No hay más resultados</small>
         <button class="btn btn-1" (click)="listOpinions(selectSubject.value, search.value)">
