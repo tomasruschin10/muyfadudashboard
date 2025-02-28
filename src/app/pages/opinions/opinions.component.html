@@ -15,6 +15,16 @@
           </select>
           <label>Materias</label>
         </div>
+        <!-- Nuevo filtro para carreras -->
+        <div class="form-floating">
+          <select class="form-select" style="max-width: 250px;" #selectCareer>
+            <option [value]="''">Todas las carreras</option>
+            <option *ngFor="let career of carrers" [selected]="+selectCareerValue == career.id" [value]="career.id">{{career.name}}</option>
+          </select>
+          <label>Carreras</label>
+        </div>
+
+        
         <div class="form-floating">
           <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
           <input class="form-control pe-5" type="text" id="listTags" placeholder=" " (input)="filterList()" (click)="filterList()" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
@@ -23,7 +33,7 @@
           </ul>
           <label>Tags</label>
         </div>
-        <button class="btn btn-1 mt-auto" (click)="filterSubjects(selectSubject.value, search.value)">
+        <button class="btn btn-1 mt-auto" (click)="filterSubjects(selectSubject.value, search.value, selectCareer.value)">
           Buscar
         </button>
       </form>
@@ -79,7 +89,7 @@
       <!-- Botón "Ver más" -->
       <section class="text-center position-relative mt-3">
         <small class="text-danger d-block mb-2" *ngIf="showAlert">No hay más resultados</small>
-        <button class="btn btn-1" (click)="listOpinions(selectSubject.value, search.value)">
+        <button class="btn btn-1" (click)="listOpinions(selectSubject.value, search.value, selectCareer.value)">
           Ver más
         </button>
       </section>

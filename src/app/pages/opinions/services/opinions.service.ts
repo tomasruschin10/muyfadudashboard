@@ -12,8 +12,8 @@ export class OpinionsService {
     this.BASE_URL = environment.API_URL
   }
 
-  getOpinions(offset, limit, subject_id, tagsId, search){
-    return this.http.get(`${this.BASE_URL}/opinion/all?offset=${offset}&limit=${limit}${subject_id}${tagsId}${search}`, {
+  getOpinions(offset, limit, subject_id, tagsId, search, career_id){
+    return this.http.get(`${this.BASE_URL}/opinion/all?offset=${offset}&limit=${limit}&career_id=${career_id}${subject_id}${tagsId}${search}`, {
       observe: 'response'
     })
   }
