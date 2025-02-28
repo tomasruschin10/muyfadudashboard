@@ -29,6 +29,7 @@ export class OpinionsComponent implements OnInit {
   searchValue = ''
   selectSubjectValue
   carrers: Career[] = []
+  selectCareerValue: string = '';
 
   constructor(
     private opinionSv: OpinionsService,
@@ -45,7 +46,7 @@ export class OpinionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listOpinions('', '')
+    this.listOpinions('', '', '')
     this.listSubjects()
     this.listTags()
     this.getCarrers()
@@ -59,7 +60,7 @@ export class OpinionsComponent implements OnInit {
     }
   }
 
-  listOpinions(subjectId, search){
+  listOpinions(subjectId, search, career){
     if(subjectId != '') subjectId = '&subject_id='+subjectId
     if(search != '') search = '&search='+search
     let arrTags = ''
@@ -68,7 +69,7 @@ export class OpinionsComponent implements OnInit {
         arrTags = arrTags+'&tags[]='+item
       }
     }
-    this.opinionSv.getOpinions(this.offset, 12, subjectId, arrTags, search).subscribe((data:any) =>{
+    this.opinionSv.getOpinions(this.offset, 12, subjectId, arrTags, search, career).subscribe((data:any) =>{
       this.opinions = this.opinions.concat(data.body)
       if(this.form) this.initFormOpinions()
       if(data.body.length == 0){
@@ -104,13 +105,13 @@ export class OpinionsComponent implements OnInit {
     })
   }
 
-  filterSubjects(subjectId, search){
+  filterSubjects(subjectId, search, career){
     this.opinions = []
     this.offset = 0
     this.answers = []
     this.selectSubjectValue = subjectId
     this.searchValue = search
-    this.listOpinions(subjectId, search)
+    this.listOpinions(subjectId, search, career)
   }
 
   filterList(item?){
