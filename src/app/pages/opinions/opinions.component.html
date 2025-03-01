@@ -50,16 +50,16 @@
       <section id="accOpinion">
         <ul class="list-group">
           <li class="list-group-item bg-gray2 rounded-3 p-2 my-1" *ngFor="let item of opinions; let i = index">
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="d-flex gap-2">
-                <img class="rounded-circle border" [src]="item.student.image.url" width="35px" height="35px" alt="userImage">
-                <div>
-                  <h6 class="mb-0 fw-bold">{{item.title | slice:0:100}}{{item.title.length > 100 ? '...' : ''}}</h6>
-                  <small class="text-muted">{{item.student.name}} - {{item.subject.name}} - {{getCareerName(item.student.career_id)}}</small>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start">
+              <div class="d-flex gap-2 flex-grow-1 mb-2 mb-md-0">
+                <img class="rounded-circle border" [src]="item.student.image.url" width="35" height="35" alt="userImage">
+                <div class="flex-grow-1 min-width-0">
+                  <h6 class="mb-0 fw-bold text-truncate">{{item.title | slice:0:100}}{{item.title.length > 100 ? '...' : ''}}</h6>
+                  <small class="text-muted d-block text-truncate">{{item.student.name}} - {{item.subject.name}} - {{getCareerName(item.student.career_id)}}</small>
                   <p class="mb-0 small text-truncate" style="max-width: 50dvw;">{{item.description}}</p>
                 </div>
               </div>
-              <div class="d-flex flex-column align-items-end">
+              <div class="d-flex md-flex-column align-items-center resp-cont">
                 <div class="d-flex gap-1 mb-1">
                   <small class="bg-gray px-2 py-1 rounded-pill">
                     <i class="far fa-comments color-1 fs-6 me-1"></i>

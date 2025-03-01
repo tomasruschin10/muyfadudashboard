@@ -17,3 +17,33 @@
     70%{opacity: 1;}
     100%{opacity: 0;}
 }
+
+@media (max-width: 767px) {
+  .list-group-item {
+    font-size: 0.9rem;
+  }
+
+  .list-group-item h6 {
+    font-size: 1rem;
+  }
+
+  .list-group-item .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .list-group-item .rounded-pill {
+    font-size: 0.75rem;
+  }
+}
+
+.resp-cont {
+    @media (max-width: 767px) {
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        >div {
+            flex: 1 1 auto;
+        }
+    }
+}
