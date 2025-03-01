@@ -19,7 +19,7 @@
                 <tbody>
                     <tr *ngFor="let item of advertisements | slice: (page-1) * 10 : page * 10, let i = index">
                         <td>{{item.url}}</td>
-                        <td>{{item.career.name}}</td>
+                        <td>{{item.career ? item.career.name : "Todas las carreras"}}</td>
                         <td>{{item.partner.name}}</td>
                         <td>{{item.date_start | date: 'dd/MM/yy'}}</td>
                         <td>{{item.date_end | date: 'dd/MM/yy'}}</td>
@@ -63,7 +63,7 @@
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
                                 <option [value]="null" selected disabled>- Seleccione -</option>
-                                <option [value]="">Todas las carreras</option>
+                                <option [value]="null">Todas las carreras</option>
                                 <option *ngFor="let item of careers" [value]="item.id">{{item.name}}</option>
                             </select>
                             <small class="text-danger" *ngIf="formAdvertisement.controls['career_id'].touched && formAdvertisement.controls['career_id'].errors?.required">La carrera es requerida</small>
