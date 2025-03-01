@@ -107,6 +107,7 @@ export class AdPageComponent implements OnInit {
     for(let [item, value] of Object.entries(form)){
       formdata.append(item, value as any)
     }
+    formdata.append("key", "home")
     try {
       if(id){
         const {body}:any = await this.adPageSv.putAdvertisement(formdata, id).toPromise()

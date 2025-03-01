@@ -16,10 +16,8 @@ export class AdPageService {
       })
     }
     postAdvertisement(form){
-      return this.http.post(`${this.BASE_URL}/advertisement/create`, {
-    ...form,
-    key: "home"
-  }, {
+    console.log(form)
+      return this.http.post(`${this.BASE_URL}/advertisement/create`, form, {
         observe: 'response'
       })
     }
