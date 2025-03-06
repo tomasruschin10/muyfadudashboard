@@ -54,7 +54,8 @@ export class AdPageComponent implements OnInit {
       career_id: new FormControl(null, Validators.required),
       date_start: new FormControl('', Validators.required),
       date_end: new FormControl('', Validators.required),
-      image: new FormControl('', Validators.required)
+      image: new FormControl('', Validators.required),
+      order: new FormControl('', Validators.required)
     })
     if(this.advertisements?.length > 0 && this.form != 'create' && this.form){
       this.advertisement = this.advertisements[this.form]

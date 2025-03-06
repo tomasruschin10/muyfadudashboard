@@ -86,6 +86,16 @@
                             <small class="text-danger" *ngIf="formAdvertisement.controls['partner_id'].touched && formAdvertisement.controls['partner_id'].errors?.required">El patrocinador es requerido</small>
                         </div>
                     </div>
+
+                    <!-- Nuevo campo para el orden -->
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" formControlName="order" type="number" placeholder=" " min="1">
+                            <small class="text-danger" *ngIf="formAdvertisement.controls['order'].touched && formAdvertisement.controls['order'].errors?.required">El orden es requerido</small>
+                            <label>Orden</label>
+                        </div>
+                    </div>
+
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="date_start" type="date" placeholder=" ">
@@ -93,6 +103,7 @@
                             <label>Fecha inicio</label>
                         </div>
                     </div>
+
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <input class="form-control" formControlName="date_end" type="date" placeholder=" ">
