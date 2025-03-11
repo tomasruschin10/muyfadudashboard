@@ -46,7 +46,7 @@
               </div>
             </td>
             <td>{{ item?.offerCategory?.name }}</td>
-            <td>{{ item?.career?.name }}</td>
+            <td>{{ item?.career ? item?.career?.name : "Todas las carreras" }}</td>
             <td>
               <div
                 class="form-check form-switch d-flex justify-content-center status-input-custom-width-container"
@@ -369,7 +369,7 @@
             <div class="form-floating">
               <select class="form-select" formControlName="career_id">
                 <option [value]="null" selected disabled>- Seleccione -</option>
-                <option [value]="'all'">Todas</option>
+                <option [value]="null">Todas</option>
                 <option *ngFor="let item of careers" [ngValue]="item.id">
                   {{ item.name }}
                 </option>
