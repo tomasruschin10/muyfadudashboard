@@ -9,6 +9,7 @@ import jwt_decode from 'jwt-decode';
 import { userData, setUserData } from 'src/app/components/dash/header/header.component';
 import { CareerService } from '../../../pages/college-career/services/career.service';
 import { Career } from '../../models/career.model';
+import { Meta } from '../../models/response.model';
 declare var $:any
 
 @Component({
@@ -24,6 +25,10 @@ export class UsersComponent implements OnInit {
   form
   userId: number | null
   page: number = 1
+  meta: Meta
+  pageSize = 10
+  totalItems:number = 0
+  search: string = ''
 
   constructor(
     private usersSv: UsersService,
@@ -75,10 +80,17 @@ export class UsersComponent implements OnInit {
   }
 
   listUsers(){
-    this.usersSv.getUsers(this.role).subscribe((data:any) =>{
-      this.users = data.body
-      if(this.form) this.initFormUser()
-    })
+    this.usersSv.getUsersPaginated(this.role, this.page, this.pageSize, this.search).subscribe(
+      (response) => {
+        this.users = response.data
+        this.meta = response.meta
+        this.totalItems = response.meta.total_elements
+        this.page = response.meta.current_page
+      },
+      (error) => {
+        MyAlert.alert('Error al cargar los usuarios', true)
+      }
+    )
   }
 
   listCareer(){
@@ -160,5 +172,15 @@ export class UsersComponent implements OnInit {
         $('#img').attr('src', imgURL)
       }, 10);
     }
+  }
+
+  onPageChange(page: number) {
+    this.page = +page
+    this.listUsers()
+  }
+
+  onSearch() {
+    this.page = 1; // Reset to first page when searching
+    this.listUsers();
   }
 }

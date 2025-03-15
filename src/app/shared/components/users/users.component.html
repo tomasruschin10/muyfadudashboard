@@ -4,8 +4,15 @@
         <div class="text-end mb-2" *ngIf="role != 2">
             <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: 'create'}">Nuevo usuario</button>
         </div>
+        <!-- Añadir el campo de búsqueda aquí -->
+        <div class="mb-3 d-flex">
+            <input type="text" class="form-control" placeholder="Buscar usuario..." [(ngModel)]="search">
+            <button class="btn btn-primary ms-2" (click)="onSearch()">Buscar</button>
+        </div>
+
         <div class="table-responsive">
             <table class="table align-middle text-center">
+
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -17,7 +24,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of users | slice: (page-1) * 10 : page * 10, let i = index">
+                    <tr *ngFor="let item of users, let i = index">
                         <td>{{item.name}} {{item?.lastname}}</td>
                         <td>{{item.username}}</td>
                         <td>{{item.email}}</td>
@@ -33,7 +40,16 @@
                 </tbody>
             </table>
         </div>
-        <ngb-pagination [(page)]="page" [pageSize]="10" [maxSize]="5" [collectionSize]="users.length"></ngb-pagination>
+        <ngb-pagination
+            [(page)]="page"
+            [collectionSize]="totalItems"
+            (pageChange)="onPageChange($event)"
+            [pageSize]="pageSize"
+            [maxSize]="15"
+            [boundaryLinks]="true"
+            [ellipses]="true"
+            >
+        </ngb-pagination>
     </section>
     <section class="view" *ngIf="form">
         <h3 class="mb-3">{{form != 'create' ? 'Informacion de '+[role == 2 ? 'estudiante' : 'usuario'] : 'Nuevo '+[role == 2 ? 'estudiante' : 'usuario']}}</h3>
