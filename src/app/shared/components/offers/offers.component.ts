@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { OffersService } from '../../../pages/offers/services/offers.service';
 import { Offer, Partner, OfferCategory } from '../../models/offer.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { MyAlert, CreateFile } from '../../static-functions/myFunctions';
 import { CareerService } from '../../../pages/college-career/services/career.service';
 import { Career } from '../../models/career.model';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 declare var $: any;
 
 @Component({
@@ -26,12 +27,15 @@ export class OffersComponent implements OnInit {
   offer: Offer | any;
   form;
   page: number = 1;
+  carouselImages: any[] = []
 
   constructor(
     private offertsSv: OffersService,
     private route: Router,
     private careerSv: CareerService,
-    private routeActive: ActivatedRoute
+    private routeActive: ActivatedRoute,
+    private changeDetectorRef: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {
     routeActive.queryParams.subscribe((data) => {
       this.form = data.form;
@@ -78,14 +82,17 @@ export class OffersComponent implements OnInit {
       image: new FormControl('', Validators.required),
       start_date: new FormControl(''),
       end_date: new FormControl(''),
-      order: new FormControl(0)
+      order: new FormControl(0),
+      images: new FormControl([])
     });
     if (this.offers?.length > 0 && this.form != 'create' && this.form) {
       this.offer = this.offers[this.form];
       this.formOffer.patchValue(this.offers[this.form]);
+      this.updateCarouselView()
     } else {
       this.categories = this.categoriesFilter;
       this.partners = this.partnersFilter;
+      this.carouselImages = []
     }
   }
 
@@ -253,15 +260,38 @@ export class OffersComponent implements OnInit {
   }
 
   addImg(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const imgURL = URL.createObjectURL(file);
-      this.formOffer.get('image')?.patchValue(file);
-      setTimeout(() => {
-        $('#img').attr('src', imgURL);
-      }, 10);
+    if (event.target.files && event.target.files.length > 0) {
+      const files = Array.from(event.target.files);
+      const currentImages = this.formOffer.get('image')?.value || [];
+
+      const newImages = files.map(file => ({
+        file: file,
+        url: URL.createObjectURL(file as Blob)
+      }));
+      console.log(newImages)
+
+      let updatedImages;
+      if (Array.isArray(currentImages)) {
+        updatedImages = [...currentImages, ...newImages];
+      } else if (currentImages.url) {
+        updatedImages = [currentImages, ...newImages];
+      } else {
+        updatedImages = newImages;
+      }
+
+      console.log(updatedImages)
+
+      // Limitar a un máximo de 3 imágenes
+      const limitedImages = updatedImages.slice(0, 3);
+
+      this.formOffer.get('image')?.setValue(limitedImages);
+
+      // Actualizar la vista del carrusel
+      console.log(this.getImages())
+      this.updateCarouselView();
     }
   }
+
 
   filterList(id, filter, item?) {
     const list = filter.filter((newList) => {
@@ -299,4 +329,39 @@ export class OffersComponent implements OnInit {
     this.formOffer.patchValue({ ...item, image: img });
     this.createOrEdit(this.formOffer.value, null);
   }
+
+  getImages(): SafeUrl[] {
+    const image = this.formOffer.get('image')?.value;
+    const images = this.formOffer.get('images')?.value || [];
+
+    let allImages:any[] = [];
+
+    if (Array.isArray(image)) {
+      allImages = [...image, ...images];
+    } else if (image) {
+      allImages = [image, ...images];
+    } else {
+      allImages = images;
+    }
+
+    console.log(allImages)
+
+    return allImages.map(img => {
+      if (img && img.url) return this.sanitizer.bypassSecurityTrustUrl(img.url);
+      if (img && img.file) return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(img.file));
+      return '';
+    }).filter(Boolean);
+  }
+
+
+
+
+  updateCarouselView() {
+    // Implementa la lógica para actualizar la vista del carrusel
+    // Por ejemplo:
+    this.carouselImages = this.getImages();
+    this.changeDetectorRef.detectChanges()
+    // Actualiza tu componente de carrusel con carouselImages
+  }
+
 }
