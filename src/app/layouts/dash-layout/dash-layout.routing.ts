@@ -16,6 +16,7 @@ export const DashLayoutRoutes: Routes = [
     { path: 'premios', loadChildren: () => import('../../pages/rewards/rewards.module').then(m => m.RewardsModule) },
     { path: 'solicitudes-canjeo', loadChildren: () => import('../../pages/reward-requests/reward-requests.module').then(m => m.RewardsRequestModule) },
     { path: 'notificaciones', loadChildren: () => import('../../pages/notifications/notifications.module').then(m => m.NotificationsModule) },
+    { path: 'eventos', loadChildren: () => import('../../pages/events/events.module').then(m => m.EventsModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];

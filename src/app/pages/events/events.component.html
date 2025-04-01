@@ -1,0 +1,82 @@
+<main class="px-sm-5 px-4 py-5">
+  <section class="view" *ngIf="!form">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3>Eventos</h3>
+          <button class="btn btn-primary" [routerLink]="[]" [queryParams]="{form: 'create'}">Crear Nuevo Evento</button>
+      </div>
+      <div class="table-responsive">
+          <table class="table align-middle text-center">
+              <thead>
+                  <tr>
+                      <th>Nombre</th>
+                      <th>Descripción</th>
+                      <th>Fecha</th>
+                      <th>Carrera</th>
+                      <th>Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let item of events, let i = index">
+                      <td>{{item.name}}</td>
+                      <td>{{item.description}}</td>
+                      <td>{{item.date | date: 'dd/MM/YY | HH:mm'}}</td>
+                      <td>{{item.career?.name || 'Todas'}}</td>
+                      <td>
+                          <div class="d-flex gap-2 justify-content-center">
+                              <button class="btn btn-primary btn-sm" [routerLink]="[]" [queryParams]="{form: 'edit', id: item.id}">Editar</button>
+                              <!-- <button class="btn btn-danger btn-sm" (click)="deleteEvent(item.id, i)">Eliminar</button> -->
+                          </div>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      <ngb-pagination
+          [(page)]="page"
+          [collectionSize]="totalItems"
+          (pageChange)="onPageChange($event)"
+          [pageSize]="pageSize"
+      >
+      </ngb-pagination>
+  </section>
+
+  <section class="view" *ngIf="form">
+      <h3 class="mb-3">{{event?.id ? 'Editar Evento' : 'Crear Nuevo Evento'}}</h3>
+      <form [formGroup]="formEvent">
+          <div class="mb-3">
+              <label for="name" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="name" formControlName="name">
+              <small class="text-danger" *ngIf="formEvent.get('name')?.touched && formEvent.get('name')?.errors?.required">
+                  El nombre es requerido
+              </small>
+          </div>
+          <div class="mb-3">
+              <label for="description" class="form-label">Descripción</label>
+              <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+              <small class="text-danger" *ngIf="formEvent.get('description')?.touched && formEvent.get('description')?.errors?.required">
+                  La descripción es requerida
+              </small>
+          </div>
+          <div class="mb-3">
+              <label for="date" class="form-label">Fecha</label>
+              <input type="datetime-local" class="form-control" id="date" formControlName="date">
+              <small class="text-danger" *ngIf="formEvent.get('date')?.touched && formEvent.get('date')?.errors?.required">
+                  La fecha es requerida
+              </small>
+          </div>
+          <div class="mb-3">
+              <label for="careerId" class="form-label">Carrera</label>
+              <select class="form-control" id="careerId" formControlName="careerId">
+                  <option value="">Seleccione una carrera</option>
+                  <option *ngFor="let career of careers" [value]="career.id">
+                    {{career.name}}
+                </option>
+              </select>
+          </div>
+          <button type="submit" class="btn btn-primary me-2" [disabled]="formEvent.invalid" (click)="createOrEdit(formEvent.value, event?.id)">
+              {{event?.id ? 'Actualizar' : 'Crear'}}
+          </button>
+          <button type="button" class="btn btn-secondary" [routerLink]="[]">Cancelar</button>
+      </form>
+  </section>
+</main>
