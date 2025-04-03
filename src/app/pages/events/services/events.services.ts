@@ -24,6 +24,12 @@ export class EventService {
       )
     }
 
+    getEventsByCareer(careerId: number): Observable<Event[]> {
+      return this.http.get<Event[]>(`${this.BASE_URL}/events/career/${careerId}`).pipe(
+        map(response => response || null)
+      )
+    }
+
     createEvent(payload: EventPayload): Observable<Event | null> {
       return this.http.post<Event>(`${this.BASE_URL}/events/create`, payload).pipe(
         map(response => response || null)

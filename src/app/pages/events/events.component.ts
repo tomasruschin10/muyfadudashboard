@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from './services/events.services';
-import { Event, EventPayload } from 'src/app/shared/models/event.model';
+import { Event as IEvent, EventPayload } from 'src/app/shared/models/event.model';
 import { Meta } from 'src/app/shared/models/response.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -16,8 +16,8 @@ import Swal from 'sweetalert2';
 })
 export class EventsComponent implements OnInit {
 
-  events: Event[] = []
-  event: Event | null
+  events: IEvent[] = []
+  event: IEvent | null
   form
   meta: Meta
   pageSize = 10
@@ -25,6 +25,7 @@ export class EventsComponent implements OnInit {
   totalItems:number = 0
   formEvent: FormGroup
   careers: Career[] = []
+  selectedCareerId: string = ''
 
   constructor(
     private eventService: EventService, 
@@ -106,6 +107,14 @@ export class EventsComponent implements OnInit {
     )
   }
 
+  getEventsFiltred() {
+    this.eventService.getEventsByCareer(+this.selectedCareerId || 0).subscribe(
+      (response:any) => {
+        this.events = response
+      }
+    )
+  }
+
   getEvent(id: number){
     this.eventService.getEvent(id).subscribe(
       (response) => {
@@ -120,6 +129,17 @@ export class EventsComponent implements OnInit {
   onPageChange(page: number) {
     this.page = +page
     this.listEvents(+page)
+  }
+
+  filterByCareer(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedCareerId = selectElement.value;
+    this.page = 1; // Reiniciar a la primera página al filtrar
+    if (selectElement.value === '') {
+      this.listEvents()
+    } else {
+      this.getEventsFiltred()
+    }
   }
 
   async createOrEdit(form, id?: number){

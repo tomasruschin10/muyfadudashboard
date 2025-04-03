@@ -4,6 +4,13 @@
           <h3>Eventos</h3>
           <button class="btn btn-primary" [routerLink]="[]" [queryParams]="{form: 'create'}">Crear Nuevo Evento</button>
       </div>
+      <div class="mb-3">
+        <label for="careerFilter" class="form-label">Filtrar por carrera:</label>
+        <select id="careerFilter" class="form-select" (change)="filterByCareer($event)">
+            <option value="">Todas las carreras</option>
+            <option *ngFor="let career of careers" [value]="career.id">{{career.name}}</option>
+        </select>
+    </div>
       <div class="table-responsive">
           <table class="table align-middle text-center">
               <thead>
@@ -31,7 +38,7 @@
               </tbody>
           </table>
       </div>
-      <ngb-pagination
+      <ngb-pagination *ngIf="!selectedCareerId"
           [(page)]="page"
           [collectionSize]="totalItems"
           (pageChange)="onPageChange($event)"
