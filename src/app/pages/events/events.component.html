@@ -24,7 +24,7 @@
                       <td>
                           <div class="d-flex gap-2 justify-content-center">
                               <button class="btn btn-primary btn-sm" [routerLink]="[]" [queryParams]="{form: 'edit', id: item.id}">Editar</button>
-                              <!-- <button class="btn btn-danger btn-sm" (click)="deleteEvent(item.id, i)">Eliminar</button> -->
+                              <button class="btn btn-danger btn-sm" (click)="delete(item.id, i, 'evento')">Eliminar</button>
                           </div>
                       </td>
                   </tr>

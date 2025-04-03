@@ -7,6 +7,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { CareerService } from '../college-career/services/career.service';
 import { Career } from 'src/app/shared/models/career.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-events',
@@ -150,4 +151,34 @@ export class EventsComponent implements OnInit {
       MyAlert.alert('Ocurrio un error', true)
     }
   }
+
+  delete(id, i, name){
+      Swal.fire({
+        position: 'center',
+        text: '¿Seguro que desea eliminar este '+name+'?',
+        width: 350,
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Eliminar',
+        reverseButtons: true,
+        customClass: {
+          actions: 'mt-1',
+          confirmButton: 'btn-danger'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if(name == 'evento'){
+            this.eventService.deleteEvent(id).subscribe(
+              (data) => {
+                MyAlert.alert('Evento eliminado!')
+                this.listEvents(this.meta.current_page)
+              },
+              (err) => {
+                MyAlert.alert('Ocurrio un error al eliminar, intente de nuevo mas tarde', true)
+              }
+            )
+          }
+        }
+      })
+    }
 }
