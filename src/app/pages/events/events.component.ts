@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from './services/events.services';
-import { Event, EventPayload } from 'src/app/shared/models/event.model';
+import { Event as IEvent, EventPayload } from 'src/app/shared/models/event.model';
 import { Meta } from 'src/app/shared/models/response.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { CareerService } from '../college-career/services/career.service';
 import { Career } from 'src/app/shared/models/career.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-events',
@@ -15,8 +16,8 @@ import { Career } from 'src/app/shared/models/career.model';
 })
 export class EventsComponent implements OnInit {
 
-  events: Event[] = []
-  event: Event | null
+  events: IEvent[] = []
+  event: IEvent | null
   form
   meta: Meta
   pageSize = 10
@@ -24,6 +25,7 @@ export class EventsComponent implements OnInit {
   totalItems:number = 0
   formEvent: FormGroup
   careers: Career[] = []
+  selectedCareerId: string = ''
 
   constructor(
     private eventService: EventService, 
@@ -105,6 +107,14 @@ export class EventsComponent implements OnInit {
     )
   }
 
+  getEventsFiltred() {
+    this.eventService.getEventsByCareer(+this.selectedCareerId || 0).subscribe(
+      (response:any) => {
+        this.events = response
+      }
+    )
+  }
+
   getEvent(id: number){
     this.eventService.getEvent(id).subscribe(
       (response) => {
@@ -119,6 +129,17 @@ export class EventsComponent implements OnInit {
   onPageChange(page: number) {
     this.page = +page
     this.listEvents(+page)
+  }
+
+  filterByCareer(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedCareerId = selectElement.value;
+    this.page = 1; // Reiniciar a la primera página al filtrar
+    if (selectElement.value === '') {
+      this.listEvents()
+    } else {
+      this.getEventsFiltred()
+    }
   }
 
   async createOrEdit(form, id?: number){
@@ -150,4 +171,34 @@ export class EventsComponent implements OnInit {
       MyAlert.alert('Ocurrio un error', true)
     }
   }
+
+  delete(id, i, name){
+      Swal.fire({
+        position: 'center',
+        text: '¿Seguro que desea eliminar este '+name+'?',
+        width: 350,
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Eliminar',
+        reverseButtons: true,
+        customClass: {
+          actions: 'mt-1',
+          confirmButton: 'btn-danger'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if(name == 'evento'){
+            this.eventService.deleteEvent(id).subscribe(
+              (data) => {
+                MyAlert.alert('Evento eliminado!')
+                this.listEvents(this.meta.current_page)
+              },
+              (err) => {
+                MyAlert.alert('Ocurrio un error al eliminar, intente de nuevo mas tarde', true)
+              }
+            )
+          }
+        }
+      })
+    }
 }
