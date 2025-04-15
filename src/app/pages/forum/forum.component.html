@@ -1,0 +1,147 @@
+<main class="overflow-auto py-3 px-2 px-sm-3 px-md-4 px-lg-5">
+  <section class="view">
+    <h3 class="mb-3">Foro</h3>
+
+    <!-- Pestañas para seleccionar entre posts y threads -->
+    <ul class="nav nav-tabs mb-3 flex-nowrap overflow-auto">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="selectedView === 'threads'" (click)="selectView('threads')">Hilos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="selectedView === 'posts'" (click)="selectView('posts')">Publicaciones</a>
+      </li>
+    </ul>
+
+    <!-- Contenido de los hilos -->
+    <div *ngIf="selectedView === 'threads'" class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th class="d-none d-md-table-cell">Descripción</th>
+            <th class="d-none d-sm-table-cell">Creado por</th>
+            <th class="d-none d-lg-table-cell">Fecha</th>
+            <th class="d-none d-sm-table-cell">Posts</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let thread of threads; let i = index">
+            <td>{{thread.name}}</td>
+            <td class="d-none d-md-table-cell">{{thread.description || '' | slice:0:30}} {{(thread.description || '').length > 30 ? '...': ''}}</td>
+            <td class="d-none d-sm-table-cell">{{thread.user.name}}</td>
+            <td class="d-none d-lg-table-cell">{{thread.created_at | date:'short'}}</td>
+            <td class="d-none d-sm-table-cell">{{thread.postTotal}}</td>
+            <td>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [id]="'threadSwitch' + i" 
+                       [(ngModel)]="thread.is_published" (change)="changeThreadStatus(thread.id)">
+                <label class="form-check-label d-none d-sm-inline" [for]="'threadSwitch' + i">
+                  {{thread.is_published ? 'Publicado' : 'No publicado'}}
+                </label>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary" (click)="openDetailsModal(detailsModal, thread)">
+                Detalles
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Contenido de las publicaciones -->
+    <div *ngIf="selectedView === 'posts'" class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th class="d-none d-md-table-cell">Contenido</th>
+            <th class="d-none d-sm-table-cell">Creado por</th>
+            <th class="d-none d-lg-table-cell">Fecha</th>
+            <th class="d-none d-xl-table-cell">Última actividad</th>
+            <th class="d-none d-sm-table-cell">Comentarios</th>
+            <th class="d-none d-md-table-cell">Votos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let post of posts; let i = index">
+            <td>{{post.title | slice:0:20}}{{post.title.length > 20 ? '...' : ''}}</td>
+            <td class="d-none d-md-table-cell">{{post.content | slice:0:30}}{{post.content.length > 30 ? '...' : ''}}</td>
+            <td class="d-none d-sm-table-cell">{{post.user.name}}</td>
+            <td class="d-none d-lg-table-cell">{{post.created_at | date:'short'}}</td>
+            <td class="d-none d-xl-table-cell">{{post.last_activity_at | date:'short'}}</td>
+            <td class="d-none d-sm-table-cell">{{post.commentsTotal}}</td>
+            <td class="d-none d-md-table-cell">{{post.votesTotal}}</td>
+            <td>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [id]="'postSwitch' + i" 
+                       [(ngModel)]="post.is_published" (change)="changePostStatus(post.id)">
+                <label class="form-check-label d-none d-sm-inline" [for]="'postSwitch' + i">
+                  {{post.is_published ? 'Publicado' : 'No publicado'}}
+                </label>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary" (click)="openDetailsModal(detailsModal, post)">
+                Detalles
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Paginación -->
+  <nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center flex-wrap">
+      <li class="page-item" [class.disabled]="page === 1">
+        <a class="page-link" (click)="changePage(page - 1)" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item"><a class="page-link">{{page}}</a></li>
+      <li class="page-item">
+        <a class="page-link" (click)="changePage(page + 1)" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Modal para mostrar detalles -->
+  <ng-template #detailsModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="detailsModalLabel">Detalles</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="selectedThread">
+        <h4>{{ selectedThread.name }}</h4>
+        <p><strong>Descripción:</strong> {{ selectedThread.description }}</p>
+        <p><strong>Creado por:</strong> {{ selectedThread.user?.name }}</p>
+        <p><strong>Fecha de creación:</strong> {{ selectedThread.created_at | date:'medium' }}</p>
+        <p><strong>Estado:</strong> {{ selectedThread.is_published ? 'Publicado' : 'No publicado' }}</p>
+        <p><strong>Total de posts:</strong> {{ selectedThread.postTotal }}</p>
+      </div>
+      <div *ngIf="selectedPost">
+        <h4>{{ selectedPost.title }}</h4>
+        <p><strong>Contenido:</strong> {{ selectedPost.content }}</p>
+        <p><strong>Creado por:</strong> {{ selectedPost.user?.name }}</p>
+        <p><strong>Fecha de creación:</strong> {{ selectedPost.created_at | date:'medium' }}</p>
+        <p><strong>Última actividad:</strong> {{ selectedPost.last_activity_at | date:'medium' }}</p>
+        <p><strong>Estado:</strong> {{ selectedPost.is_published ? 'Publicado' : 'No publicado' }}</p>
+        <p><strong>Total de comentarios:</strong> {{ selectedPost.commentsTotal }}</p>
+        <p><strong>Total de votos:</strong> {{ selectedPost.votesTotal }}</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Cerrar</button>
+    </div>
+  </ng-template>
+</main>

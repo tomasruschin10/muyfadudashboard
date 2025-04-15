@@ -17,6 +17,7 @@ export const DashLayoutRoutes: Routes = [
     { path: 'solicitudes-canjeo', loadChildren: () => import('../../pages/reward-requests/reward-requests.module').then(m => m.RewardsRequestModule) },
     { path: 'notificaciones', loadChildren: () => import('../../pages/notifications/notifications.module').then(m => m.NotificationsModule) },
     { path: 'eventos', loadChildren: () => import('../../pages/events/events.module').then(m => m.EventsModule) },
+    { path: 'foro', loadChildren: () => import('../../pages/forum/forum.module').then(m => m.ForumModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];
