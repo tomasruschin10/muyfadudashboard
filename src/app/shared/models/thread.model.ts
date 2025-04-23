@@ -1,3 +1,4 @@
+import { Career } from "./career.model";
 import { User } from "./user.model";
 
 export interface Thread {
@@ -10,4 +11,7 @@ export interface Thread {
   updated_at: Date;
   is_published: boolean;
   user: User;
+  career: Career | null;
 }
+
+export type ThreadPayload = Pick<Thread, 'name' | 'description' | 'is_published'> & { career_id: number | null };
