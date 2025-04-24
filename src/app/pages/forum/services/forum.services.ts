@@ -4,8 +4,8 @@ import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaginatedEp } from 'src/app/shared/models/response.model';
-import { Thread } from 'src/app/shared/models/thread.model';
-import { Post } from 'src/app/shared/models/post.model';
+import { Thread, ThreadPayload } from 'src/app/shared/models/thread.model';
+import { PayloadPost, Post } from 'src/app/shared/models/post.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +49,30 @@ export class ForumService {
 
     getThreadById(threadId: number): Observable<Thread | null> {
       return this.http.get<Thread>(`${this.BASE_URL}/threads/${threadId}`).pipe(
+        map(response => response || null)
+      )
+    }
+
+    updateThread(payload: ThreadPayload, id:number): Observable<Thread | null> {
+      return this.http.put<Thread>(`${this.BASE_URL}/threads/${id}`, payload).pipe(
+        map(response => response || null)
+      )
+    }
+
+    updatePost(payload: PayloadPost, id:number): Observable<Post | null> {
+      return this.http.put<Post>(`${this.BASE_URL}/posts/${id}`, payload).pipe(
+        map(response => response || null)
+      )
+    }
+
+    createThread(payload: ThreadPayload): Observable<Thread | null> {
+      return this.http.post<Thread>(`${this.BASE_URL}/threads/create`, payload).pipe(
+        map(response => response || null)
+      )
+    }
+
+    createPost(payload: PayloadPost): Observable<Post | null> {
+      return this.http.post<Post>(`${this.BASE_URL}/posts/create`, payload).pipe(
         map(response => response || null)
       )
     }

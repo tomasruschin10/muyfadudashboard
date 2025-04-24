@@ -16,3 +16,5 @@ export interface Post {
   commentsTotal?: number;
   votesTotal?: number;
 }
+
+export type PayloadPost = Pick<Post, 'title' | 'content' | 'thread_id' | 'user_id' | 'is_deleted' | 'is_published'>;
