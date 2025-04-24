@@ -64,4 +64,16 @@ export class ForumService {
         map(response => response || null)
       )
     }
+
+    createThread(payload: ThreadPayload): Observable<Thread | null> {
+      return this.http.post<Thread>(`${this.BASE_URL}/threads/create`, payload).pipe(
+        map(response => response || null)
+      )
+    }
+
+    createPost(payload: PayloadPost): Observable<Post | null> {
+      return this.http.post<Post>(`${this.BASE_URL}/posts/create`, payload).pipe(
+        map(response => response || null)
+      )
+    }
 }

@@ -1,6 +1,9 @@
 <main class="overflow-auto py-3 px-2 px-sm-3 px-md-4 px-lg-5">
   <section class="view">
-    <h3 class="mb-3">Foro</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>Foro</h3>
+      <button class="btn btn-primary" (click)="openCreateThreadModal(createThreadModal)">Crear Tema</button>
+    </div>
 
     <!-- Pestañas para seleccionar entre posts y threads -->
     <ul class="nav nav-tabs mb-3 flex-nowrap overflow-auto">
@@ -200,6 +203,52 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Cerrar</button>
       <button type="button" class="btn btn-primary" (click)="toggleEditing()" *ngIf="!isEditing">Editar</button>
+    </div>
+  </ng-template>
+
+  <!-- Modal para crear nuevo thread -->
+  <ng-template #createThreadModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="createThreadModalLabel">Crear Nuevo Tema</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="createThread()">
+        <div class="mb-3">
+          <label for="newThreadName" class="form-label">Nombre:</label>
+          <input type="text" class="form-control" id="newThreadName" [(ngModel)]="newThread.name" name="name" required>
+        </div>
+        <div class="mb-3">
+          <label for="newThreadDescription" class="form-label">Descripción:</label>
+          <textarea class="form-control" id="newThreadDescription" [(ngModel)]="newThread.description" name="description"></textarea>
+        </div>
+        <div class="mb-3 form-check form-switch">
+          <input type="checkbox" class="form-check-input" id="newThreadPublished" 
+                 [(ngModel)]="newThread.is_published" 
+                 name="is_published">
+          <label class="form-check-label" for="newThreadPublished">
+            {{newThread.is_published ? 'Publicado' : 'No publicado'}}
+          </label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+          <input type="checkbox" class="form-check-input" id="newThreadPublic" 
+                 [(ngModel)]="isNewThreadPublic" 
+                 name="isPublic" 
+                 (change)="onNewThreadPublicChange()">
+          <label class="form-check-label" for="newThreadPublic">
+            {{isNewThreadPublic ? 'Público (Todas las carreras)' : 'Específico de carrera'}}
+          </label>
+        </div>
+        <div class="mb-3" *ngIf="!isNewThreadPublic">
+          <label for="newThreadCareer" class="form-label">Seleccionar Carrera:</label>
+          <select class="form-select" id="newThreadCareer" 
+                  [(ngModel)]="newThread.career_id"
+                  name="career_id">
+            <option *ngFor="let career of careers" [value]="career.id">{{career.name}}</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Crear</button>
+      </form>
     </div>
   </ng-template>
 </main>

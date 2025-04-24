@@ -25,6 +25,13 @@ export class ForumComponent implements OnInit {
   totalItems = 0
   isEditing: boolean = false
   isThreadPublic: boolean = true;
+  newThread: ThreadPayload = {
+    name: '',
+    description: '',
+    is_published: false,
+    career_id: null
+  };
+  isNewThreadPublic: boolean = true;
 
   constructor(
     private forumService: ForumService,
@@ -184,6 +191,37 @@ export class ForumComponent implements OnInit {
         }
       );
     }
+  }
+
+  openCreateThreadModal(content: any) {
+    this.modalService.open(content, {ariaLabelledBy: 'createThreadModalLabel'});
+  }
+
+  onNewThreadPublicChange() {
+    if (this.isNewThreadPublic) {
+      this.newThread.career_id = null;
+    }
+  }
+
+  createThread() {
+    this.forumService.createThread(this.newThread).subscribe(
+      (createdThread) => {
+        this.getThreads();
+        this.modalService.dismissAll();
+        MyAlert.alert('Tema creado con éxito');
+        // Reiniciar el formulario
+        this.newThread = {
+          name: '',
+          description: '',
+          is_published: false,
+          career_id: null
+        };
+        this.isNewThreadPublic = true;
+      },
+      (error) => {
+        MyAlert.alert('Error al crear el tema', true);
+      }
+    );
   }
 
 }
