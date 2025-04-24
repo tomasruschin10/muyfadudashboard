@@ -41,7 +41,8 @@ export class NoticeComponent implements OnInit {
       name: new FormControl('', Validators.required),
       date_start: new FormControl('', Validators.required),
       date_end: new FormControl('', Validators.required),
-      image: new FormControl('', Validators.required)
+      image: new FormControl('', Validators.required),
+      url: new FormControl(null)
     })
     if(this.news?.length > 0 && this.form != 'create' && this.form){
       this.newId = this.news[this.form].id
