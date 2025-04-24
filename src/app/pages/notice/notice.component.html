@@ -57,6 +57,12 @@
                     </div>
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
+                            <input class="form-control" formControlName="url" type="text" placeholder=" ">
+                            <label>Url</label>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
                             <input class="form-control" formControlName="date_start" type="date" placeholder=" ">
                             <small class="text-danger" *ngIf="formNotice.controls['date_start'].touched && formNotice.controls['date_start'].errors?.required">La fecha inicial es requerida</small>
                             <label>Fecha inicio</label>
