@@ -18,6 +18,7 @@ export const DashLayoutRoutes: Routes = [
     { path: 'notificaciones', loadChildren: () => import('../../pages/notifications/notifications.module').then(m => m.NotificationsModule) },
     { path: 'eventos', loadChildren: () => import('../../pages/events/events.module').then(m => m.EventsModule) },
     { path: 'foro', loadChildren: () => import('../../pages/forum/forum.module').then(m => m.ForumModule) },
+    { path: 'acciones', loadChildren: () => import('../../pages/actions/actions.module').then(m => m.ActionModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];
