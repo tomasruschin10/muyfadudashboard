@@ -100,24 +100,22 @@ export class ActionComponent implements OnInit {
   }
 
   saveActionType(): void {
-    if (this.isEditing) {
-      this.actionService.updateActionType(this.currentActionType, this.currentActionType.id).subscribe(
-        (response) => {
-          if (response) {
-            const index = this.actionTypes.findIndex(t => t.id === response.id);
-            if (index !== -1) {
-              this.actionTypes[index] = response;
-            }
-            this.cancelEdit();
-            MyAlert.alert('Accion editada correctamente', false)
+    this.actionService.updateActionType(this.currentActionType, this.currentActionType.id).subscribe(
+      (response) => {
+        if (response) {
+          const index = this.actionTypes.findIndex(t => t.id === response.id);
+          if (index !== -1) {
+            this.actionTypes[index] = response;
           }
-        },
-        (error) => {
-          this.error = 'Error al actualizar el tipo de acción';
-          console.error('Error al actualizar el tipo de acción:', error);
+          this.cancelEdit();
+          MyAlert.alert('Accion editada correctamente', false)
         }
-      );
-    }
+      },
+      (error) => {
+        this.error = 'Error al actualizar el tipo de acción';
+        console.error('Error al actualizar el tipo de acción:', error);
+      }
+    );
   }
 
   cancelEdit(): void {

@@ -46,6 +46,7 @@ export class RewardsComponent implements OnInit {
       description: new FormControl('', Validators.required),
       image: new FormControl(null, Validators.required),
       points_to_be_claimed: new FormControl(0, Validators.required),
+      amount: new FormControl(0, Validators.required),
     })
     if(this.rewards?.length > 0 && this.form != 'create' && this.form){
       this.adPageSv.getReward(+this.form).subscribe((data) => {
