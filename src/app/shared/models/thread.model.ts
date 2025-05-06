@@ -1,5 +1,5 @@
 import { Career } from "./career.model";
-import { User } from "./user.model";
+import { Image, User } from "./user.model";
 
 export interface Thread {
   id: number;
@@ -12,6 +12,7 @@ export interface Thread {
   is_published: boolean;
   user: User;
   career: Career | null;
+  image: Image | null ;
 }
 
-export type ThreadPayload = Pick<Thread, 'name' | 'description' | 'is_published'> & { career_id: number | null };
+export type ThreadPayload = Pick<Thread, 'name' | 'description' | 'is_published'> & { career_id: number | null, image?: any };

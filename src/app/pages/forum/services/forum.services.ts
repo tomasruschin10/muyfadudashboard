@@ -53,7 +53,7 @@ export class ForumService {
       )
     }
 
-    updateThread(payload: ThreadPayload, id:number): Observable<Thread | null> {
+    updateThread(payload: FormData, id:number): Observable<Thread | null> {
       return this.http.put<Thread>(`${this.BASE_URL}/threads/${id}`, payload).pipe(
         map(response => response || null)
       )
@@ -65,7 +65,7 @@ export class ForumService {
       )
     }
 
-    createThread(payload: ThreadPayload): Observable<Thread | null> {
+    createThread(payload: FormData): Observable<Thread | null> {
       return this.http.post<Thread>(`${this.BASE_URL}/threads/create`, payload).pipe(
         map(response => response || null)
       )

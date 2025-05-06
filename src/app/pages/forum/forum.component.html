@@ -134,6 +134,30 @@
             <label for="threadDescription" class="form-label">Descripción:</label>
             <textarea class="form-control" id="threadDescription" [(ngModel)]="selectedThread.description" name="description" [readonly]="!isEditing"></textarea>
           </div>
+          <!-- Nuevo campo para la imagen -->
+          <div class="mb-3">
+            <label for="threadImage" class="form-label">Imagen (opcional):</label>
+            <div class="image-preview-container border rounded-3 overflow-hidden" style="width: 100%; height: 200px; position: relative;">
+              <ng-container *ngIf="selectedImageUrl || selectedThread?.image?.url; else noImage">
+                <div class="w-full h-100 d-flex align-items-center justify-content-center overflow-hidden">
+                  <img #threadImg [src]="selectedImageUrl || selectedThread?.image?.url" 
+                       alt="Vista previa del tema" 
+                       class="img-cover">
+                </div>
+              </ng-container>
+              <ng-template #noImage>
+                <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                  <span class="text-muted">Sin imagen</span>
+                </div>
+              </ng-template>
+              <div *ngIf="isEditing" class="position-absolute bottom-0 end-0 m-2">
+                <label for="threadFile" class="btn btn-sm btn-primary">
+                  <i class="fas fa-upload me-1"></i>{{ selectedThread.image ? 'Cambiar' : 'Subir' }} imagen
+                </label>
+                <input type="file" id="threadFile" accept="image/*" (change)="onImageSelected($event)" hidden>
+              </div>
+            </div>
+          </div>
           <p><strong>Creado por:</strong> {{ selectedThread.user?.name }}</p>
           <p><strong>Fecha de creación:</strong> {{ selectedThread.created_at | date:'medium' }}</p>
           <div class="mb-3 form-check form-switch">
@@ -221,6 +245,28 @@
         <div class="mb-3">
           <label for="newThreadDescription" class="form-label">Descripción:</label>
           <textarea class="form-control" id="newThreadDescription" [(ngModel)]="newThread.description" name="description"></textarea>
+        </div>
+        <!-- Nuevo campo para la imagen -->
+        <div class="mb-3">
+          <label for="newThreadImage" class="form-label">Imagen (opcional):</label>
+          <div class="image-preview-container border rounded-3 overflow-hidden" style="width: 100%; height: 200px; position: relative;">
+            <ng-container *ngIf="newThreadImageUrl; else noNewImage">
+              <div class="w-full h-100 d-flex align-items-center justify-content-center overflow-hidden">
+                <img [src]="newThreadImageUrl" alt="Vista previa del nuevo tema" class="img-cover">
+              </div>
+            </ng-container>
+            <ng-template #noNewImage>
+              <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                <span class="text-muted">Sin imagen</span>
+              </div>
+            </ng-template>
+            <div class="position-absolute bottom-0 end-0 m-2">
+              <label for="newThreadFile" class="btn btn-sm btn-primary">
+                <i class="fas fa-upload me-1"></i>{{ newThreadImageUrl ? 'Cambiar' : 'Subir' }} imagen
+              </label>
+              <input type="file" id="newThreadFile" accept="image/*" (change)="onNewThreadImageSelected($event)" hidden>
+            </div>
+          </div>
         </div>
         <div class="mb-3 form-check form-switch">
           <input type="checkbox" class="form-check-input" id="newThreadPublished" 
