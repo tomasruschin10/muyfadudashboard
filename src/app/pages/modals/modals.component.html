@@ -1,0 +1,134 @@
+<main class="px-sm-5 px-4 py-5">
+    <section class="view">
+        <h3>Modales</h3>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-1" (click)="openModal(modalContent)">Nuevo modal</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Carrera</th>
+                        <th>Fecha inicio</th>
+                        <th>Fecha fin</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let modal of displayedModals">
+                        <td>{{modal.title}}</td>
+                        <td>{{modal.description | slice:0:50}}...</td>
+                        <td>{{getCareerName(modal?.career_id || 0)}}</td>
+                        <td>{{modal.date_start | date:'dd/MM/yyyy'}}</td>
+                        <td>{{modal.date_end | date:'dd/MM/yyyy'}}</td>
+                        <td>
+                            <span class="badge" [ngClass]="modal.is_active ? 'bg-success' : 'bg-danger'">
+                                {{modal.is_active ? 'Activo' : 'Inactivo'}}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button class="btn btn-1" (click)="openModal(modalContent, modal)">Editar</button>
+                                <button class="btn btn-danger" (click)="deleteModal(modal.id)">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ngb-pagination
+            [(page)]="page"
+            [collectionSize]="totalItems"
+            (pageChange)="onPageChange($event)"
+            [pageSize]="pageSize">
+        </ngb-pagination>
+    </section>
+</main>
+
+<ng-template #modalContent let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{currentModal.id ? 'Editar Modal' : 'Nuevo Modal'}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="modalForm">
+            <div class="mb-3">
+                <label for="title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="title" formControlName="title">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="link" class="form-label">Enlace (opcional)</label>
+                <input type="url" class="form-control" id="link" formControlName="link">
+            </div>
+            <div class="mb-3">
+                <label for="modalImage" class="form-label">Imagen (opcional)</label>
+                <div class="image-preview-container border rounded-3 overflow-hidden" style="width: 100%; height: 200px; position: relative;">
+                    <ng-container *ngIf="selectedImageUrl || currentModal?.image?.url; else noImage">
+                        <div class="w-full h-100 d-flex align-items-center justify-content-center overflow-hidden">
+                            <img [src]="selectedImageUrl || currentModal?.image?.url" 
+                                 alt="Vista previa del modal" 
+                                 class="img-cover">
+                        </div>
+                    </ng-container>
+                    <ng-template #noImage>
+                        <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                            <span class="text-muted">Sin imagen</span>
+                        </div>
+                    </ng-template>
+                    <div class="position-absolute bottom-0 end-0 m-2">
+                        <label for="modalFile" class="btn btn-sm btn-primary">
+                            <i class="fas fa-upload me-1"></i>{{ currentModal.image ? 'Cambiar' : 'Subir' }} imagen
+                        </label>
+                        <input type="file" id="modalFile" accept="image/*" (change)="onImageSelected($event)" hidden>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="career" class="form-label">Carrera</label>
+                <select class="form-select" id="career" formControlName="career_id">
+                    <option value="null">Todas las carreras</option>
+                    <option *ngFor="let career of careers" [value]="career.id">{{career.name}}</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="date_start" class="form-label">Fecha de inicio</label>
+                <input type="date" class="form-control" id="date_start" formControlName="date_start">
+            </div>
+            <div class="mb-3">
+                <label for="date_end" class="form-label">Fecha de fin</label>
+                <input type="date" class="form-control" id="date_end" formControlName="date_end">
+            </div>
+            <div class="mb-3">
+                <label for="display_frequency" class="form-label">Frecuencia de visualización</label>
+                <select class="form-select" id="display_frequency" formControlName="display_frequency">
+                    <option *ngFor="let frequency of displayFrequencies" [value]="frequency.value">
+                        {{frequency.label}}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="icon_type" class="form-label">Tipo de icono</label>
+                <select class="form-select" id="icon_type" formControlName="icon_type">
+                    <option value="">Ninguno</option>
+                    <option value="warning">Advertencia</option>
+                    <option value="info">Información</option>
+                </select>
+            </div>
+            <div class="mb-3 form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="is_active" formControlName="is_active">
+                <label class="form-check-label" for="is_active">{{modalForm.get('is_active')?.value ? 'Activo' : 'Inactivo'}}</label>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('Cancel click')">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="saveModal()">Guardar</button>
+    </div>
+</ng-template>
