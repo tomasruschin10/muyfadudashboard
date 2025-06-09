@@ -26,7 +26,8 @@ export class UserInteractionService {
     getInteractions(page:number, perPage:number, filters: filtersPanel): Observable<PaginatedEp<UserInteraction[]>> {
       let params = new HttpParams()
         .set('page', page.toString())
-        .set('limit', perPage.toString());
+        .set('limit', perPage.toString())
+        .set('order', "ASC");
       if (filters.email) {
         params = params.set('email', filters.email);
       }
