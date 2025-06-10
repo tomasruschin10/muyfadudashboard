@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -33,8 +33,12 @@ export class ActionsService {
       )
     }
 
-    getUserActions(): Observable<UserAction[]> {
-      return this.http.get<UserAction[]>(`${this.BASE_URL}/user-actions/all`).pipe(
+    getUserActions(page: number, limit:number): Observable<PaginatedEp<UserAction[]>> {
+      let params = new HttpParams()
+        .set("page", page.toString())
+        .set("limit", limit.toString());
+
+      return this.http.get<PaginatedEp<UserAction[]>>(`${this.BASE_URL}/user-actions/all`, { params }).pipe(
         map(response => response || null)
       )
     }
