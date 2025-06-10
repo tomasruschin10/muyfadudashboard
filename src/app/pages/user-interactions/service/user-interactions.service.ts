@@ -27,7 +27,8 @@ export class UserInteractionService {
       let params = new HttpParams()
         .set('page', page.toString())
         .set('limit', perPage.toString())
-        .set('order', "ASC");
+        .set('sortBy', "id")
+        .set('order', "DESC");
       if (filters.email) {
         params = params.set('email', filters.email);
       }
