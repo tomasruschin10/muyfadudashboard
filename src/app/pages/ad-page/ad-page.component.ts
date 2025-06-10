@@ -50,6 +50,7 @@ export class AdPageComponent implements OnInit {
     this.advertisement = null
     this.formAdvertisement = new FormGroup({
       url: new FormControl('', Validators.required),
+      title: new FormControl('', Validators.required),
       partner_id: new FormControl('', Validators.required),
       career_id: new FormControl(null, Validators.required),
       date_start: new FormControl('', Validators.required),

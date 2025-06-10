@@ -4,6 +4,7 @@ import { Career } from 'src/app/shared/models/career.model';
 
 export interface Advertisement{
     "id": number,
+    "title": string,
     "career_id": number,
     "partner_id": number,
     "image_id": number,

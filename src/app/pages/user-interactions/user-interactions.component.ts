@@ -71,7 +71,7 @@ export class UserInteractionComponent implements OnInit {
   getContentTitle(interaction: UserInteraction): string {
     if (interaction.promotion) return interaction.promotion.title;
     if (interaction.notice) return interaction.notice.name;
-    if (interaction.advertisement) return interaction.advertisement?.partner?.name || 'anuncio';
+    if (interaction.advertisement) return interaction.advertisement?.title || 'anuncio';
     if (interaction.modal) return interaction.modal.title || 'Título de modal'
     return 'N/A';
   }
