@@ -95,7 +95,7 @@ export class UserInteractionComponent implements OnInit {
       case 'view':
         return 'Vista';
       case 'click':
-        return 'Clic';
+        return 'Click';
       case 'redeem':
         return 'Canje';
       default:
