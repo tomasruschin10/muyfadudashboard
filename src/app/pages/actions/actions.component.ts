@@ -5,6 +5,7 @@ import { ActionType } from 'src/app/shared/models/actionType.model';
 import { UserAction } from 'src/app/shared/models/userAction.model';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Meta } from 'src/app/shared/models/response.model';
 
 @Component({
   selector: 'app-actions',
@@ -20,13 +21,15 @@ export class ActionComponent implements OnInit {
   currentActionType: ActionType = {} as ActionType;
   newAction: number = 0;
   isEditing: boolean = false;
-  currentPage: number = 1;
-  totalPages: number = 1;
   pages: number[] = [];
   showActionTypes: boolean = false;
   showActions: boolean = false;
   showUserActions: boolean = false;
   remainingActionsTypes: ActionType[] = [];
+  pageSize = 10;
+  page: number = 1;
+  totalItems: number = 0;
+  meta: Meta;
 
   constructor(
     private actionService: ActionsService,
@@ -75,15 +78,13 @@ export class ActionComponent implements OnInit {
     );
   }
 
-  loadUserActions(page: number = 1): void {
+  loadUserActions(): void {
     this.loading = true;
-    this.actionService.getUserActions().subscribe(
+    this.actionService.getUserActions(this.page, this.pageSize).subscribe(
       (response) => {
-        // this.userActions = response.data;
-        // this.currentPage = response.currentPage;
-        // this.totalPages = response.totalPages;
-        this.userActions = response;
-        this.pages = this.generatePageArray(this.totalPages);
+        this.userActions = response.data;
+        this.meta = response.meta
+        this.totalItems = response.meta.total_elements
         this.loading = false;
       },
       (error) => {
@@ -140,9 +141,8 @@ export class ActionComponent implements OnInit {
   }
 
   changePage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.loadUserActions(page);
-    }
+    this.page = page
+    this.loadUserActions();
   }
 
   private generatePageArray(totalPages: number): number[] {
