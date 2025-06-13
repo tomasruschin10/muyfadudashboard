@@ -9,8 +9,8 @@ import { UserInteraction } from 'src/app/shared/models/userInteraction.model';
 
 type filtersPanel = {
   email: string;
-  contentType: "" | "promotion" | "news" | "advertisement";
-  interactionType: "" | "view" | "click" | "redeem";
+  contentType: "" | 'promotion' | 'news' | 'advertisement' | 'modal' | 'button' | 'offer';
+  interactionType: "" | 'view' | 'click' | 'redeem' | 'view_more' | 'contact' | 'search';
 }
 
 @Injectable({
