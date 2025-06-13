@@ -19,8 +19,8 @@ export class UserInteractionComponent implements OnInit {
 
   // Filtros
   email: string = '';
-  contentType: 'promotion' | 'news' | 'advertisement' | '' = '';
-  interactionType: 'view' | 'click' | 'redeem' | '' = '';
+  contentType: 'promotion' | 'news' | 'advertisement' | 'modal' | 'button' | 'offer' | '' = '';
+  interactionType: 'view' | 'click' | 'redeem' | 'view_more' | 'contact' | 'search' | '' = '';
 
   constructor(
     private service: UserInteractionService,
@@ -73,6 +73,8 @@ export class UserInteractionComponent implements OnInit {
     if (interaction.notice) return interaction.notice.name;
     if (interaction.advertisement) return interaction.advertisement?.title || 'anuncio';
     if (interaction.modal) return interaction.modal.title || 'Título de modal'
+    if (interaction.offer) return interaction.offer.title || 'Oferta sin título'
+    if (interaction.section_name) return interaction.section_name || 'sección sin nombre'
     return 'N/A';
   }
 
@@ -85,7 +87,13 @@ export class UserInteractionComponent implements OnInit {
       case 'advertisement':
         return 'Anuncio';
       case 'modal':
-        return 'Modal'
+        return 'Modal';
+      case 'offer':
+        return 'Oferta'
+      case 'button':
+        return 'Botón'
+      case 'search':
+        return 'Búsqueda';
       default:
         return contentType;
     }
@@ -98,6 +106,10 @@ export class UserInteractionComponent implements OnInit {
         return 'Click';
       case 'redeem':
         return 'Canje';
+      case 'view_more':
+        return 'Ver más';
+      case 'contact':
+        return 'Contacto';
       default:
         return interactionType;
     }
