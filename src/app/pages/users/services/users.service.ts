@@ -1,10 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaginatedEp } from 'src/app/shared/models/response.model';
-import { User } from 'src/app/shared/models/user.model';
+import { User, UserWithcounters } from 'src/app/shared/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,17 @@ export class UsersService {
     return this.http.delete(`${this.BASE_URL}/auth/delete/${id}`, {
       observe: 'response'
     })
+  }
+
+  getUsersRankedBypoints(page:number, per_page:number, order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints'): Observable<PaginatedEp<UserWithcounters[]>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', per_page.toString())
+      .set('orderBy', order_by);
+
+    return this.http.get<PaginatedEp<UserWithcounters[]>>(`${this.BASE_URL}/user/ranking/points`, { params }).pipe(
+      map(response => response || null)
+    )
   }
 
 }

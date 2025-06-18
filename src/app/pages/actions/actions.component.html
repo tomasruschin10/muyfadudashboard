@@ -126,6 +126,63 @@
         ></ngb-pagination>
       </div>
     </div>
+
+    <!-- User Points List -->
+    <div class="card mt-4">
+      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" (click)="toggleUserPoints()">
+        <h3 class="card-title mb-0">
+          Usuarios y Puntos
+        </h3>
+        <i class="fas" [ngClass]="{'fa-chevron-down': !showUserPoints, 'fa-chevron-up': showUserPoints}"></i>
+      </div>
+      <div class="card-body" *ngIf="showUserPoints">
+        <div class="mb-3">
+          <label for="sortBy" class="form-label">Ordenar por:</label>
+          <select id="sortBy" class="form-select" [(ngModel)]="sortBy" (change)="loadUserWithCounters()">
+            <option value="totalPoints">Puntos Totales</option>
+            <option value="actionPoints">Puntos de Acciones</option>
+            <option value="opinionCount">Número de Opiniones</option>
+            <option value="rewardRequestsCount">Solicitudes de Canjeo</option>
+            <option value="referralCount">Número de Referidos</option>
+          </select>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Puntos Totales</th>
+                <th>Puntos de Acciones</th>
+                <th>Opiniones</th>
+                <th>Solicitudes de Canjeo</th>
+                <th>Referidos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of userWithPoints">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.totalPoints }}</td>
+                <td>{{ user.actionPoints }}</td>
+                <td>{{ user.opinionCount }}</td>
+                <td>{{ user.rewardRequestsCount }}</td>
+                <td>{{ user.referralCount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Paginación -->
+        <ngb-pagination
+          [(page)]="pageUserWithPoints"
+          [pageSize]="pageSize"
+          [collectionSize]="totalUserWithPoints"
+          (pageChange)="changePageUserPoints($event)"
+          [ellipses]="true"
+          [maxSize]="15"
+        ></ngb-pagination>
+      </div>
+    </div>
   
     <!-- Edit Action Type Modal -->
     <ng-template #editActionTypeModal let-modal>
