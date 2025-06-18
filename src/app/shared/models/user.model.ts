@@ -43,3 +43,11 @@ export interface Image{
   "created_at": Date,
   "updated_at": Date
 }
+
+export type UserWithcounters = User & {
+  opinionCount: number;
+  rewardRequestsCount: number;
+  actionPoints: number;
+  referralCount: number;
+  totalPoints: number;
+}

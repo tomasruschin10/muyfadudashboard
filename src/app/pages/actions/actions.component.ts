@@ -6,6 +6,8 @@ import { UserAction } from 'src/app/shared/models/userAction.model';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Meta } from 'src/app/shared/models/response.model';
+import { UserWithcounters } from 'src/app/shared/models/user.model';
+import { UsersService } from '../users/services/users.service';
 
 @Component({
   selector: 'app-actions',
@@ -31,9 +33,18 @@ export class ActionComponent implements OnInit {
   totalItems: number = 0;
   meta: Meta;
 
+  // User Points
+  showUserPoints = false
+  totalUserWithPoints: number = 0;
+  pageUserWithPoints = 1
+  userWithPoints: UserWithcounters[] = []
+  sortBy: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' = 'totalPoints'
+  metaUserWithPoints: Meta;
+
   constructor(
     private actionService: ActionsService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private userService: UsersService
   ) {}
 
   ngOnInit(): void {
@@ -93,6 +104,35 @@ export class ActionComponent implements OnInit {
         console.error('Error al cargar las acciones de usuario:', error);
       }
     );
+  }
+
+  loadUserWithCounters() {
+    this.loading = true;
+    this.userService.getUsersRankedBypoints(this.pageUserWithPoints, this.pageSize, this.sortBy).subscribe(
+      (response) => {
+        this.userWithPoints = response.data
+        this.metaUserWithPoints = response.meta
+        this.totalUserWithPoints = response.meta.total_elements
+        this.loading = false;
+      },
+      (error) => {
+        this.error = 'Error al cargar los datos de usuario';
+        this.loading = false;
+        console.error('Error al cargar los datos de usuario:', error);
+      }
+    )
+  }
+
+  toggleUserPoints(): void {
+    this.showUserPoints = !this.showUserPoints;
+    if (this.showUserPoints && this.userWithPoints.length === 0) {
+      this.loadUserWithCounters();
+    }
+  }
+
+  changePageUserPoints(page: number): void {
+    this.pageUserWithPoints = page
+    this.loadUserWithCounters();
   }
 
   editActionType(type: ActionType): void {
