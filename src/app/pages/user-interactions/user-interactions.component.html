@@ -8,7 +8,7 @@
         <input type="email" class="form-control" [(ngModel)]="email" placeholder="Filtrar por email...">
       </div>
       <div class="col-md-3">
-        <select class="form-select" [(ngModel)]="contentType">
+        <select class="form-control" [(ngModel)]="contentType">
           <option value="">Todos los contenidos</option>
           <option value="promotion">Promoción</option>
           <option value="news">Noticia</option>
@@ -17,16 +17,25 @@
         </select>
       </div>
       <div class="col-md-3">
-        <select class="form-select" [(ngModel)]="interactionType">
+        <select class="form-control" [(ngModel)]="interactionType">
           <option value="">Todas las interacciones</option>
           <option value="view">Vista</option>
           <option value="click">Click</option>
           <option value="redeem">Canje</option>
+          <option value="contact">Contacto</option>
+          <option value="search">Búsqueda</option>
         </select>
       </div>
       <div class="col-md-3">
+        <input type="date" class="form-control" [(ngModel)]="startDate" placeholder="Fecha de inicio">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control" [(ngModel)]="endDate" placeholder="Fecha de fin">
+      </div>
+      <div class="col-md-3 col-lg-6">
         <button class="btn btn-primary me-2" (click)="applyFilters()">Aplicar Filtros</button>
-        <button class="btn btn-secondary" (click)="clearFilters()">Limpiar Filtros</button>
+        <button class="btn btn-secondary me-2" (click)="clearFilters()">Limpiar Filtros</button>
+        <button class="btn btn-success me-2" (click)="exportToExcel()">Exportar a Excel</button>
       </div>
     </div>
   </section>
@@ -63,5 +72,6 @@
     [pageSize]="pageSize"
     [collectionSize]="totalItems"
     (pageChange)="onPageChange($event)"
+    [maxSize]="15"
   ></ngb-pagination>
 </main>

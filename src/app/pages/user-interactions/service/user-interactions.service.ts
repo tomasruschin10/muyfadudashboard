@@ -11,6 +11,8 @@ type filtersPanel = {
   email: string;
   contentType: "" | 'promotion' | 'news' | 'advertisement' | 'modal' | 'button' | 'offer';
   interactionType: "" | 'view' | 'click' | 'redeem' | 'view_more' | 'contact' | 'search';
+  startDate?: string;
+  endDate?: string;
 }
 
 @Injectable({
@@ -40,6 +42,26 @@ export class UserInteractionService {
       }
       return this.http.get<PaginatedEp<UserInteraction[]>>(`${this.BASE_URL}/user-interactions/panel`, { params }).pipe(
         map(response => response || null)
+      )
+    }
+
+    getInteractionsForExport(filters: filtersPanel): Observable<UserInteraction[]> {
+      let params = new HttpParams()
+        if (filters.email) {
+          params = params.set('email', filters.email);
+        }
+        if (filters.contentType) {
+          params = params.set('contentType', filters.contentType);
+        }
+        if (filters.interactionType) {
+          params = params.set('interactionType', filters.interactionType);
+        }
+        if (filters.startDate && filters.endDate) {
+          params = params.set('startDate', filters.startDate);
+          params = params.set('endDate', filters.endDate);
+        }
+      return this.http.get<UserInteraction[]>(`${this.BASE_URL}/user-interactions/export`, { params }).pipe(
+        map(response => response || [])
       )
     }
 }
