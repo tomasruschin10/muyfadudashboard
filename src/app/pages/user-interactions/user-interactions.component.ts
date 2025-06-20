@@ -18,6 +18,8 @@ export class UserInteractionComponent implements OnInit {
   page: number = 1;
   totalItems: number = 0;
 
+  Math = Math;
+
   interactionsForExport: UserInteraction[] = []
 
   // Filtros
