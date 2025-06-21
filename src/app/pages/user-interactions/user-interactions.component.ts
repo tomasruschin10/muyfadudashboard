@@ -42,7 +42,11 @@ export class UserInteractionComponent implements OnInit {
     const filters = {
       email: this.email,
       contentType: this.contentType,
-      interactionType: this.interactionType
+      interactionType: this.interactionType,
+      ...( this.startDate && this.endDate ? {
+        startDate: this.formatDate(new Date(this.startDate)),
+        endDate: this.formatDate(new Date(this.endDate)),
+      } : {})
     }
     this.service.getInteractions(page, pageSize, filters).subscribe(
       (response) => {
@@ -127,8 +131,8 @@ export class UserInteractionComponent implements OnInit {
       contentType: this.contentType,
       interactionType: this.interactionType,
       ...( this.startDate && this.endDate ? {
-        startDate: this.startDate,
-        endDate: this.endDate
+        startDate: this.formatDate(new Date(this.startDate)),
+        endDate: this.formatDate(new Date(this.endDate)),
       } : {})
     }
     this.service.getInteractionsForExport(filters).subscribe(
@@ -187,4 +191,11 @@ export class UserInteractionComponent implements OnInit {
     link.download = `${fileName}_${dateStr}_${timeStr}${filterStr}.xlsx`;
     link.click();
   }
+
+  private formatDate(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 }
