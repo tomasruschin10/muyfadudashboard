@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Meta } from 'src/app/shared/models/response.model';
 import { UserWithcounters } from 'src/app/shared/models/user.model';
 import { UsersService } from '../users/services/users.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-actions',
@@ -32,6 +33,12 @@ export class ActionComponent implements OnInit {
   page: number = 1;
   totalItems: number = 0;
   meta: Meta;
+
+  //User actions filters
+  fromDate: string = ""
+  toDate: string = ""
+
+  userActionForExport: UserAction[] = []
 
   // User Points
   showUserPoints = false
@@ -91,7 +98,12 @@ export class ActionComponent implements OnInit {
 
   loadUserActions(): void {
     this.loading = true;
-    this.actionService.getUserActions(this.page, this.pageSize).subscribe(
+    let filters:any = {}
+    if (this.fromDate && this.toDate) {
+      filters.startDate = this.formatDate(new Date(this.fromDate))
+      filters.endDate = this.formatDate(new Date(this.toDate))
+    }
+    this.actionService.getUserActions(this.page, this.pageSize, filters).subscribe(
       (response) => {
         this.userActions = response.data;
         this.meta = response.meta
@@ -102,6 +114,40 @@ export class ActionComponent implements OnInit {
         this.error = 'Error al cargar las acciones de usuario';
         this.loading = false;
         console.error('Error al cargar las acciones de usuario:', error);
+      }
+    );
+  }
+
+  exportToExcel() {
+    let filters:any = {}
+    if (this.fromDate && this.toDate) {
+      filters.startDate = this.formatDate(new Date(this.fromDate))
+      filters.endDate = this.formatDate(new Date(this.toDate))
+    }
+    // Primero, obtener todos los datos sin paginar
+    this.actionService.getUserActionsForExport(filters).subscribe(
+      (data: UserAction[]) => {
+        // Preparar los datos para Excel
+        const excelData = data.map(action => ({
+          'Usuario': action.user.name,
+          'Email': action.user.email,
+          'Acción': action.action.type.name,
+          'Tipo de Acción': action.action.type.type,
+          'Fecha': new Date(action.created_at).toLocaleString()
+        }));
+
+        // Crear una hoja de trabajo
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData);
+
+        // Crear un libro de trabajo
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Acciones de Usuarios');
+
+        // Guardar el archivo
+        XLSX.writeFile(wb, 'Acciones_de_Usuarios.xlsx');
+      },
+      error => {
+        console.error('Error al exportar los datos:', error);
       }
     );
   }
@@ -121,6 +167,26 @@ export class ActionComponent implements OnInit {
         console.error('Error al cargar los datos de usuario:', error);
       }
     )
+  }
+
+  loadUserActionsForExport(): void {
+    this.loading = true;
+    let filters:any = {}
+    if (this.fromDate && this.toDate) {
+      filters.startDate = this.formatDate(new Date(this.fromDate))
+      filters.endDate = this.formatDate(new Date(this.toDate))
+    }
+    this.actionService.getUserActionsForExport(filters).subscribe(
+      (response) => {
+        this.userActionForExport = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = 'Error al cargar las acciones de usuario';
+        this.loading = false;
+        console.error('Error al cargar las acciones de usuario:', error);
+      }
+    );
   }
 
   toggleUserPoints(): void {
@@ -199,5 +265,12 @@ export class ActionComponent implements OnInit {
   
   toggleUserActions(): void {
     this.showUserActions = !this.showUserActions;
+  }
+
+  private formatDate(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   }
 }
