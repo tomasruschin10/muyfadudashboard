@@ -33,12 +33,30 @@ export class ActionsService {
       )
     }
 
-    getUserActions(page: number, limit:number): Observable<PaginatedEp<UserAction[]>> {
+    getUserActions(page: number, limit: number, filters: { startDate?: string, endDate?: string }): Observable<PaginatedEp<UserAction[]>> {
       let params = new HttpParams()
         .set("page", page.toString())
         .set("limit", limit.toString());
-
+    
+      if (filters.startDate && filters.endDate) {
+        params = params.set("startDate", filters.startDate);
+        params = params.set("endDate", filters.endDate);
+      }
+    
       return this.http.get<PaginatedEp<UserAction[]>>(`${this.BASE_URL}/user-actions/all`, { params }).pipe(
+        map(response => response || null)
+      )
+    }
+
+    getUserActionsForExport(filters: { startDate?: string, endDate?: string }): Observable<UserAction[]> {
+      let params = new HttpParams()
+    
+      if (filters.startDate && filters.endDate) {
+        params = params.set("startDate", filters.startDate);
+        params = params.set("endDate", filters.endDate);
+      }
+    
+      return this.http.get<UserAction[]>(`${this.BASE_URL}/user-actions/all/export`, { params }).pipe(
         map(response => response || null)
       )
     }

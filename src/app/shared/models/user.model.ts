@@ -50,4 +50,6 @@ export type UserWithcounters = User & {
   actionPoints: number;
   referralCount: number;
   totalPoints: number;
+  weeklyPoints: number;
+  monthlyPoints: number;
 }
