@@ -144,6 +144,8 @@
             <option value="opinionCount">Número de Opiniones</option>
             <option value="rewardRequestsCount">Solicitudes de Canjeo</option>
             <option value="referralCount">Número de Referidos</option>
+            <option value="weeklyPoints">Puntos en la semana</option>
+            <option value="monthlyPoints">Puntos en el mes</option>
           </select>
         </div>
         <div class="table-responsive">
@@ -157,6 +159,8 @@
                 <th>Opiniones</th>
                 <th>Solicitudes de Canjeo</th>
                 <th>Referidos</th>
+                <th>Puntos Semanales</th>
+                <th>Puntos Mensuales</th>
               </tr>
             </thead>
             <tbody>
@@ -168,6 +172,8 @@
                 <td>{{ user.opinionCount }}</td>
                 <td>{{ user.rewardRequestsCount }}</td>
                 <td>{{ user.referralCount }}</td>
+                <td [ngStyle]="{'color': user.weeklyPoints > 0 ? 'green' : ''}">+{{ user.weeklyPoints }}</td>
+                <td [ngStyle]="{'color': user.monthlyPoints > 0 ? 'green' : ''}">+{{ user.monthlyPoints }}</td>
               </tr>
             </tbody>
           </table>

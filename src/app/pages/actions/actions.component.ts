@@ -38,7 +38,7 @@ export class ActionComponent implements OnInit {
   totalUserWithPoints: number = 0;
   pageUserWithPoints = 1
   userWithPoints: UserWithcounters[] = []
-  sortBy: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' = 'totalPoints'
+  sortBy: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints' = 'totalPoints'
   metaUserWithPoints: Meta;
 
   constructor(

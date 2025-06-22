@@ -43,7 +43,7 @@ export class UsersService {
     })
   }
 
-  getUsersRankedBypoints(page:number, per_page:number, order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints'): Observable<PaginatedEp<UserWithcounters[]>> {
+  getUsersRankedBypoints(page:number, per_page:number, order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints'): Observable<PaginatedEp<UserWithcounters[]>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', per_page.toString())
