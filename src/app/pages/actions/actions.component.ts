@@ -38,8 +38,6 @@ export class ActionComponent implements OnInit {
   fromDate: string = ""
   toDate: string = ""
 
-  userActionForExport: UserAction[] = []
-
   // User Points
   showUserPoints = false
   totalUserWithPoints: number = 0;
@@ -167,26 +165,6 @@ export class ActionComponent implements OnInit {
         console.error('Error al cargar los datos de usuario:', error);
       }
     )
-  }
-
-  loadUserActionsForExport(): void {
-    this.loading = true;
-    let filters:any = {}
-    if (this.fromDate && this.toDate) {
-      filters.startDate = this.formatDate(new Date(this.fromDate))
-      filters.endDate = this.formatDate(new Date(this.toDate))
-    }
-    this.actionService.getUserActionsForExport(filters).subscribe(
-      (response) => {
-        this.userActionForExport = response;
-        this.loading = false;
-      },
-      (error) => {
-        this.error = 'Error al cargar las acciones de usuario';
-        this.loading = false;
-        console.error('Error al cargar las acciones de usuario:', error);
-      }
-    );
   }
 
   toggleUserPoints(): void {
