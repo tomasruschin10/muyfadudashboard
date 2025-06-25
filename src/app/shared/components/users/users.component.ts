@@ -10,6 +10,8 @@ import { userData, setUserData } from 'src/app/components/dash/header/header.com
 import { CareerService } from '../../../pages/college-career/services/career.service';
 import { Career } from '../../models/career.model';
 import { Meta } from '../../models/response.model';
+import { formatDate } from 'src/utils/helpers';
+import * as XLSX from 'xlsx';
 declare var $:any
 
 @Component({
@@ -29,6 +31,8 @@ export class UsersComponent implements OnInit {
   pageSize = 10
   totalItems:number = 0
   search: string = ''
+  startDate: string = ''
+  endDate: string = ''
 
   constructor(
     private usersSv: UsersService,
@@ -80,7 +84,9 @@ export class UsersComponent implements OnInit {
   }
 
   listUsers(){
-    this.usersSv.getUsersPaginated(this.role, this.page, this.pageSize, this.search).subscribe(
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.usersSv.getUsersPaginated(this.role, this.page, this.pageSize, this.search, formatedStart, formatedEnd).subscribe(
       (response) => {
         this.users = response.data
         this.meta = response.meta
@@ -89,6 +95,43 @@ export class UsersComponent implements OnInit {
       },
       (error) => {
         MyAlert.alert('Error al cargar los usuarios', true)
+      }
+    )
+  }
+
+  exportUsers() {
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.usersSv.getUsersForExport(this.role, this.search, formatedStart, formatedEnd).subscribe(
+      (response: User[]) => {
+        // Preparar los datos para Excel
+        const data = response.map(user => ({
+          'Nombre': user.name,
+          'Apellido': user.lastname,
+          'Email': user.email,
+          'Teléfono': user.phone,
+          'Nombre de usuario': user.username,
+          'Estado': user.active ? 'Activo' : 'Inactivo',
+          'Fecha de registro': new Date(user.created_at).toLocaleString()
+        }));
+
+        // Crear una hoja de trabajo
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+
+        // Crear un libro de trabajo
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+
+        // Generar nombre de archivo con fecha y hora
+        const fileName = `Usuarios_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Guardar el archivo
+        XLSX.writeFile(wb, fileName);
+
+        MyAlert.alert('Exportación completada con éxito', false);
+      },
+      (error) => {
+        MyAlert.alert('Error al exportar los usuarios', true);
       }
     )
   }

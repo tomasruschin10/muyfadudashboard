@@ -22,8 +22,28 @@ export class UsersService {
       observe: 'response'
     })
   }
-  getUsersPaginated(rol:number, page:number, perPage:number, search:string): Observable<PaginatedEp<User[]>> {
-    return this.http.get<PaginatedEp<User[]>>(`${this.BASE_URL}/user/all/${rol}?page=${page}&per_page=${perPage}&search=${search}`).pipe(
+  getUsersPaginated(rol:number, page:number, perPage:number, search:string, startDate?: string, endDate?: string): Observable<PaginatedEp<User[]>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString())
+      .set('search', search);
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<PaginatedEp<User[]>>(`${this.BASE_URL}/user/all/${rol}`, { params }).pipe(
+      map(response => response || null)
+    )
+  }
+
+  getUsersForExport(rol:number, search:string, startDate?: string, endDate?: string): Observable<User[]> {
+    let params = new HttpParams()
+      .set('search', search);
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<User[]>(`${this.BASE_URL}/user/export/${rol}`, { params }).pipe(
       map(response => response || null)
     )
   }

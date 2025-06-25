@@ -5,9 +5,21 @@
             <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: 'create'}">Nuevo usuario</button>
         </div>
         <!-- Añadir el campo de búsqueda aquí -->
-        <div class="mb-3 d-flex">
-            <input type="text" class="form-control" placeholder="Buscar usuario..." [(ngModel)]="search">
-            <button class="btn btn-primary ms-2" (click)="onSearch()">Buscar</button>
+        <div class="mb-3 d-flex flex-wrap gap-2 align-items-end">
+            <div class="flex-grow-1">
+                <label for="search" class="form-label">Buscar usuario</label>
+                <input type="text" class="form-control" id="search" placeholder="Buscar usuario..." [(ngModel)]="search">
+            </div>
+            <div>
+                <label for="startDate" class="form-label">Fecha inicio</label>
+                <input type="date" class="form-control" id="startDate" [(ngModel)]="startDate">
+            </div>
+            <div>
+                <label for="endDate" class="form-label">Fecha fin</label>
+                <input type="date" class="form-control" id="endDate" [(ngModel)]="endDate">
+            </div>
+            <button class="btn btn-primary" (click)="onSearch()">Buscar</button>
+            <button class="btn btn-success" (click)="exportUsers()">Exportar a Excel</button>
         </div>
 
         <div class="table-responsive">
@@ -16,20 +28,20 @@
                 <thead>
                     <tr>
                         <th>Nombre</th>
-                        <th>Nombre de usuario</th>
                         <th>Correo</th>
                         <th>Telefono</th>
                         <th>Estado</th>
+                        <th>Fecha de registro</th>
                         <th>Accion</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of users, let i = index">
                         <td>{{item.name}} {{item?.lastname}}</td>
-                        <td>{{item.username}}</td>
                         <td>{{item.email}}</td>
                         <td>{{item?.phone}}</td>
                         <td><small class="text-white rounded-pill py-1 px-2 {{item.active ? 'active' : 'unactive'}}"></small></td>
+                        <td>{{item.created_at | date:'short' }}</td>
                         <td>
                             <div class="d-flex gap-2 justify-content-center">
                                 <button class="btn btn-1" [routerLink]="[]" [queryParams]="{form: i}">Ver</button>
