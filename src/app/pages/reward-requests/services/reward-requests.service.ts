@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { RewardRequest, RewardsRequestStatus } from 'src/app/shared/models/reward-request.model';
@@ -20,8 +20,31 @@ export class RewardRequestsService {
     });
   }
 
-  getRewardsRequests(page: number, status?: string): Observable<PaginatedEp<RewardRequest[]>> {
-    return this.http.get<PaginatedEp<RewardRequest[]>>(`${this.apiUrl}/rewards-requests?page=${page}&status=${status || ''}`).pipe(
+  getRewardsRequests(page: number, status?: string, startDate?: string, endDate?: string): Observable<PaginatedEp<RewardRequest[]>> {
+    let params = new HttpParams()
+      .set('page', page.toString());
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<PaginatedEp<RewardRequest[]>>(`${this.apiUrl}/rewards-requests`, {params}).pipe(
+      map(response => response || null)
+    )
+  }
+
+  getRewardsRequestsForExport(status?: string, startDate?: string, endDate?: string): Observable<RewardRequest[]> {
+    let params = new HttpParams()
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<RewardRequest[]>(`${this.apiUrl}/rewards-requests/export`, { params }).pipe(
       map(response => response || null)
     )
   }

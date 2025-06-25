@@ -22,8 +22,28 @@ export class UsersService {
       observe: 'response'
     })
   }
-  getUsersPaginated(rol:number, page:number, perPage:number, search:string): Observable<PaginatedEp<User[]>> {
-    return this.http.get<PaginatedEp<User[]>>(`${this.BASE_URL}/user/all/${rol}?page=${page}&per_page=${perPage}&search=${search}`).pipe(
+  getUsersPaginated(rol:number, page:number, perPage:number, search:string, startDate?: string, endDate?: string): Observable<PaginatedEp<User[]>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString())
+      .set('search', search);
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<PaginatedEp<User[]>>(`${this.BASE_URL}/user/all/${rol}`, { params }).pipe(
+      map(response => response || null)
+    )
+  }
+
+  getUsersForExport(rol:number, search:string, startDate?: string, endDate?: string): Observable<User[]> {
+    let params = new HttpParams()
+      .set('search', search);
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<User[]>(`${this.BASE_URL}/user/export/${rol}`, { params }).pipe(
       map(response => response || null)
     )
   }
@@ -43,13 +63,43 @@ export class UsersService {
     })
   }
 
-  getUsersRankedBypoints(page:number, per_page:number, order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints'): Observable<PaginatedEp<UserWithcounters[]>> {
+  getUsersRankedBypoints(
+    page:number,
+    per_page:number,
+    order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints',
+    order: 'DESC' | 'ASC',
+    startDate?: string,
+    endDate?: string
+  ): Observable<PaginatedEp<UserWithcounters[]>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', per_page.toString())
-      .set('orderBy', order_by);
+      .set('orderBy', order_by)
+      .set('order', order);
 
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
     return this.http.get<PaginatedEp<UserWithcounters[]>>(`${this.BASE_URL}/user/ranking/points`, { params }).pipe(
+      map(response => response || null)
+    )
+  }
+
+  getUsersRankedBypointsForExport(
+    order_by: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints',
+    order: 'DESC' | 'ASC',
+    startDate?: string,
+    endDate?: string
+  ): Observable<UserWithcounters[]> {
+    let params = new HttpParams()
+      .set('orderBy', order_by)
+      .set('order', order);
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+    }
+    return this.http.get<UserWithcounters[]>(`${this.BASE_URL}/user/ranking/points/export`, { params }).pipe(
       map(response => response || null)
     )
   }

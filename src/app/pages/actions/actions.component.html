@@ -152,18 +152,41 @@
         <i class="fas" [ngClass]="{'fa-chevron-down': !showUserPoints, 'fa-chevron-up': showUserPoints}"></i>
       </div>
       <div class="card-body" *ngIf="showUserPoints">
-        <div class="mb-3">
-          <label for="sortBy" class="form-label">Ordenar por:</label>
-          <select id="sortBy" class="form-select" [(ngModel)]="sortBy" (change)="loadUserWithCounters()">
-            <option value="totalPoints">Puntos Totales</option>
-            <option value="actionPoints">Puntos de Acciones</option>
-            <option value="opinionCount">Número de Opiniones</option>
-            <option value="rewardRequestsCount">Solicitudes de Canjeo</option>
-            <option value="referralCount">Número de Referidos</option>
-            <option value="weeklyPoints">Puntos en la semana</option>
-            <option value="monthlyPoints">Puntos en el mes</option>
-          </select>
-        </div>
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <label for="startDate" class="form-label">Fecha desde:</label>
+        <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-3">
+        <label for="endDate" class="form-label">Fecha hasta:</label>
+        <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-3">
+        <label for="sortBy" class="form-label">Ordenar por:</label>
+        <select id="sortBy" class="form-select" [(ngModel)]="sortBy">
+          <option value="totalPoints">Puntos Totales</option>
+          <option value="actionPoints">Puntos de Acciones</option>
+          <option value="opinionCount">Número de Opiniones</option>
+          <option value="rewardRequestsCount">Solicitudes de Canjeo</option>
+          <option value="referralCount">Número de Referidos</option>
+          <option value="weeklyPoints">Puntos en la semana</option>
+          <option value="monthlyPoints">Puntos en el mes</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="order" class="form-label">Dirección:</label>
+        <select id="order" class="form-select" [(ngModel)]="order">
+          <option value="DESC">Descendente</option>
+          <option value="ASC">Ascendente</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <button class="btn btn-primary me-2" (click)="loadUserWithCounters()">Aplicar Filtros</button>
+        <button class="btn btn-success" (click)="exportUserWithCounters()">Exportar a Excel</button>
+      </div>
+    </div>
         <div class="table-responsive">
           <table class="table table-striped table-hover">
             <thead>
