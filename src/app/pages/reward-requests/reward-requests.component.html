@@ -3,14 +3,27 @@
       <h3>Solicitudes de Canjeo</h3>
       <form class="d-flex flex-wrap justify-content-end gap-3 mb-3">
         <div class="form-floating">
-          <select class="form-select" style="max-width: 250px;" (change)="filterByStatus($event)">
+          <input type="date" class="form-control" id="startDate" [(ngModel)]="startDate" name="startDate" style="max-width: 200px;">
+          <label for="startDate">Fecha de inicio</label>
+        </div>
+        <div class="form-floating">
+          <input type="date" class="form-control" id="endDate" [(ngModel)]="endDate" name="endDate" style="max-width: 200px;">
+          <label for="endDate">Fecha de fin</label>
+        </div>
+        <div class="form-floating">
+          <select class="form-select" style="max-width: 250px;" [(ngModel)]="filtredStatus" name="filteredStatus" >
             <option value="">Todos los estados</option>
             <option *ngFor="let status of rewardRequestStatuses" [value]="status">
               {{translate(status)}}
             </option>
           </select>
-
           <label>Estado</label>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="applyFilters()">Aplicar filtros</button>
+          <button class="btn btn-success" (click)="exportData()">
+            <i class="fas fa-file-excel me-2"></i>Exportar a Excel
+          </button>
         </div>
       </form>
       <section class="d-flex flex-column gap-3" id="rewardRequests">
