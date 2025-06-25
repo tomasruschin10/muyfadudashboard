@@ -9,6 +9,7 @@ import { Meta } from 'src/app/shared/models/response.model';
 import { UserWithcounters } from 'src/app/shared/models/user.model';
 import { UsersService } from '../users/services/users.service';
 import * as XLSX from 'xlsx';
+import { formatDate } from 'src/utils/helpers';
 
 @Component({
   selector: 'app-actions',
@@ -45,6 +46,9 @@ export class ActionComponent implements OnInit {
   userWithPoints: UserWithcounters[] = []
   sortBy: 'referralCount' | 'opinionCount' | 'rewardRequestsCount' | 'actionPoints' | 'totalPoints' | 'weeklyPoints' | 'monthlyPoints' = 'totalPoints'
   metaUserWithPoints: Meta;
+  order: 'DESC' | 'ASC' = 'DESC'
+  startDate: string = ''
+  endDate: string = ''
 
   constructor(
     private actionService: ActionsService,
@@ -152,7 +156,9 @@ export class ActionComponent implements OnInit {
 
   loadUserWithCounters() {
     this.loading = true;
-    this.userService.getUsersRankedBypoints(this.pageUserWithPoints, this.pageSize, this.sortBy).subscribe(
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.userService.getUsersRankedBypoints(this.pageUserWithPoints, this.pageSize, this.sortBy, this.order, formatedStart, formatedEnd).subscribe(
       (response) => {
         this.userWithPoints = response.data
         this.metaUserWithPoints = response.meta
@@ -163,6 +169,50 @@ export class ActionComponent implements OnInit {
         this.error = 'Error al cargar los datos de usuario';
         this.loading = false;
         console.error('Error al cargar los datos de usuario:', error);
+      }
+    )
+  }
+
+  exportUserWithCounters() {
+    this.loading = true;
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.userService.getUsersRankedBypointsForExport(this.sortBy, this.order, formatedStart, formatedEnd).subscribe(
+      (response: UserWithcounters[]) => {
+        // Preparar los datos para Excel
+        const data = response.map(user => ({
+          'Nombre': user.name,
+          'Email': user.email,
+          'Puntos Totales': user.totalPoints,
+          'Puntos de Acciones': user.actionPoints,
+          'Número de Opiniones': user.opinionCount,
+          'Solicitudes de Canjeo': user.rewardRequestsCount,
+          'Número de Referidos': user.referralCount,
+          'Puntos Semanales': user.weeklyPoints,
+          'Puntos Mensuales': user.monthlyPoints
+        }));
+
+        // Crear una hoja de trabajo
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+
+        // Crear un libro de trabajo
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Usuarios y Puntos');
+
+        // Generar nombre de archivo con fecha y hora
+        const fileName = `Usuarios_y_Puntos_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Guardar el archivo
+        XLSX.writeFile(wb, fileName);
+
+        this.loading = false;
+        MyAlert.alert('Exportación completada con éxito', false);
+      },
+      (error) => {
+        this.error = 'Error al exportar los datos de usuario';
+        this.loading = false;
+        console.error('Error al exportar los datos de usuario:', error);
+        MyAlert.alert('Error al exportar los datos', true);
       }
     )
   }
