@@ -7,6 +7,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { MyAlert } from '../../shared/static-functions/myFunctions';
+import { formatDate } from 'src/utils/helpers';
+import * as XLSX from 'xlsx';
 declare const $:any
 
 @Component({
@@ -30,6 +32,8 @@ export class OpinionsComponent implements OnInit {
   selectSubjectValue
   carrers: Career[] = []
   selectCareerValue: string = '';
+  startDate: string = ''
+  endDate: string = ''
 
   constructor(
     private opinionSv: OpinionsService,
@@ -61,15 +65,9 @@ export class OpinionsComponent implements OnInit {
   }
 
   listOpinions(subjectId, search, career){
-    if(subjectId != '') subjectId = '&subject_id='+subjectId
-    if(search != '') search = '&search='+search
-    let arrTags = ''
-    if(this.tagsId.length > 0) {
-      for(let item of this.tagsId){
-        arrTags = arrTags+'&tags[]='+item
-      }
-    }
-    this.opinionSv.getOpinions(this.offset, 12, subjectId, arrTags, search, career).subscribe((data:any) =>{
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.opinionSv.getOpinions(this.offset, 12, subjectId, this.tagsId, search, career, formatedStart, formatedEnd).subscribe((data:any) =>{
       this.opinions = this.opinions.concat(data.body)
       if(this.form) this.initFormOpinions()
       if(data.body.length == 0){
@@ -80,6 +78,42 @@ export class OpinionsComponent implements OnInit {
       }
       this.offset+=12
     })
+  }
+
+  exportOpinions(subjectId, search, career){
+    const formatedStart = this.startDate ? formatDate(new Date(this.startDate)) : '';
+    const formatedEnd = this.endDate ? formatDate(new Date(this.endDate)) : '';
+    this.opinionSv.getOpinionsForExport(subjectId, this.tagsId, search, career, formatedStart, formatedEnd).subscribe((data: Opinion[]) => {
+      // Preparar los datos para Excel
+      const excelData = data.map(opinion => ({
+        'ID': opinion.id,
+        'Usuario': opinion.student.name,
+        'Email': opinion.student.email,
+        'Asignatura': opinion.subject.name,
+        'Carrera': this.getCareerName(opinion.student.career_id),
+        'Opinión': opinion.description,
+        'Numero de Respuestas': opinion.answersCount,
+        'Fecha': new Date(opinion.created_at).toLocaleString(),
+      }));
+
+      // Crear una hoja de trabajo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Crear un libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Opiniones');
+
+      // Generar nombre de archivo con fecha y hora
+      const fileName = `Opiniones_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+      // Guardar el archivo
+      XLSX.writeFile(wb, fileName);
+
+      MyAlert.alert('Exportación completada con éxito', false);
+    }, error => {
+      console.error('Error al exportar las opiniones:', error);
+      MyAlert.alert('Error al exportar las opiniones', true);
+    });
   }
 
   delete(id, i){
@@ -105,12 +139,14 @@ export class OpinionsComponent implements OnInit {
     })
   }
 
-  filterSubjects(subjectId, search, career){
+  filterSubjects(subjectId, search, career, startDate, endDate){
     this.opinions = []
     this.offset = 0
     this.answers = []
     this.selectSubjectValue = subjectId
     this.searchValue = search
+    this.startDate = startDate
+    this.endDate = endDate
     this.listOpinions(subjectId, search, career)
   }
 

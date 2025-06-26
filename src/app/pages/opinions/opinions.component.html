@@ -1,48 +1,72 @@
 <main class="overflow-auto py-5 px-sm-5 px-4">
     <section class="view" *ngIf="!form">
-      <h3>Opiniones</h3>
+      <h3 class="mb-4">Opiniones</h3>
       
       <!-- Filtros -->
-      <form class="d-flex flex-wrap justify-content-end gap-3 ">
-        <div class="form-floating">
-          <input class="form-control" [value]="searchValue" type="text" placeholder=" " #search>
-          <label>Buscar</label>
+      <form class="row g-3 mb-4">
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <input class="form-control" [value]="searchValue" type="text" placeholder=" " #search>
+            <label>Buscar</label>
+          </div>
         </div>
-        <div class="form-floating">
-          <select class="form-select" style="max-width: 250px;" #selectSubject>
-            <option [value]="''">Todas las materias</option>
-            <option *ngFor="let item of subjects" [selected]="selectSubjectValue == item.id" [value]="item.id">{{item.name}}</option>
-          </select>
-          <label>Materias</label>
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <select class="form-select" #selectSubject>
+              <option [value]="''">Todas las materias</option>
+              <option *ngFor="let item of subjects" [selected]="selectSubjectValue == item.id" [value]="item.id">{{item.name}}</option>
+            </select>
+            <label>Materias</label>
+          </div>
         </div>
-        <!-- Nuevo filtro para carreras -->
-        <div class="form-floating">
-          <select class="form-select" style="max-width: 250px;" #selectCareer>
-            <option [value]="''">Todas las carreras</option>
-            <option *ngFor="let career of carrers" [selected]="+selectCareerValue == career.id" [value]="career.id">{{career.name}}</option>
-          </select>
-          <label>Carreras</label>
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <select class="form-select" #selectCareer>
+              <option [value]="''">Todas las carreras</option>
+              <option *ngFor="let career of carrers" [selected]="+selectCareerValue == career.id" [value]="career.id">{{career.name}}</option>
+            </select>
+            <label>Carreras</label>
+          </div>
         </div>
-
-        
-        <div class="form-floating">
-          <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
-          <input class="form-control pe-5" type="text" id="listTags" placeholder=" " (input)="filterList()" (click)="filterList()" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
-          <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
-            <li><button type="button" class="dropdown-item item_tag" (click)="filterList(item)" [value]="item.id" *ngFor="let item of tags">{{item.name}}</button></li>
-          </ul>
-          <label>Tags</label>
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <input class="form-control" type="date" id="startDate" [(ngModel)]="startDate" name="startDate" #start>
+            <label for="startDate">Fecha de inicio</label>
+          </div>
         </div>
-        <button class="btn btn-1 mt-auto" (click)="filterSubjects(selectSubject.value, search.value, selectCareer.value)">
-          Buscar
-        </button>
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <input class="form-control" type="date" id="endDate" [(ngModel)]="endDate" name="endDate" #end>
+            <label for="endDate">Fecha de fin</label>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+          <div class="form-floating">
+            <i class="fas fa-caret-down position-absolute mx-3 my-4 end-0 top-0"></i>
+            <input class="form-control pe-5" type="text" id="listTags" placeholder=" " (input)="filterList()" (click)="filterList()" (focus)="filterCategory.click()" (click)="filterCategory.classList.contains('show') && filterCategory.click()" data-bs-toggle="dropdown" autocomplete="off" #filterCategory>
+            <ul class="dropdown-menu overflow-auto w-100 shadow-sm" style="max-height: 178px;">
+              <li><button type="button" class="dropdown-item item_tag" (click)="filterList(item)" [value]="item.id" *ngFor="let item of tags">{{item.name}}</button></li>
+            </ul>
+            <label>Tags</label>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-3 d-flex">
+          <button class="btn btn-primary flex-grow-1" (click)="filterSubjects(selectSubject.value, search.value, selectCareer.value, start.value, end.value)">
+            Buscar
+          </button>
+        </div>
+        <div class="col-md-4 col-lg-3 d-flex">
+          <button class="btn btn-success flex-grow-1" (click)="exportOpinions(selectSubject.value, search.value, selectCareer.value)">
+            <i class="fas fa-file-excel me-2"></i>Exportar a Excel
+          </button>
+        </div>
       </form>
     
       <!-- Tags seleccionados -->
-      <div class="mb-3 d-flex gap-3 justify-content-end flex-wrap">
-        <span class="bg-gray py-1 px-2 rounded-pill" *ngFor="let item of tagsSelected, let i = index">
+      <div class="mb-3 d-flex gap-3 flex-wrap">
+        <span class="bg-light py-1 px-2 rounded-pill" *ngFor="let item of tagsSelected, let i = index">
           {{item.name}}
-          <small class="far fa-times-circle text-danger" role="button" (click)="tagsId.splice(i, 1)" (click)="tagsSelected.splice(i, 1)"></small>
+          <small class="far fa-times-circle text-danger ms-1" role="button" (click)="tagsId.splice(i, 1)" (click)="tagsSelected.splice(i, 1)"></small>
         </span>
       </div>
     
