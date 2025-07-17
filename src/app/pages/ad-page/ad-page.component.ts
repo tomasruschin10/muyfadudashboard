@@ -10,6 +10,8 @@ import { Partner } from 'src/app/shared/models/offer.model';
 import { CareerService } from '../college-career/services/career.service';
 import { Career, Subject } from 'src/app/shared/models/career.model';
 import { CreateFile } from '../../shared/static-functions/myFunctions';
+import { PromotionService } from '../promotions/services/promotions.service';
+import { Promotion } from 'src/app/shared/models/promotion.model';
 declare var $: any
 
 @Component({
@@ -26,6 +28,7 @@ export class AdPageComponent implements OnInit {
   form
   advertisement: Advertisement | null
   page: number = 1
+  promotions: Promotion[] = []
 
   constructor(
     private adPageSv: AdPageService,
@@ -33,6 +36,7 @@ export class AdPageComponent implements OnInit {
     private careerSv: CareerService,
     private route: Router,
     private routeActive: ActivatedRoute,
+    private promotionSv: PromotionService
   ) { 
     routeActive.queryParams.subscribe(data =>{
       this.form = data.form
@@ -44,6 +48,7 @@ export class AdPageComponent implements OnInit {
     this.listAdvertisement()
     this.listPartner()
     this.listCareers()
+    this.listPromotions()
   }
 
   initFormAdvertisement(){
@@ -52,11 +57,12 @@ export class AdPageComponent implements OnInit {
       url: new FormControl('', Validators.required),
       title: new FormControl('', Validators.required),
       partner_id: new FormControl('', Validators.required),
-      career_id: new FormControl(null, Validators.required),
+      career_id: new FormControl(null),
       date_start: new FormControl('', Validators.required),
       date_end: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required),
-      order: new FormControl('', Validators.required)
+      order: new FormControl('', Validators.required),
+      promotion_id: new FormControl(null)
     })
     if(this.advertisements?.length > 0 && this.form != 'create' && this.form){
       this.advertisement = this.advertisements[this.form]
@@ -79,6 +85,14 @@ export class AdPageComponent implements OnInit {
       this.advertisements = body
       this.initFormAdvertisement()
     })
+  }
+
+  listPromotions() {
+    this.promotionSv.getAllPromotions().subscribe(
+      (data) => {
+        this.promotions = data
+      }
+    )
   }
 
   listPartner(){

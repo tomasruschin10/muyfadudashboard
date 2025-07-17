@@ -71,7 +71,7 @@
                     <div class="col-xxl-6 col-lg-12 col-md-6">
                         <div class="form-floating">
                             <select class="form-select" formControlName="career_id">
-                                <option [value]="null" selected disabled>- Seleccione -</option>
+                                <!-- <option [value]="null" selected disabled>- Seleccione -</option> -->
                                 <option [value]="null">Todas las carreras</option>
                                 <option *ngFor="let item of careers" [value]="item.id">{{item.name}}</option>
                             </select>
@@ -120,6 +120,18 @@
                             <label>Fecha Fin</label>
                         </div>
                     </div>
+
+                    <!-- Nuevo selector de promoción -->
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" formControlName="promotion_id">
+                                <option [value]="null">Sin promoción asociada</option>
+                                <option *ngFor="let promo of promotions" [value]="promo.id">{{promo.title}}</option>
+                            </select>
+                            <label>Promoción asociada (opcional)</label>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div>
