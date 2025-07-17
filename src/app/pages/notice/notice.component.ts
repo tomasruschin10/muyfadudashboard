@@ -6,6 +6,8 @@ import { NoticeService } from './services/notice.service';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { Notice } from '../../shared/models/notice.model';
 import { CreateFile } from '../../shared/static-functions/myFunctions';
+import { PromotionService } from '../promotions/services/promotions.service';
+import { Promotion } from 'src/app/shared/models/promotion.model';
 declare const $:any
 
 @Component({
@@ -19,11 +21,13 @@ export class NoticeComponent implements OnInit {
   form
   newId: number | null
   page: number = 1
+  promotions: Promotion[] = []
 
   constructor(
     private noticeSv: NoticeService,
     private route: Router,
-    private routeActive: ActivatedRoute, 
+    private routeActive: ActivatedRoute,
+    private promotionSv: PromotionService
   ) { 
     routeActive.queryParams.subscribe(data =>{
       this.form = data.form
@@ -33,6 +37,7 @@ export class NoticeComponent implements OnInit {
 
   ngOnInit(): void {
     this.listNotice()
+    this.listPromotions()
   }
 
   initFormNotice(){
@@ -42,6 +47,7 @@ export class NoticeComponent implements OnInit {
       date_start: new FormControl('', Validators.required),
       date_end: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required),
+      promotion_id: new FormControl(null, ),
       url: new FormControl(null)
     })
     if(this.news?.length > 0 && this.form != 'create' && this.form){
@@ -62,6 +68,14 @@ export class NoticeComponent implements OnInit {
       this.news = data.body
       this.initFormNotice()
     })
+  }
+
+  listPromotions() {
+    this.promotionSv.getAllPromotions().subscribe(
+      (data) => {
+        this.promotions = data
+      }
+    )
   }
 
   async createOrEdit(form, id){

@@ -75,6 +75,15 @@
                             <label>Fecha Fin</label>
                         </div>
                     </div>
+                    <div class="col-xxl-6 col-lg-12 col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" formControlName="promotion_id" placeholder=" ">
+                                <option value="null">Seleccione una promoción (opcional)</option>
+                                <option *ngFor="let promo of promotions" [value]="promo.id">{{promo.title}}</option>
+                            </select>
+                            <label>Promoción asociada</label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
