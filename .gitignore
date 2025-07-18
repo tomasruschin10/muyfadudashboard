@@ -47,3 +47,5 @@ Thumbs.db
 
 .yarn/
 .env
+/environments
+src/environments/environment.ts
