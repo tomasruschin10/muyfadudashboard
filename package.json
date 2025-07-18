@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node ./config && ng serve",
-    "build": "node ./config && ng build --prod",
+    "build": "node -e \"process.env.NODE_ENV='production'; require('./config.js')\" && ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
