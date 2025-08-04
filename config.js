@@ -1,5 +1,8 @@
 const fs = require('fs');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const environmentFile = './src/environments/environment.prod.ts';
 
 const environmentContent = `
