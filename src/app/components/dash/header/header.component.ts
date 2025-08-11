@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Faculty } from 'src/app/shared/models/faculty.model';
 
 export let userData
 export let setUserData 
@@ -10,6 +11,8 @@ export let setUserData
 })
 export class HeaderComponent implements OnInit {
   userData
+  faculties: Faculty[] = []; // Asume que tienes un tipo Faculty definido
+  selectedFaculty: Faculty | null = null;
 
   constructor() {
     userData = sessionStorage.getItem('userData')
@@ -28,6 +31,10 @@ export class HeaderComponent implements OnInit {
   logout() {
     sessionStorage.removeItem('token');
     window.location.reload();
+  }
+
+    selectFaculty(faculty: Faculty) {
+    this.selectedFaculty = faculty;
   }
 
 
