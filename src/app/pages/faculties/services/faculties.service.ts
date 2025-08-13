@@ -19,4 +19,22 @@ export class FacultiesService {
         map(response => response || null)
       )
     }
+
+    createOne(data: FormData) {
+      return this.http.post<Faculty>(`${this.BASE_URL}/faculties/create`, data).pipe(
+        map(response => response || null)
+      )
+    }
+
+    updateOne(id: number, data: FormData) {
+      return this.http.put<Faculty>(`${this.BASE_URL}/faculties/${id}`, data).pipe(
+        map(response => response || null)
+      )
+    }
+
+    deleteOne(id: number) {
+      return this.http.delete(`${this.BASE_URL}/faculties/${id}`).pipe(
+        map(response => response || null)
+      )
+    }
 }
