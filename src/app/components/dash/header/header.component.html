@@ -5,11 +5,20 @@
   <div class="ms-auto me-4">
     <div class="dropdown">
       <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownFacultades" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ (selectedFaculty !== null) ? selectedFaculty['title'] : 'Seleccionar Facultad' }}
+        {{ (selectedFaculty !== null && selectedFaculty.title) ? selectedFaculty.title : 'Seleccionar Facultad' }}
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownFacultades">
+        <li *ngIf="selectedFaculty">
+          <a class="dropdown-item text-danger" (click)="clearFacultyFilter()">
+            <i class="fas fa-times-circle me-2"></i>Quitar filtro
+          </a>
+          <div class="dropdown-divider"></div>
+        </li>
         <li *ngFor="let faculty of faculties">
-          <a class="dropdown-item" (click)="selectFaculty(faculty)">{{ faculty.title }}</a>
+          <a class="dropdown-item" (click)="selectFaculty(faculty)" 
+            [class.active]="selectedFaculty && selectedFaculty.id === faculty.id">
+            {{ faculty.title }}
+          </a>
         </li>
       </ul>
     </div>

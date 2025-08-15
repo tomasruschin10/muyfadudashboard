@@ -1,210 +1,266 @@
-import { Component, OnInit } from '@angular/core';
-import { Career, Subject } from 'src/app/shared/models/career.model';
-import { CareerService } from './services/career.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
+import { Career } from 'src/app/shared/models/career.model';
+import { FacultyFilterService } from 'src/app/shared/services/faculty-filter.service';
+import { CareerService } from './services/career.service';
 import Swal from 'sweetalert2';
-import { MyAlert } from '../../shared/static-functions/myFunctions';
-import { NgxSpinnerService } from 'ngx-spinner';
-declare var $: any;
+import { SubjectCategory, SubjectCategoryPayload } from 'src/app/shared/models/subject-category.model';
 
 @Component({
   selector: 'app-college-career',
   templateUrl: './college-career.component.html',
-  styleUrls: ['./college-career.component.scss'],
+  styleUrls: ['./college-career.component.scss']
 })
 export class CollegeCareerComponent implements OnInit {
+  @ViewChild('careerModal') careerModal: any;
+  
   careers: Career[] = [];
-  myGroup: FormGroup;
-  formCareer: FormGroup;
-  form;
-  careerId: number | null;
-  subjects: Array<any>;
-  allSubjects: Array<any> = [];
-  allLabels: Array<string> = [];
-  deleteSubjects: Array<any> = [];
-  deleteLevels: Array<any> = [];
-  page: number = 1;
-  last: number;
-  selectedOrCorrelative: string | null = null;
+  page = 1;
+  loading = false;
+  error = '';
+  
+  careerForm: FormGroup;
+  selectedImageUrl: string | null = null;
+  editMode = false;
+  careerId: number | null = null;
+
+  facultyId: null | number = null;
+  subjectCategories: SubjectCategory[] = []
 
   constructor(
-    private careerSv: CareerService,
-    private route: Router,
-    private routeActive: ActivatedRoute,
-    private spinnerSv: NgxSpinnerService
+    private careerService: CareerService,
+    private facultyFilterService: FacultyFilterService,
+    private modalService: NgbModal,
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    routeActive.queryParams.subscribe((data) => {
-      this.form = data.form;
-      if (this.form) this.initFormCareer();
+    this.careerForm = this.fb.group({
+      name: ['', Validators.required],
+      descriptionUrl: [''],
+      image: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.listCareer();
-  }
-
-  initFormCareer() {
-    this.subjects = [{ name: '', career_id: '', subject: [{ name: '' }] }];
-    this.careerId = null;
-    this.deleteLevels = [];
-    this.deleteSubjects = [];
-    this.formCareer = new FormGroup({
-      name: new FormControl('', Validators.required),
-      image: new FormControl('', Validators.required),
-    });
-    if (this.careers?.length > 0 && this.form != 'create' && this.form) {
-      this.careerId = this.careers[this.form].id;
-      this.formCareer.patchValue(this.careers[this.form]);
-      this.careerSv
-        .getSubjectCategory(this.careers[this.form].id)
-        .subscribe((data: any) => {
-          this.subjects = data.body;
-          this.allSubjects = this.getAllSubjects(this.subjects);
-          this.allLabels = this.getAllLabels(this.subjects);
-        });
-      setTimeout(() => {
-        $('#img').attr('src', this.careers[this.form].image.url);
-      }, 10);
-    }
-  }
-
-  getAllSubjects(subjects: any[]): any[] {
-    return subjects.reduce((acc, subjectGroup) => {
-      return acc.concat(
-        subjectGroup.subject.map((subject: any) => ({
-          ...subject,
-          level: subjectGroup.name,
-        }))
-      );
-    }, []);
-  }
-
-  getAllLabels(subjects: any[]): string[] {
-    const labelsSet = subjects.reduce((acc, subjectGroup) => {
-      subjectGroup.subject.forEach((subject: any) => {
-        if (subject.label) {
-          acc.add(subject.label);
+    this.loadCareers();
+    
+    // Escuchar cambios en los parámetros de consulta para la edición
+    this.route.queryParams.subscribe(params => {
+      if (params['edit']) {
+        const id = +params['edit'];
+        if (!isNaN(id)) {
+          this.editMode = true;
+          this.careerId = id;
+          this.loadCareerDetails(id);
+          this.loadSubjectCategories(id)
+          this.loadFacultyId()
         }
-      });
-      return acc;
-    }, new Set<string>());
-
-    return Array.from(labelsSet);
-  }
-
-  listCareer() {
-    this.careerSv.getCareer().subscribe((data: any) => {
-      this.careers = data.body;
-      if (this.form) this.initFormCareer();
-    });
-  }
-
-  createOrEdit(form, id) {
-    if (this.formCareer.invalid) return this.formCareer.markAllAsTouched();
-    if (this.subjects.some((x) => !x.name || x.subject.some((y) => !y.name)))
-      return MyAlert.alert('No pueden haber campos vacios!', true);
-    const formdata: any = new FormData();
-    for (let [item, value] of Object.entries(form)) {
-      formdata.append(item, value);
-    }
-    if (id) {
-      this.careerSv
-        .putCareer(formdata, id)
-        .toPromise()
-        .then((data: any) => {
-          const newData: any = {
-            ...data.body,
-            image: { url: data.body.image_url },
-          };
-          this.careers[this.form] = newData;
-          this.createLevel(data.body.id);
-        })
-        .catch((error) => {
-          MyAlert.alert(error.error.message, true);
-        });
-    } else {
-      this.careerSv
-        .postCareer(formdata)
-        .toPromise()
-        .then((data: any) => {
-          const newData: any = {
-            ...data.body,
-            image: { url: data.body.image_url },
-          };
-          this.careers.unshift(newData);
-          this.createLevel(data.body.id);
-        })
-        .catch((error) => {
-          MyAlert.alert(error.error.message, true);
-        });
-    }
-  }
-
-  createLevel(id) {
-    let interval;
-    let i = 0;
-    this.spinnerSv.show();
-    interval = setInterval(async () => {
-      this.spinnerSv.show();
-      if (i < this.subjects.length) {
-        const form = {
-          name: this.subjects[i].name,
-          description: this.subjects[i].description,
-          career_id: id,
-          selectiveSubject: this.subjects[i].selectiveSubject,
-          chairs: this.subjects[i].chairs,
-          conditions: this.subjects[i].conditions,
-          label: this.subjects[i].label,
-          subjectParent: this.subjects[i].subjectParent,
-        };
-        try {
-          if (!this.subjects[i]?.id) {
-            const data: any = await this.careerSv
-              .postSubjectCategory(form)
-              .toPromise();
-            for (let item of this.subjects[i].subject) {
-              item.subject_category_id = data.body.id;
-            }
-            this.careerSv
-              .postSubject({ data: this.subjects[i].subject })
-              .toPromise();
-            this.spinnerSv.show();
-          } else if (this.subjects[i]?.edit) {
-            const data: any = await this.careerSv
-              .putSubjectCategory(form, this.subjects[i].id)
-              .toPromise();
-
-            const formsubject: any = {
-              data: [],
-              deleteData: this.deleteSubjects,
-            };
-            for (let item of this.subjects[i].subject) {
-              item.subject_category_id = data.body.id;
-              item.url = '';
-              if (item?.edit || !item?.id) formsubject.data.push(item);
-            }
-            this.careerSv.putSubject(formsubject).toPromise();
-            this.spinnerSv.show();
-          }
-        } catch (error: any) {
-          clearInterval(interval);
-          return MyAlert.alert(error.error.message, true);
-        }
-        i++;
       } else {
-        clearInterval(interval);
-        this.deleteLevels.forEach(async (item) => {
-          await this.careerSv.deleteSubjectCategory(item).toPromise();
-        });
-        this.spinnerSv.hide();
-        MyAlert.alert(this.careerId ? 'Carrera editada!' : 'Carrera creada!');
-        this.route.navigate([]);
+        this.editMode = false;
+        this.careerId = null;
       }
-    }, 800);
+    });
+
+    
   }
 
-  delete(id, i) {
+  loadCareers(): void {
+    this.loading = true;
+    
+    this.careerService.getCareer().subscribe({
+      next: (data) => {
+        this.careers = data;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = 'Error al cargar las carreras';
+        this.loading = false;
+        MyAlert.alert('Error al cargar las carreras', true);
+        console.error('Error al cargar las carreras:', error);
+      },
+    });
+  }
+
+  loadSubjectCategories(careerId:number) {
+    if (!careerId) return;
+    this.careerService.getSubjectCategory(careerId).subscribe(
+      (data) => {
+        this.subjectCategories = data || []
+      }
+    )
+  }
+
+  loadFacultyId() {
+    this.facultyId = this.facultyFilterService.getCurrentFaculty()?.id || null
+  }
+
+  loadCareerDetails(careerId: number): void {
+    this.loading = true;
+    this.careerService.getCareerById(careerId).subscribe({
+      next: (career) => {
+        this.careerForm.patchValue({
+          name: career.name,
+          descriptionUrl: career.description_url || ''
+        });
+        
+        // Si la carrera tiene una imagen, mostrarla
+        if (career.image && career.image.url) {
+          this.selectedImageUrl = career.image.url;
+          // No requerimos una nueva imagen si ya existe una
+          this.careerForm.get('image')?.clearValidators();
+          this.careerForm.get('image')?.updateValueAndValidity();
+        }
+        
+        this.loading = false;
+      },
+      error: (error) => {
+        this.loading = false;
+        MyAlert.alert('Error al cargar los datos de la carrera', true);
+        console.error('Error al cargar los datos de la carrera:', error);
+        this.clearEditMode();
+      }
+    });
+  }
+
+  openCareerModal(): void {
+    this.careerForm.reset();
+    this.selectedImageUrl = null;
+    this.modalService.open(this.careerModal, { centered: true });
+  }
+
+  closeCareerModal() {
+    this.modalService.dismissAll();
+  }
+
+  editCareer(careerId: number): void {
+    // Navegar a la misma página pero con el parámetro de consulta edit
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { edit: careerId },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  clearEditMode(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      queryParamsHandling: ''
+    });
+  }
+
+  onImageSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validar que sea una imagen
+      if (!file.type.startsWith('image/')) {
+        MyAlert.alert('El archivo seleccionado no es una imagen válida', true);
+        return;
+      }
+
+      this.careerForm.patchValue({
+        image: file
+      });
+      this.careerForm.get('image')?.markAsTouched();
+      
+      // Vista previa de la imagen
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImageUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  createCareer(): void {
+    if (this.careerForm.invalid) {
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.careerForm.controls).forEach(key => {
+        this.careerForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', this.careerForm.get('name')?.value);
+    
+    const descriptionUrl = this.careerForm.get('descriptionUrl')?.value;
+    if (descriptionUrl) {
+      formData.append('description_url', descriptionUrl);
+    }
+    
+    const imageFile = this.careerForm.get('image')?.value;
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    const facultyId = this.facultyFilterService.getCurrentFaculty()?.id;
+    if (!facultyId) {
+      MyAlert.alert('Debe seleccionar una facultad para crear una carrera', true);
+      return;
+    }
+    
+    formData.append('faculty_id', facultyId.toString());
+
+    this.loading = true;
+    this.careerService.postCareer(formData).subscribe({
+      next: (response) => {
+        MyAlert.alert('Carrera creada con éxito');
+        this.loadCareers();
+        this.modalService.dismissAll();
+        this.loading = false;
+      },
+      error: (error) => {
+        MyAlert.alert('Error al crear la carrera', true);
+        console.error('Error al crear la carrera:', error);
+        this.loading = false;
+      }
+    });
+  }
+
+  updateCareer(): void {
+    if (this.careerForm.invalid || !this.careerId) {
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.careerForm.controls).forEach(key => {
+        this.careerForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', this.careerForm.get('name')?.value);
+    
+    const descriptionUrl = this.careerForm.get('descriptionUrl')?.value;
+    if (descriptionUrl) {
+      formData.append('description_url', descriptionUrl);
+    }
+    
+    const imageFile = this.careerForm.get('image')?.value;
+    if (imageFile && typeof imageFile !== 'string') {
+      formData.append('image', imageFile);
+    }
+
+    this.loading = true;
+    this.careerService.putCareer(formData, this.careerId).subscribe({
+      next: (response) => {
+        MyAlert.alert('Carrera actualizada con éxito');
+        this.loadCareers();
+        this.clearEditMode();
+        this.loading = false;
+      },
+      error: (error) => {
+        MyAlert.alert('Error al actualizar la carrera', true);
+        console.error('Error al actualizar la carrera:', error);
+        this.loading = false;
+      }
+    });
+  }
+
+  delete(id: number, index: number): void {
     Swal.fire({
       position: 'center',
       text: '¿Seguro que desea eliminar esta carrera?',
@@ -215,359 +271,58 @@ export class CollegeCareerComponent implements OnInit {
       reverseButtons: true,
       customClass: {
         actions: 'mt-1',
-        confirmButton: 'btn-danger',
-      },
+        confirmButton: 'btn-danger'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.careerSv.deleteCareer(id).subscribe((data) => {
-          this.careers.splice(i, 1);
-          MyAlert.alert('Carrera eliminada!');
+        this.careerService.deleteCareer(id).subscribe({
+          next: () => {
+            this.careers.splice(index, 1);
+            MyAlert.alert('Carrera eliminada con éxito');
+          },
+          error: (error) => {
+            MyAlert.alert('Error al eliminar la carrera', true);
+            console.error('Error al eliminar la carrera:', error);
+          }
         });
       }
     });
   }
 
-  deleteLevel(i, item) {
-    if (item?.id) this.deleteLevels.push(item.id);
-    this.subjects.splice(i, 1);
+  reloadCategories() {
+    if (!this.careerId) return;
+    this.loadSubjectCategories(this.careerId)
   }
 
-  deleteSubject(i, item, iS) {
-    if (item?.id) this.deleteSubjects.push(item.id);
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-    this.subjects[i].subject.splice(iS, 1);
-  }
-
-  setPrefix(value, i, iS?) {
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].prefix = value;
-      if (this.subjects[i].subject[iS]?.id)
-        this.subjects[i].subject[iS].edit = true;
-    } else {
-      this.subjects[i].prefix = value;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-  setSubjectDescription(value, i, iS?) {
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].info = value;
-      if (this.subjects[i].subject[iS]?.id)
-        this.subjects[i].subject[iS].edit = true;
-    } else {
-      this.subjects[i].info = value;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-  setSubjectSelective(value, i, iS?) {
-    const isSelective = value === 'true';
-    if (!isSelective) this.subjects[i].subject[iS].selectiveSubjects = [];
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].selective = isSelective;
-      if (this.subjects[i].subject[iS]?.id) {
-        this.subjects[i].subject[iS].edit = true;
+  createCategory(payload:SubjectCategoryPayload) {
+    this.loading = true
+    this.careerService.createSubjectCategory(payload).subscribe(
+      () => {
+        if (!this.careerId) return 
+        this.loadSubjectCategories(this.careerId)
+        this.loading = false
+      },
+      (error) => {
+        console.error(error)
+        MyAlert.alert('ocurrio un error al crear el nivel', true)
+        this.loading = false
       }
-    } else {
-      this.subjects[i].selective = isSelective;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
+    )
   }
-  addSelectiveSubject(value, i, iS?) {
-    if (iS !== undefined) {
-      if (this.subjects[i].subject[iS]?.id) {
-        this.subjects[i].subject[iS].edit = true;
+
+  deleteCategory(id:number) {
+    this.loading = true
+    this.careerService.deleteSubjectCategory(id).subscribe(
+      () => {
+        if (!this.careerId) return 
+        this.loadSubjectCategories(this.careerId)
+        this.loading = false
+      },
+      (error) => {
+        console.error(error)
+        MyAlert.alert('ocurrio un error al crear el nivel', true)
+        this.loading = false
       }
-      const subject = this.subjects[i].subject[iS];
-      if (value.trim()) {
-        if (!subject.selectiveSubjects) {
-          subject.selectiveSubjects = [];
-        }
-        const materiasArray = value
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item);
-        subject.selectiveSubjects.push(...materiasArray);
-      }
-      subject.selectiveSubject = '';
-    } else {
-      if (!this.subjects[i].selectiveSubjects) {
-        this.subjects[i].selectiveSubjects = [];
-      }
-      if (value.trim()) {
-        const materiasArray = value
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item);
-        this.subjects[i].selectiveSubjects.push(...materiasArray);
-      }
-      this.subjects[i].selectiveSubject = '';
-    }
-  }
-
-  removeSelectiveSubject(i: number, iS: number, j: number) {
-    if (iS !== undefined) {
-      const subject = this.subjects[i].subject[iS];
-      if (subject?.selectiveSubjects && subject.selectiveSubjects.length > j) {
-        subject.selectiveSubjects.splice(j, 1);
-        this.subjects[i].subject[iS].edit = true;
-      }
-    } else {
-      if (
-        this.subjects[i]?.selectiveSubjects &&
-        this.subjects[i].selectiveSubjects.length > j
-      ) {
-        this.subjects[i].selectiveSubjects.splice(j, 1);
-        this.subjects[i].edit = true;
-      }
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-
-  addChair(value, i, iS?) {
-    if (iS !== undefined) {
-      if (this.subjects[i].subject[iS]?.id) {
-        this.subjects[i].subject[iS].edit = true;
-      }
-      const subject = this.subjects[i].subject[iS];
-      if (value.trim()) {
-        if (!subject.chairs) {
-          subject.chairs = [];
-        }
-        const materiasArray = value
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item);
-        subject.chairs.push(...materiasArray);
-      }
-      subject.selectiveSubject = '';
-    } else {
-      if (!this.subjects[i].chairs) {
-        this.subjects[i].chairs = [];
-      }
-      if (value.trim()) {
-        const materiasArray = value
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item);
-        this.subjects[i].chairs.push(...materiasArray);
-      }
-      this.subjects[i].chairs = '';
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-
-  removeChair(i: number, iS: number, j: number) {
-    if (iS !== undefined) {
-      const subject = this.subjects[i].subject[iS];
-      if (subject?.chairs && subject.chairs.length > j) {
-        subject.chairs.splice(j, 1);
-        this.subjects[i].subject[iS].edit = true;
-      }
-    } else {
-      if (this.subjects[i]?.chairs && this.subjects[i].chairs.length > j) {
-        this.subjects[i].chairs.splice(j, 1);
-        this.subjects[i].edit = true;
-      }
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-
-  setValue(value, i, iS?) {
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].name = value;
-      if (this.subjects[i].subject[iS]?.id)
-        this.subjects[i].subject[iS].edit = true;
-    } else {
-      this.subjects[i].name = value;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-  setDescription(value, i, iS?) {
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].description = value;
-      if (this.subjects[i].subject[iS]?.id)
-        this.subjects[i].subject[iS].edit = true;
-    } else {
-      this.subjects[i].description = value;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-  }
-
-  selectCorrelative(i, iS, value) {
-    if (value.includes('index')) {
-      value = value.replace('index', '');
-      delete this.subjects[i].subject[iS].subject_id;
-      this.subjects[i].subject[iS].subject_key = value;
-    } else {
-      delete this.subjects[i].subject[iS].subject_key;
-      this.subjects[i].subject[iS].subject_id = value;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-    if (this.subjects[i].subject[iS]?.id)
-      this.subjects[i].subject[iS].edit = true;
-  }
-
-  addCorrelative(value, i, iS) {
-    if (value) {
-      const selectedSubject = this.allSubjects.find(
-        (subject) => subject.id === parseInt(value)
-      );
-      if (selectedSubject) {
-        this.subjects[i].subject[iS].subjectParent =
-          this.subjects[i].subject[iS].subjectParent || [];
-        this.subjects[i].subject[iS].subjectParent.push({
-          subject_id: this.subjects[i].subject[iS].id,
-          subject_parent_id: parseInt(value),
-          created_at: new Date().toISOString(),
-          parent: selectedSubject,
-          orSubjectParents: [],
-        });
-      }
-    }
-  }
-
-  removeCorrelative(i, iS, j) {
-    this.subjects[i].subject[iS].subjectParent.splice(j, 1);
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-    if (this.subjects[i].subject[iS]?.id)
-      this.subjects[i].subject[iS].edit = true;
-  }
-
-  selectOrCorrelative(value: string) {
-    this.selectedOrCorrelative = value;
-  }
-
-  addOrCorrelative(i: number, iS: number, j: number) {
-    const value = this.selectedOrCorrelative;
-    if (value) {
-      const newOrCorrelativeIdParsed = parseInt(value);
-      if (!isNaN(newOrCorrelativeIdParsed)) {
-        if (!this.subjects[i].subject[iS].subjectParent[j].orCorrelative) {
-          this.subjects[i].subject[iS].subjectParent[j].orCorrelative = [];
-        }
-        this.subjects[i].subject[iS].subjectParent[j].orCorrelative.push(
-          newOrCorrelativeIdParsed
-        );
-
-        this.subjects[i].edit = true;
-        this.subjects[i].subject[iS].edit = true;
-
-        this.selectedOrCorrelative = null; 
-      } else {
-        console.error('Invalid ID entered');
-      }
-    }
-  }
-
-  removeOrCorrelative(i: number, iS: number, j: number, k: number) {
-    this.subjects[i].subject[iS].subjectParent[j].orCorrelative.splice(k, 1);
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id)
-      this.subjects[i].edit = true;
-    if (this.subjects[i].subject[iS]?.id)
-      this.subjects[i].subject[iS].edit = true;
-  }
-
-  getSubjectNameById(id: number): string {
-    for (let subjectGroup of this.subjects) {
-      if (subjectGroup.id === id) {
-        return subjectGroup.name;
-      }
-    }
-    return '';
-  }
-
-  addImg(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const imgURL = URL.createObjectURL(file);
-      this.formCareer.get('image')?.patchValue(file);
-      setTimeout(() => {
-        $('#img').attr('src', imgURL);
-      }, 10);
-    }
-  }
-
-  setLabelValue(value, i, iS?): void {
-    if (iS !== undefined) {
-      this.subjects[i].subject[iS].label = value;
-      if (this.subjects[i].subject[iS]?.id) {
-        this.subjects[i].subject[iS].edit = true;
-      }
-    } else {
-      this.subjects[i].label = value;
-    }
-
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
-  }
-
-  addCondition(i: number, iS: number) {
-    if (!this.subjects[i].subject[iS].conditions) {
-      this.subjects[i].subject[iS].conditions = [];
-    }
-    this.subjects[i].subject[iS].conditions.push({
-      number: null,
-      approvedLabel: '',
-      exemptedLabel: '',
-    });
-
-    if (this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].subject[iS].edit = true;
-    }
-
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
-  }
-
-  removeCondition(i: number, iS: number, j: number) {
-    this.subjects[i].subject[iS].conditions.splice(j, 1);
-    if (this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].subject[iS].edit = true;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
-  }
-
-  saveCondition(i: number, iS: number, j: number) {
-    const condition = this.subjects[i].subject[iS].conditions[j];
-
-    this.subjects[i].subject[iS].conditions[j] = {
-      number: condition.number,
-      approvedLabel: condition.approvedLabel,
-      exemptedLabel: condition.exemptedLabel,
-    };
-
-    if (this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].subject[iS].edit = true;
-    }
-    if (this.subjects[i]?.id || this.subjects[i].subject[iS]?.id) {
-      this.subjects[i].edit = true;
-    }
-  }
-
-  getSubjectNameAndLevel(id: number | string): string {
-    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-
-    const subject = this.allSubjects.find(
-      (subject) => subject.id === numericId
-    );
-
-    return subject
-      ? `${subject.name} - ${subject.level}`
-      : 'Materia no encontrada';
+    )
   }
 }

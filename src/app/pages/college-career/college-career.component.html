@@ -1,15 +1,92 @@
 <main class="px-sm-5 px-4 py-5">
-  <section class="view" *ngIf="!form">
-    <h3>Carreras</h3>
-    <div class="d-flex justify-content-end">
+  <!-- VISTA DE EDICIÓN DE CARRERA (se muestra cuando editMode es true) -->
+  <section class="view" *ngIf="editMode">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3>Editar Carrera</h3>
+      <button class="btn btn-secondary" (click)="clearEditMode()">
+        <i class="fas fa-arrow-left me-2"></i>Volver
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <form [formGroup]="careerForm" class="row g-3">
+          <!-- Nombre de la carrera -->
+          <div class="col-md-6">
+            <label for="edit-name" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="edit-name" formControlName="name" placeholder="Nombre de la carrera">
+            <div *ngIf="careerForm.get('name')?.touched && careerForm.get('name')?.errors?.required" class="text-danger mt-1">
+              <small>El nombre es requerido</small>
+            </div>
+          </div>
+
+          <!-- URL de descripción (opcional) -->
+          <div class="col-md-6">
+            <label for="edit-descriptionUrl" class="form-label">URL de descripción (opcional)</label>
+            <input type="url" class="form-control" id="edit-descriptionUrl" formControlName="descriptionUrl" placeholder="https://ejemplo.com/descripcion">
+          </div>
+
+          <!-- Imagen de la carrera -->
+          <div class="col-12">
+            <label for="edit-careerImage" class="form-label">Imagen</label>
+            <div class="image-preview-container border rounded-3 overflow-hidden" style="width: 100%; height: 300px; position: relative;">
+              <ng-container *ngIf="selectedImageUrl; else noEditImage">
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center overflow-hidden">
+                  <img [src]="selectedImageUrl" 
+                       alt="Vista previa de la carrera" 
+                       style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                </div>
+              </ng-container>
+              <ng-template #noEditImage>
+                <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                  <span class="text-muted">Sin imagen</span>
+                </div>
+              </ng-template>
+              <div class="position-absolute bottom-0 end-0 m-2">
+                <label for="edit-careerFile" class="btn btn-sm btn-primary">
+                  <i class="fas fa-upload me-1"></i>{{ selectedImageUrl ? 'Cambiar' : 'Subir' }} imagen
+                </label>
+                <input type="file" id="edit-careerFile" accept="image/*" (change)="onImageSelected($event)" hidden>
+              </div>
+            </div>
+            <div *ngIf="careerForm.get('image')?.touched && careerForm.get('image')?.errors?.required" class="text-danger mt-1">
+              <small>La imagen es requerida</small>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="col-12 mt-4">
+            <button type="button" class="btn btn-secondary me-2" (click)="clearEditMode()">Cancelar</button>
+            <button type="button" class="btn btn-primary" (click)="updateCareer()" [disabled]="careerForm.invalid || loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <app-career-levels [careerId]="careerId || 0" [facultyId]="facultyId" [levels]="subjectCategories" (levelPayload)="createCategory($event)" (levelToDelete)="deleteCategory($event)" (reloadTrigger)="reloadCategories()">
+  
+      </app-career-levels>
+    </div>
+  </section>
+
+  <!-- VISTA DE LISTA DE CARRERAS (se muestra cuando editMode es false) -->
+  <section class="view" *ngIf="!editMode">
+    <!-- Encabezado con título y botón de nueva carrera -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>Carreras</h3>
       <button
-        class="btn btn-1"
-        [routerLink]="[]"
-        [queryParams]="{ form: 'create' }"
+        class="btn btn-primary"
+        (click)="openCareerModal()"
       >
         Nueva carrera
       </button>
     </div>
+
+    <!-- Tabla de carreras -->
     <div class="table-responsive">
       <table class="table align-middle text-center">
         <thead>
@@ -19,19 +96,33 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="
-              let item of careers | slice : (page - 1) * 10 : page * 10;
-              let i = index
-            "
-          >
+          <!-- Mensaje cuando no hay carreras o está cargando -->
+          <tr *ngIf="loading">
+            <td colspan="2" class="text-center py-4">
+              <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="!loading && careers.length === 0">
+            <td colspan="2" class="text-center py-4">
+              <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                No hay carreras disponibles para la facultad seleccionada
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Listado de carreras -->
+          <tr *ngFor="let item of careers | slice : (page - 1) * 10 : page * 10; let i = index">
             <td>{{ item.name }}</td>
             <td>
               <div class="d-flex gap-2 justify-content-center">
                 <button
                   class="btn btn-1"
-                  [routerLink]="[]"
-                  [queryParams]="{ form: i + (page - 1) * 10 }"
+                  (click)="editCareer(item.id)"
                 >
                   Ver
                 </button>
@@ -47,534 +138,75 @@
         </tbody>
       </table>
     </div>
+    
+    <!-- Paginación -->
     <ngb-pagination
+      *ngIf="careers.length > 0"
       [(page)]="page"
       [pageSize]="10"
       [maxSize]="5"
       [collectionSize]="careers.length"
     ></ngb-pagination>
   </section>
-  <section class="view" *ngIf="form">
-    <h3 class="mb-3">
-      {{ careerId ? "Informacion de carrera" : "Nueva carrera" }}
-    </h3>
-    <form class="row g-3" [formGroup]="formCareer">
-      <div>
-        <div
-          class="d-flex justify-content-center align-items-center flex-column border rounded-7 position-relative"
-          style="height: 400px"
-        >
-          <img
-            height="100%"
-            width="100%"
-            id="img"
-            style="object-fit: cover"
-            [src]="formCareer.get('image')?.value.url"
-            *ngIf="formCareer.get('image')?.value"
-          />
-          <input
-            type="file"
-            id="file"
-            accept="image/*"
-            (change)="addImg($event)"
-            hidden
-          />
-          <label
-            class="fas fa-plus btn-1 m-3"
-            [ngClass]="{ changeImg: formCareer.get('image')?.value }"
-            for="file"
-          ></label>
-          <span *ngIf="!formCareer.get('image')?.value">Imagen de carrera</span>
-        </div>
-        <small
-          class="text-danger"
-          *ngIf="
-            formCareer.get('image')?.touched &&
-            formCareer.get('image')?.errors?.required
-          "
-          >La imagen es requerida</small
-        >
-        <div class="form-floating my-3">
-          <input
-            class="form-control"
-            formControlName="name"
-            type="text"
-            placeholder=" "
-          />
-          <small
-            class="text-danger"
-            *ngIf="
-              formCareer.controls['name'].touched &&
-              formCareer.controls['name'].errors?.required
-            "
-            >El nombre es requerido</small
-          >
-          <label>Nombre</label>
+</main>
+
+<!-- Template para el modal de creación de carrera -->
+<ng-template #careerModal>
+  <div class="modal-header">
+    <h4 class="modal-title">Nueva Carrera</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeCareerModal()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="careerForm">
+      <!-- Nombre de la carrera -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="name" formControlName="name" placeholder="Nombre de la carrera">
+        <div *ngIf="careerForm.get('name')?.touched && careerForm.get('name')?.errors?.required" class="text-danger mt-1">
+          <small>El nombre es requerido</small>
         </div>
       </div>
-      <div class="col-md">
-        <h5 class="mb-3">Niveles y Materias</h5>
-        <div class="accordion border" id="accSubjects">
-          <div *ngFor="let item of subjects; let i = index">
-            <div class="accordion-item border-0">
-              <div class="position-relative ctn-trash">
-                <div class="row">
-                  <div class="form-floating col-12 col-sm-4">
-                    <input
-                      class="form-control"
-                      style="padding-right: 10px"
-                      [value]="subjects[i].name"
-                      (input)="setValue(level.value, i)"
-                      type="text"
-                      placeholder=" "
-                      #level
-                    />
-                    <label>Nivel</label>
-                  </div>
-                  <div class="form-floating col-12 col-sm-6">
-                    <input
-                      class="form-control"
-                      maxlength="100"
-                      style="padding-right: 10px"
-                      [value]="subjects[i].description || ''"
-                      (input)="setDescription(description.value, i)"
-                      type="text"
-                      placeholder=" "
-                      #description
-                    />
-                    <label>descripción</label>
-                  </div>
-                </div>
 
-                <div class="position-absolute top-0 end-0">
-                  <button
-                    class="accordion-button collapsed d-none d-sm-flex"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#coll' + i"
-                  >
-                    Materias
-                  </button>
-                  <button
-                    class="accordion-button collapsed d-sm-none custom-button-sm-arrow"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#coll' + i"
-                  ></button>
-                </div>
-                <i
-                  class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
-                  style="top: 13px; right: -20px"
-                  role="button"
-                  (click)="deleteLevel(i, item)"
-                  *ngIf="subjects.length > 1"
-                ></i>
-              </div>
-              <div
-                [id]="'coll' + i"
-                class="accordion-collapse collapse"
-                data-bs-parent="#accSubjects"
-              >
-                <div class="accordion-body border-bottom">
-                  <div
-                    class="p-2 rounded-7 mb-3 ctn-trash"
-                    *ngFor="let subject of item.subject; let iS = index"
-                    style="background: #cdf3"
-                  >
-                    <div class="form-floating">
-                      <input
-                        class="form-control bg-transparent"
-                        type="text"
-                        [value]="subjects[i].subject[iS].name"
-                        (input)="setValue(subjectname.value, i, iS)"
-                        placeholder=" "
-                        #subjectname
-                      />
-                      <label>Materia {{ iS + 1 }}</label>
-                      <i
-                        class="far fa-trash-alt position-absolute bg-gray rounded-circle p-2 text-danger"
-                        style="top: 10px; right: -3px"
-                        role="button"
-                        (click)="deleteSubject(i, subject, iS)"
-                        *ngIf="subjects[i].subject.length > 1"
-                      ></i>
-                    </div>
-                    <div class="form-floating mt-3">
-                      <input
-                        class="form-control bg-transparent"
-                        type="text"
-                        style="margin-bottom: 10px"
-                        placeholder="Etiquetas"
-                        [value]="subjects[i].subject[iS]?.label"
-                        (input)="setLabelValue(labelInput.value, i, iS)"
-                        #labelInput
-                      />
-                      <label>Etiqueta</label>
-                    </div>
+      <!-- URL de descripción (opcional) -->
+      <div class="mb-3">
+        <label for="descriptionUrl" class="form-label">URL de descripción (opcional)</label>
+        <input type="url" class="form-control" id="descriptionUrl" formControlName="descriptionUrl" placeholder="https://ejemplo.com/descripcion">
+      </div>
 
-                    <div>
-                      <div class="input-group">
-                        <select
-                          class="form-select bg-transparent"
-                          (change)="selectCorrelative(i, iS, selectCor.value)"
-                          #selectCor
-                        >
-                          <option [value]="''" selected>
-                            - Sin materia correlativa -
-                          </option>
-                          <option
-                            *ngFor="
-                              let subjectCor of allSubjects;
-                              let iSc = index
-                            "
-                            [value]="subjectCor?.id"
-                          >
-                            {{ subjectCor.name }} - {{ subjectCor.level }}
-                          </option>
-                        </select>
-                        <button
-                          class="btn btn-primary"
-                          (click)="
-                            addCorrelative(selectCor.value, i, iS);
-                            selectCor.value = ''
-                          "
-                          style="margin-top: 5px"
-                        >
-                          Agregar
-                        </button>
-                      </div>
-                      <div
-                        *ngIf="
-                          subjects[i].subject[iS].subjectParent?.length > 0
-                        "
-                      >
-                        <div style="margin-left: 10px">
-                          Correlativas Agregadas:
-                        </div>
-                        <ul>
-                          <li
-                            style="margin-bottom: 10px"
-                            *ngFor="
-                              let correlative of subjects[i].subject[iS]
-                                .subjectParent;
-                              let j = index
-                            "
-                          >
-                            <span>{{ correlative.parent.name }}</span>
-                            <span
-                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                              style="margin-left: 10px; cursor: pointer"
-                              (click)="removeCorrelative(i, iS, j)"
-                            ></span>
-                            <div class="input-group" style="margin-top: 5px">
-                              <select
-                                class="form-select bg-transparent"
-                                (change)="selectOrCorrelative(selectOrCor.value)"
-                                #selectOrCor
-                              >
-                                <option [value]="''" selected>
-                                  - Sin otra materia correlativa -
-                                </option>
-                                <option
-                                  *ngFor="let subjectCor of allSubjects; let iSc = index"
-                                  [value]="subjectCor?.id"
-                                >
-                                  {{ subjectCor.name }} - {{ subjectCor.level }}
-                                </option>
-                              </select>
-                              <button
-                                class="btn btn-secondary"
-                                (click)="addOrCorrelative(i, iS, j)"
-                                style="margin-left: 5px"
-                              >
-                                Agregar O
-                              </button>
-                            </div>
-                            
-                            <div
-                              *ngIf="
-                                subjects[i]?.subject[iS]?.subjectParent[j]
-                                  ?.orCorrelative?.length > 0
-                              "
-                            >
-                              <ul style="margin-top: 10px">
-                                <li
-                                  *ngFor="
-                                    let id of subjects[i].subject[iS]
-                                      .subjectParent[j].orCorrelative;
-                                    let k = index
-                                  "
-                                  style="margin-bottom: 5px"
-                                >
-                                  {{ getSubjectNameAndLevel(id) }}
-                                  <span
-                                    class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                                    style="margin-left: 10px; cursor: pointer"
-                                    (click)="removeOrCorrelative(i, iS, j, k)"
-                                  ></span>
-                                </li>
-                              </ul>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div class="form-floating">
-                      <input
-                        class="form-control bg-transparent"
-                        type="text"
-                        [value]="
-                          subjects[i].subject[iS].prefix
-                            ? subjects[i].subject[iS].prefix
-                            : ''
-                        "
-                        (input)="setPrefix(prefix.value, i, iS)"
-                        placeholder=" "
-                        #prefix
-                      />
-                      <label>Prefijo</label>
-                    </div>
-                    <div
-                      class="form-floating"
-                      style="margin-bottom: 20px; margin-top: 20px"
-                    >
-                      <select
-                        class="form-select bg-transparent"
-                        (change)="setSubjectSelective(selective.value, i, iS)"
-                        #selective
-                      >
-                        <option
-                          value="true"
-                          [selected]="
-                            subjects[i].subject[iS]?.selective === true
-                          "
-                        >
-                          Sí
-                        </option>
-                        <option
-                          value="false"
-                          [selected]="
-                            subjects[i].subject[iS]?.selective === false ||
-                            subjects[i].subject[iS]?.selective === null
-                          "
-                        >
-                          No
-                        </option>
-                      </select>
-                      <label>¿Es selectiva?</label>
-                    </div>
-
-                    <div *ngIf="subjects[i].subject[iS]?.selective === true">
-                      <div class="input-group">
-                        <input
-                          class="form-control bg-transparent"
-                          type="text"
-                          [value]="
-                            subjects[i].subject[iS].selectiveSubject
-                              ? subjects[i].subject[iS].selectiveSubject
-                              : ''
-                          "
-                          #selectiveSubject
-                          placeholder=" "
-                        />
-                        <button
-                          class="btn btn-primary"
-                          (click)="
-                            addSelectiveSubject(selectiveSubject.value, i, iS)
-                          "
-                          style="margin-top: 5px"
-                        >
-                          Agregar
-                        </button>
-                      </div>
-                      <div>
-                        <div style="margin-left: 10px">Materias Agregadas:</div>
-                        <ul>
-                          <li
-                            style="margin-bottom: 10px"
-                            *ngFor="
-                              let materia of subjects[i].subject[iS]
-                                ?.selectiveSubjects;
-                              let s = index
-                            "
-                          >
-                            {{ materia }}
-                            <span
-                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                              style="margin-left: 10px; cursor: pointer"
-                              (click)="removeSelectiveSubject(i, iS, s)"
-                            ></span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div class="input-group">
-                        <input
-                          class="form-control bg-transparent"
-                          type="text"
-                          [value]="
-                            subjects[i].subject[iS]?.chair
-                              ? subjects[i].subject[iS].chair
-                              : ''
-                          "
-                          #chair
-                          placeholder=" "
-                        />
-                        <button
-                          class="btn btn-primary"
-                          (click)="
-                            addChair(chair.value, i, iS); chair.value = ''
-                          "
-                          style="margin-top: 5px"
-                        >
-                          Agregar
-                        </button>
-                      </div>
-                      <div>
-                        <div style="margin-left: 10px">Catedras Agregadas:</div>
-                        <ul>
-                          <li
-                            style="margin-bottom: 10px"
-                            *ngFor="
-                              let chair of subjects[i].subject[iS]?.chairs;
-                              let j = index
-                            "
-                          >
-                            {{ chair }}
-                            <span
-                              class="far fa-trash-alt bg-gray rounded-circle p-1 text-danger"
-                              style="margin-left: 10px; cursor: pointer"
-                              (click)="removeChair(i, iS, j)"
-                            ></span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div class="form-floating" style="margin-bottom: 10px">
-                      <input
-                        class="form-control bg-transparent"
-                        type="text"
-                        [value]="
-                          subjects[i].subject[iS].info
-                            ? subjects[i].subject[iS].info
-                            : ''
-                        "
-                        (input)="setSubjectDescription(info.value, i, iS)"
-                        placeholder=" "
-                        #info
-                      />
-                      <label>descripción</label>
-                    </div>
-
-                    <div [formGroup]="formCareer">
-                      <div
-                        *ngFor="
-                          let condition of subjects[i].subject[iS].conditions;
-                          let j = index
-                        "
-                        style="margin-bottom: 5px"
-                      >
-                        <label style="margin-right: 5px" for="number"
-                          >Si aprobó</label
-                        >
-                        <input
-                          style="margin-right: 5px"
-                          type="number"
-                          [(ngModel)]="condition.number"
-                          [ngModelOptions]="{ standalone: true }"
-                          name="number{{ i }}{{ iS }}{{ j }}"
-                        />
-
-                        <label style="margin-right: 5px" for="approvedLabel"
-                          >materias de tipo</label
-                        >
-                        <select
-                          style="margin-right: 5px"
-                          [(ngModel)]="condition.approvedLabel"
-                          [ngModelOptions]="{ standalone: true }"
-                          name="approvedLabel{{ i }}{{ iS }}{{ j }}"
-                        >
-                          <option
-                            *ngFor="let label of allLabels"
-                            [value]="label"
-                          >
-                            {{ label }}
-                          </option>
-                        </select>
-
-                        <label style="margin-right: 5px" for="exemptedLabel"
-                          >no debe dar materias de tipo</label
-                        >
-                        <select
-                          style="margin-right: 10px"
-                          [(ngModel)]="condition.exemptedLabel"
-                          [ngModelOptions]="{ standalone: true }"
-                          name="exemptedLabel{{ i }}{{ iS }}{{ j }}"
-                        >
-                          <option
-                            *ngFor="let label of allLabels"
-                            [value]="label"
-                          >
-                            {{ label }}
-                          </option>
-                        </select>
-
-                        <button
-                          style="margin-right: 5px"
-                          class="btn btn-primary"
-                          (click)="saveCondition(i, iS, j)"
-                        >
-                          Guardar
-                        </button>
-                        <button
-                          class="btn btn-secondary"
-                          (click)="removeCondition(i, iS, j)"
-                        >
-                          Eliminar Condición
-                        </button>
-                      </div>
-                      <button
-                        class="btn btn-primary"
-                        (click)="addCondition(i, iS)"
-                      >
-                        Agregar Condición
-                      </button>
-                    </div>
-                  </div>
-                  <div class="text-end">
-                    <button
-                      class="btn btn-1"
-                      (click)="subjects[i].subject.push({ name: '' })"
-                    >
-                      Agregar otra materia
-                    </button>
-                  </div>
-                </div>
-              </div>
+      <!-- Imagen de la carrera -->
+      <div class="mb-3">
+        <label for="careerImage" class="form-label">Imagen <span class="text-danger">*</span></label>
+        <div class="image-preview-container border rounded-3 overflow-hidden" style="width: 100%; height: 200px; position: relative;">
+          <ng-container *ngIf="selectedImageUrl; else noImage">
+            <div class="w-100 h-100 d-flex align-items-center justify-content-center overflow-hidden">
+              <img [src]="selectedImageUrl" 
+                   alt="Vista previa de la carrera" 
+                   style="max-width: 100%; max-height: 100%; object-fit: cover;">
             </div>
+          </ng-container>
+          <ng-template #noImage>
+            <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+              <span class="text-muted">Sin imagen</span>
+            </div>
+          </ng-template>
+          <div class="position-absolute bottom-0 end-0 m-2">
+            <label for="careerFile" class="btn btn-sm btn-primary">
+              <i class="fas fa-upload me-1"></i>Subir imagen
+            </label>
+            <input type="file" id="careerFile" accept="image/*" (change)="onImageSelected($event)" hidden>
           </div>
         </div>
-        <button
-          class="btn btn-1 mt-3"
-          (click)="
-            subjects.push({ name: '', career_id: '', subject: [{ name: '' }] })
-          "
-        >
-          Agregar otro nivel
-        </button>
-      </div>
-      <div>
-        <button
-          class="btn btn-1"
-          (click)="createOrEdit(formCareer.value, careerId)"
-        >
-          Guardar
-        </button>
+        <div *ngIf="careerForm.get('image')?.touched && careerForm.get('image')?.errors?.required" class="text-danger mt-1">
+          <small>La imagen es requerida</small>
+        </div>
       </div>
     </form>
-  </section>
-</main>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="closeCareerModal()">Cancelar</button>
+    <button type="button" class="btn btn-primary" (click)="createCareer()" [disabled]="careerForm.invalid || loading">
+      <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+      Guardar
+    </button>
+  </div>
+</ng-template>

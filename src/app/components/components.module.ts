@@ -10,6 +10,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuLeftComponent } from './dash/menu-left/menu-left.component';
+import { CareerLevelsComponent } from './career-levels/career-levels.component';
+import { SubjectModalComponent } from './subject-modal/subject-modal.component';
 
 
 @NgModule({
@@ -28,13 +30,17 @@ import { MenuLeftComponent } from './dash/menu-left/menu-left.component';
     DashFooterComponent,
     DashHeaderComponent,
     MenuLeftComponent,
+    CareerLevelsComponent,
+    SubjectModalComponent
   ],
   exports: [
     AuthFooterComponent,
     AuthHeaderComponent,
     DashFooterComponent,
     DashHeaderComponent,
-    MenuLeftComponent
+    MenuLeftComponent,
+    CareerLevelsComponent,
+    SubjectModalComponent
   ],
   providers: []
 })
