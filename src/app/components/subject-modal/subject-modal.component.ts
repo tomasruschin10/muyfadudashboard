@@ -209,7 +209,7 @@ export class SubjectModalComponent implements OnInit {
           subject.subjectParent = subject.subjectParent.map(parent => ({ 
             subject_parent_id: parent.subject_parent_id,
             orCorrelative: parent.orCorrelative  // Aquí se mantienen los IDs de las correlativas seleccionadas
-           }));
+          }));
         }
         return subject;
       });
