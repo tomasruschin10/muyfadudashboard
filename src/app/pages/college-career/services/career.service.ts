@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { Career } from 'src/app/shared/models/career.model';
 import { map } from 'rxjs/operators';
 import { SubjectCategory, SubjectCategoryPayload } from 'src/app/shared/models/subject-category.model';
-import { SubjectPayload } from 'src/app/shared/models/subject.model';
+import { Subject, SubjectPayload } from 'src/app/shared/models/subject.model';
 
 @Injectable({
   providedIn: 'root'
@@ -90,6 +90,12 @@ export class CareerService {
     return this.http.post<SubjectCategory[]>(`${this.BASE_URL}/subject/createMany`, {
       data: subjects
     }).pipe(
+      map(response => response || [])
+    )
+  }
+
+  getSubjectsByCareer(careerId:number){
+    return this.http.get<Subject[]>(`${this.BASE_URL}/subject/career/${careerId}`).pipe(
       map(response => response || [])
     )
   }

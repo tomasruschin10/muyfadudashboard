@@ -2,7 +2,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { SubjectPayload } from 'src/app/shared/models/subject.model';
+import { Subject, SubjectParentPayload, SubjectPayload } from 'src/app/shared/models/subject.model';
 
 @Component({
   selector: 'app-subject-modal',
@@ -12,6 +12,7 @@ import { SubjectPayload } from 'src/app/shared/models/subject.model';
 export class SubjectModalComponent implements OnInit {
   @Input() categoryId: number;
   @Input() facultyId: number | null;
+  @Input() subjectsCareer: Subject[] = [];
   
   subjectForm: FormGroup;
   subjects: SubjectPayload[] = [];
@@ -37,7 +38,7 @@ export class SubjectModalComponent implements OnInit {
       url: [''],
       subject_category_id: [this.categoryId],
       faculty_id: [this.facultyId],
-      subjectParent: this.fb.array([])
+      subjectParent: this.fb.array([]) // Mantenemos el nombre original
     });
   }
   
@@ -48,6 +49,11 @@ export class SubjectModalComponent implements OnInit {
   
   get selectiveSubjectsArray(): FormArray {
     return this.subjectForm.get('selectiveSubjects') as FormArray;
+  }
+  
+  // Getter para el array de materias correlativas
+  get subjectParentArray(): FormArray {
+    return this.subjectForm.get('subjectParent') as FormArray;
   }
   
   // Métodos para manejar las cátedras (profesores)
@@ -97,6 +103,17 @@ export class SubjectModalComponent implements OnInit {
         subject.chairs = ['No especificado'];
       }
       
+      // Asegurarse de que subjectParent tenga el formato correcto
+      if (subject.subjectParent && Array.isArray(subject.subjectParent)) {
+        // Filtrar entradas vacías
+        subject.subjectParent = subject.subjectParent
+          .filter(item => item && item.subject_parent_id)
+          .map(item => ({
+            subject_parent_id: item.subject_parent_id,
+            orCorrelative: item.orCorrelative || []
+          }));
+      }
+      
       // Agregar la materia a la lista
       this.subjects.push(subject);
       
@@ -112,6 +129,40 @@ export class SubjectModalComponent implements OnInit {
     this.subjects.splice(index, 1);
   }
   
+  // Método para agregar una correlativa
+  addSubjectParent(subjectId?: number): void {
+    this.subjectParentArray.push(
+      this.fb.group({
+        subject_parent_id: [subjectId || ''],
+        orCorrelative: this.fb.array([])
+      })
+    );
+  }
+
+  // Método para eliminar una correlativa
+  removeSubjectParent(index: number): void {
+    this.subjectParentArray.removeAt(index);
+  }
+
+  // Método para verificar si una materia ya está seleccionada como correlativa
+  isSubjectParentSelected(subjectId: number): boolean {
+    const values = this.subjectParentArray.value;
+    return values.some(item => item.subject_parent_id === subjectId);
+  }
+
+  // Método para manejar la selección de correlativas
+  toggleSubjectParent(subject: Subject): void {
+    const index = this.subjectParentArray.value.findIndex(item => item.subject_parent_id === subject.id);
+    
+    if (index >= 0) {
+      // Si ya está seleccionada, la quitamos
+      this.subjectParentArray.removeAt(index);
+    } else {
+      // Si no está seleccionada, la agregamos
+      this.addSubjectParent(subject.id);
+    }
+  }
+
   resetForm(): void {
     // Mantener los valores de categoryId y facultyId
     const categoryId = this.subjectForm.get('subject_category_id')?.value;
@@ -137,6 +188,10 @@ export class SubjectModalComponent implements OnInit {
     while (this.selectiveSubjectsArray.length > 0) {
       this.selectiveSubjectsArray.removeAt(0);
     }
+    
+    while (this.subjectParentArray.length > 0) {
+      this.subjectParentArray.removeAt(0);
+    }
   }
   
   // Método para guardar todas las materias
@@ -147,6 +202,18 @@ export class SubjectModalComponent implements OnInit {
     }
     
     if (this.subjects.length > 0) {
+      // Asegurarse de que cada materia tenga el formato correcto para subjectParent
+      this.subjects = this.subjects.map(subject => {
+        if (subject.subjectParent && Array.isArray(subject.subjectParent)) {
+          // Transformar el array de IDs a objetos con el formato requerido
+          subject.subjectParent = subject.subjectParent.map(parent => ({ 
+            subject_parent_id: parent.subject_parent_id,
+            orCorrelative: parent.orCorrelative  // Aquí se mantienen los IDs de las correlativas seleccionadas
+           }));
+        }
+        return subject;
+      });
+      
       this.activeModal.close(this.subjects);
     } else {
       // Mostrar mensaje de error o validación
@@ -176,5 +243,27 @@ export class SubjectModalComponent implements OnInit {
         control?.markAsTouched();
       }
     });
+  }
+
+  // Método para obtener el nombre de una materia por su ID
+  getSubjectName(subjectParent: SubjectParentPayload): string {
+    const subject = this.subjectsCareer.find(s => s.id === subjectParent.subject_parent_id);
+    return subject ? subject.name : 'Materia desconocida';
+  }
+
+  // Propiedad para la búsqueda de correlativas
+  subjectParentSearch: string = '';
+
+  // Getter para filtrar las materias correlativas
+  get filteredSubjectParents(): Subject[] {
+    if (!this.subjectParentSearch) {
+      return this.subjectsCareer;
+    }
+    
+    const search = this.subjectParentSearch.toLowerCase();
+    return this.subjectsCareer.filter(subject => 
+      subject.name.toLowerCase().includes(search) || 
+      subject.prefix?.toLowerCase().includes(search)
+    );
   }
 }

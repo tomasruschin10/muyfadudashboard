@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { SubjectCategory, SubjectCategoryPayload } from '../../shared/models/subject-category.model';
 import { CareerService } from 'src/app/pages/college-career/services/career.service';
-import { SubjectPayload } from 'src/app/shared/models/subject.model';
+import { Subject, SubjectPayload } from 'src/app/shared/models/subject.model';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SubjectModalComponent } from '../subject-modal/subject-modal.component';
@@ -20,6 +20,8 @@ export class CareerLevelsComponent implements OnInit {
   @Output() levelToDelete = new EventEmitter<number>();
   @Output() reloadTrigger = new EventEmitter<void>();
 
+  subjects: Subject[] = []
+
   constructor(
     private careerService: CareerService,
     private modalService: NgbModal
@@ -30,6 +32,18 @@ export class CareerLevelsComponent implements OnInit {
     if (!this.levels || this.levels.length === 0) {
       this.addLevel();
     }
+    this.loadSubjects();
+  }
+
+  loadSubjects() {
+    this.careerService.getSubjectsByCareer(this.careerId).subscribe(
+      (subjects) => {
+        this.subjects = subjects
+      },
+      (error) => {
+        console.error(error)
+      }
+    )
   }
 
   // Métodos para gestionar niveles
@@ -106,6 +120,9 @@ export class CareerLevelsComponent implements OnInit {
     // Crear y emitir el payload para este nivel específico
     const payload = this.getPayload(level);
     this.levelPayload.emit(payload);
+    setTimeout(() => {
+      this.loadSubjects()
+    }, 1000);
   }
 
   addSubjectsToLevel(subjects: SubjectPayload[]): void {
@@ -126,6 +143,7 @@ export class CareerLevelsComponent implements OnInit {
     // Pasar datos básicos al modal
     modalRef.componentInstance.categoryId = categoryId;
     modalRef.componentInstance.facultyId = this.facultyId;
+    modalRef.componentInstance.subjectsCareer = this.subjects;
     
     // Suscribirse al evento de cierre del modal
     modalRef.result.then(
