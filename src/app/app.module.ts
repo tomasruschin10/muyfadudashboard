@@ -20,6 +20,7 @@ import { NgxMaskModule } from 'ngx-mask';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { FacultyHeaderInterceptor } from './core/interceptors/faculty-header.interceptor';
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -65,6 +66,11 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: FacultyHeaderInterceptor,
       multi: true
     }
   ],

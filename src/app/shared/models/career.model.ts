@@ -4,6 +4,8 @@ export interface Career{
     "id": number,
     "name": string,
     "image_id": number,
+    "faculty_id": number | null
+    description_url?: string
     "created_at": Date,
     "updated_at": Date,
     "image": Image

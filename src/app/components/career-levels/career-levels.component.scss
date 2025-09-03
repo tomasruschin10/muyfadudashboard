@@ -1,0 +1,11 @@
+.career-levels-container {
+  margin-bottom: 20px;
+}
+
+.level-item {
+  transition: all 0.3s ease;
+}
+
+.level-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

@@ -1,6 +1,30 @@
 <nav class="navbar navbar-expand-lg px-4 py-3 shadow-sm">
   <img class="logo" width="50px" role="button" src="assets/img/logo.png" routerLink="/dash/home">
-  <div class="ms-auto d-flex align-items-center gap-4">
+  
+  <!-- Selector de Facultades -->
+  <div class="ms-auto me-4">
+    <div class="dropdown">
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownFacultades" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ (selectedFaculty !== null && selectedFaculty.title) ? selectedFaculty.title : 'Seleccionar Facultad' }}
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownFacultades">
+        <li *ngIf="selectedFaculty">
+          <a class="dropdown-item text-danger" (click)="clearFacultyFilter()">
+            <i class="fas fa-times-circle me-2"></i>Quitar filtro
+          </a>
+          <div class="dropdown-divider"></div>
+        </li>
+        <li *ngFor="let faculty of faculties">
+          <a class="dropdown-item" (click)="selectFaculty(faculty)" 
+            [class.active]="selectedFaculty && selectedFaculty.id === faculty.id">
+            {{ faculty.title }}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center gap-4">
     <div class="dropdown">
       <img class="rounded-circle border-1" width="48px" height="48px" [src]="userData.image.url" role="button" data-bs-toggle="dropdown">
       <ul class="dropdown-menu pt-0 shadow-sm" aria-labelledby="dropdownMenuButton1">
@@ -11,14 +35,9 @@
             <span>{{userData.email}}</span>
           </div>
         </li>
-        <!-- <li>
-          <a class="dropdown-options d-flex align-items-center gap-2" routerLink="/dash/configuraciones">
-            <i class="fas fa-cog fs-5"></i> Ajustes
-          </a>
-        </li> -->
         <li>
           <a class="dropdown-options d-flex align-items-center gap-2" (click)="logout()">
-            <i class="fas fa-sign-out-alt fs-5"></i> Cerra Sesión
+            <i class="fas fa-sign-out-alt fs-5"></i> Cerrar Sesión
           </a>
         </li>
       </ul>
