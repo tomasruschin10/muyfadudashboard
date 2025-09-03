@@ -120,15 +120,15 @@ export class CareerLevelsComponent implements OnInit {
     // Crear y emitir el payload para este nivel específico
     const payload = this.getPayload(level);
     this.levelPayload.emit(payload);
-    setTimeout(() => {
-      this.loadSubjects()
-    }, 1000);
   }
 
   addSubjectsToLevel(subjects: SubjectPayload[]): void {
     this.careerService.createManySubjects(subjects).subscribe(
       () => {
         this.reloadTrigger.emit();
+        setTimeout(() => {
+          this.loadSubjects()
+        }, 1000);
       },
       (error) => {
         console.error('Error al crear las materias:', error);
