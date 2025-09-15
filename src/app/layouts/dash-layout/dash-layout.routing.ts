@@ -23,6 +23,7 @@ export const DashLayoutRoutes: Routes = [
     { path: 'promociones', loadChildren: () => import('../../pages/promotions/promotions.module').then(m => m.PromotionsModule) },
     { path: 'interacciones', loadChildren: () => import('../../pages/user-interactions/user-interactions.module').then(m => m.UserInteractionModule) },
     { path: 'facultades', loadChildren: () => import('../../pages/faculties/faculties.module').then(m => m.FacultiesModule) },
+    { path: 'banners-pagados', loadChildren: () => import('../../pages/paid-banners/paid-banners.module').then(m => m.PaidBannersModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];
