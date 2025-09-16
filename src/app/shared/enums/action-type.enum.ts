@@ -20,3 +20,9 @@ export enum ActionTypeEnum {
   COMMENT_OPINION = 'COMMENT_OPINION',
   PROFILE_BONUS = 'PROFILE_BONUS'
 }
+
+export enum BannerLocation {
+  OPINIONS = 'opinions',
+  NOTES = 'notes',
+  ALL = 'all'
+}

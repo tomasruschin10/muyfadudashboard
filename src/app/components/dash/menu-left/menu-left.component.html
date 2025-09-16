@@ -94,8 +94,13 @@
   </a>
 
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/facultades" routerLinkActive="active">
-    <i class="fas fa-history"></i>
+    <i class="fas fa-school"></i>
     <div><span>Facultades</span></div>
+  </a>
+
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/banners-pagados" routerLinkActive="active">
+    <i class="fas fa-money-bill-wave"></i>
+    <div><span>Banners Pagados</span></div>
   </a>
 </aside>
 <div class="backdrop" (click)="show = !show"></div>
