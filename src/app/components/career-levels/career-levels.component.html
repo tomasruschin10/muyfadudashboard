@@ -136,8 +136,17 @@
                     <div class="accordion-body p-0">
                       <ul class="list-group list-group-flush">
                         <li *ngFor="let subject of level.subject" class="list-group-item d-flex justify-content-between align-items-center">
-                          {{ subject.name }}
-                          <span class="badge bg-light text-dark">{{ subject.label || 'Sin etiqueta' }}</span>
+                          <div class="d-flex align-items-center flex-grow-1">
+                            <span class="me-2">{{ subject.name }}</span>
+                            <span class="badge bg-light text-dark">{{ subject.label || 'Sin etiqueta' }}</span>
+                          </div>
+                          <button 
+                            class="btn btn-sm btn-outline-primary"
+                            (click)="editSubject(subject, level.id)"
+                            title="Editar materia"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </button>
                         </li>
                       </ul>
                     </div>
