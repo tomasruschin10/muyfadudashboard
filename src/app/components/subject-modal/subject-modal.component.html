@@ -1,7 +1,7 @@
 <div class="modal-header bg-gradient-primary text-white">
   <h4 class="modal-title d-flex align-items-center">
     <i class="fas fa-book-open me-2"></i>
-    Agregar materias al nivel
+    {{ editMode ? 'Editar materia' : 'Agregar materias al nivel' }}
   </h4>
   <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="close()"></button>
 </div>
@@ -283,10 +283,17 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="close()">
+  <button type="button" class="btn btn-secondary" (click)="close()">
     <i class="fas fa-times me-2"></i>Cancelar
   </button>
-  <button type="button" class="btn btn-success px-4" (click)="saveSubjects()" [disabled]="subjects.length === 0">
-    <i class="fas fa-save me-2"></i> Guardar materias
+  
+  <!-- Botón de guardar con texto dinámico -->
+  <button 
+    type="button" 
+    class="btn btn-primary"
+    (click)="saveSubjects()"
+    [disabled]="editMode ? subjectForm.invalid : subjects.length === 0"
+  >
+    <i class="fas fa-save me-2"></i>{{ editMode ? 'Guardar cambios' : 'Guardar materias' }}
   </button>
 </div>

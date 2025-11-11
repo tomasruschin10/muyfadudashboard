@@ -100,4 +100,10 @@ export class CareerService {
     )
   }
 
+  editSubject(subject: SubjectPayload, id:number){
+    return this.http.put(`${this.BASE_URL}/subject/update/${id}`, subject, {
+      observe: 'response'
+    })
+  }
+
 }

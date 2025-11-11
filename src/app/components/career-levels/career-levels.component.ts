@@ -144,6 +144,7 @@ export class CareerLevelsComponent implements OnInit {
     modalRef.componentInstance.categoryId = categoryId;
     modalRef.componentInstance.facultyId = this.facultyId;
     modalRef.componentInstance.subjectsCareer = this.subjects;
+    modalRef.componentInstance.editMode = false
     
     // Suscribirse al evento de cierre del modal
     modalRef.result.then(
@@ -155,6 +156,41 @@ export class CareerLevelsComponent implements OnInit {
       },
       (reason) => {
         // Este bloque se ejecuta cuando el modal se descarta (usando dismiss())
+        console.log('Modal cerrado sin guardar:', reason);
+      }
+    );
+  }
+
+  // Nuevo método para editar una materia
+  editSubject(subject: Subject, categoryId: number): void {
+    const modalRef = this.modalService.open(SubjectModalComponent, {size: 'lg'});
+    
+    // Configurar el modal en modo edición
+    modalRef.componentInstance.categoryId = categoryId;
+    modalRef.componentInstance.facultyId = this.facultyId;
+    modalRef.componentInstance.subjectsCareer = this.subjects;
+    modalRef.componentInstance.editMode = true;
+    modalRef.componentInstance.subjectToEdit = subject;
+    
+    // Manejar el resultado
+    modalRef.result.then(
+      (updatedSubjects: SubjectPayload[]) => {
+        if (updatedSubjects && updatedSubjects.length > 0) {
+          const updatedSubject = updatedSubjects[0];
+          
+          // Llamar al servicio para actualizar la materia
+          this.careerService.editSubject(updatedSubject, subject.id).subscribe(
+            response => {
+              this.reloadTrigger.emit();
+            },
+            error => {
+              console.error('Error al actualizar la materia:', error);
+              alert('Error al actualizar la materia');
+            }
+          );
+        }
+      },
+      (reason) => {
         console.log('Modal cerrado sin guardar:', reason);
       }
     );
