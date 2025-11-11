@@ -13,6 +13,8 @@ export class SubjectModalComponent implements OnInit {
   @Input() categoryId: number;
   @Input() facultyId: number | null;
   @Input() subjectsCareer: Subject[] = [];
+  @Input() editMode: boolean = false; // Nuevo input
+  @Input() subjectToEdit: SubjectPayload | null = null; // Nuevo input
   
   subjectForm: FormGroup;
   subjects: SubjectPayload[] = [];
@@ -24,6 +26,11 @@ export class SubjectModalComponent implements OnInit {
   
   ngOnInit(): void {
     this.initForm();
+    
+    // Si estamos en modo edición, cargar los datos
+    if (this.editMode && this.subjectToEdit) {
+      this.loadSubjectData(this.subjectToEdit);
+    }
   }
   
   initForm(): void {
@@ -194,30 +201,103 @@ export class SubjectModalComponent implements OnInit {
     }
   }
   
-  // Método para guardar todas las materias
-  saveSubjects(): void {
-    // Si hay una materia en el formulario que no se ha agregado, agregarla
-    if (this.subjectForm.valid && this.subjectForm.get('name')?.value) {
-      this.addSubject();
+  // Nuevo método para cargar datos en modo edición
+  loadSubjectData(subject: SubjectPayload): void {
+    // Cargar datos básicos
+    this.subjectForm.patchValue({
+      name: subject.name,
+      prefix: subject.prefix,
+      label: subject.label || 'Materia Regular',
+      info: subject.info || '',
+      selective: subject.selective || false,
+      url: subject.url || '',
+      subject_category_id: subject.subject_category_id,
+      faculty_id: subject.faculty_id
+    });
+    
+    // Cargar cátedras
+    this.chairsArray.clear();
+    if (subject.chairs && subject.chairs.length > 0) {
+      subject.chairs.forEach(chair => {
+        this.chairsArray.push(this.fb.control(chair));
+      });
+    } else {
+      this.addChair();
     }
     
-    if (this.subjects.length > 0) {
-      // Asegurarse de que cada materia tenga el formato correcto para subjectParent
-      this.subjects = this.subjects.map(subject => {
-        if (subject.subjectParent && Array.isArray(subject.subjectParent)) {
-          // Transformar el array de IDs a objetos con el formato requerido
-          subject.subjectParent = subject.subjectParent.map(parent => ({ 
-            subject_parent_id: parent.subject_parent_id,
-            orCorrelative: parent.orCorrelative  // Aquí se mantienen los IDs de las correlativas seleccionadas
-          }));
-        }
-        return subject;
+    // Cargar materias selectivas
+    this.selectiveSubjectsArray.clear();
+    if (subject.selectiveSubjects && subject.selectiveSubjects.length > 0) {
+      subject.selectiveSubjects.forEach(selective => {
+        this.selectiveSubjectsArray.push(this.fb.control(selective));
       });
-      
-      this.activeModal.close(this.subjects);
+    }
+    
+    // Cargar correlativas
+    this.subjectParentArray.clear();
+    if (subject.subjectParent && subject.subjectParent.length > 0) {
+      subject.subjectParent.forEach(parent => {
+        const parentGroup = this.fb.group({
+          subject_parent_id: [parent.subject_parent_id],
+          orCorrelative: this.fb.array(parent.orCorrelative || [])
+        });
+        this.subjectParentArray.push(parentGroup);
+      });
+    }
+  }
+  
+  // Modificar el método saveSubjects
+  saveSubjects(): void {
+    if (this.editMode) {
+      // En modo edición, solo guardamos la materia actual del formulario
+      if (this.subjectForm.valid) {
+        const subject: SubjectPayload = {...this.subjectForm.value};
+        
+        // Filtrar valores vacíos
+        subject.chairs = subject.chairs.filter(chair => chair.trim() !== '');
+        subject.selectiveSubjects = subject.selectiveSubjects.filter(s => s.trim() !== '');
+        
+        if (subject.chairs.length === 0) {
+          subject.chairs = ['No especificado'];
+        }
+        
+        // Formatear subjectParent
+        if (subject.subjectParent && Array.isArray(subject.subjectParent)) {
+          subject.subjectParent = subject.subjectParent
+            .filter(item => item && item.subject_parent_id)
+            .map(item => ({
+              subject_parent_id: item.subject_parent_id,
+              orCorrelative: item.orCorrelative || []
+            }));
+        }
+        
+        // Cerrar con la materia editada
+        this.activeModal.close([subject]);
+      } else {
+        this.markFormGroupTouched(this.subjectForm);
+        alert('Por favor complete todos los campos requeridos');
+      }
     } else {
-      // Mostrar mensaje de error o validación
-      alert('Debe agregar al menos una materia');
+      // Modo creación (lógica actual)
+      if (this.subjectForm.valid && this.subjectForm.get('name')?.value) {
+        this.addSubject();
+      }
+      
+      if (this.subjects.length > 0) {
+        this.subjects = this.subjects.map(subject => {
+          if (subject.subjectParent && Array.isArray(subject.subjectParent)) {
+            subject.subjectParent = subject.subjectParent.map(parent => ({ 
+              subject_parent_id: parent.subject_parent_id,
+              orCorrelative: parent.orCorrelative
+            }));
+          }
+          return subject;
+        });
+        
+        this.activeModal.close(this.subjects);
+      } else {
+        alert('Debe agregar al menos una materia');
+      }
     }
   }
   
