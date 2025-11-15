@@ -27,6 +27,10 @@
           <h6 class="mb-0">
             <span class="badge bg-primary me-2">{{ i + 1 }}</span>
             {{ level.name || 'Nuevo nivel' }}
+            <!-- Indicador de cambios pendientes -->
+            <span *ngIf="hasLevelChanged(i)" class="badge bg-warning text-dark ms-2">
+              <i class="fas fa-exclamation-circle"></i> Cambios sin guardar
+            </span>
           </h6>
           <div>
             <!-- Mostrar botón de guardar solo si el nivel no tiene ID (no está guardado) -->
@@ -38,6 +42,17 @@
               title="Guardar nivel"
             >
               <i class="fas fa-save"></i>
+            </button>
+            
+            <!-- Nuevo: Botón de actualizar (solo si el nivel existe y ha sido modificado) -->
+            <button
+              *ngIf="level.id && hasLevelChanged(i)"
+              class="btn btn-outline-warning btn-sm me-2"
+              (click)="updateLevel(i)"
+              [disabled]="!level.name"
+              title="Actualizar nivel"
+            >
+              <i class="fas fa-sync-alt"></i>
             </button>
             
             <!-- Botón de eliminar siempre visible si hay más de un nivel -->

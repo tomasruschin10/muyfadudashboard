@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Subject, SubjectPayload } from 'src/app/shared/models/subject.model';
 import { SubjectCategory, SubjectCategoryPayload } from '../../shared/models/subject-category.model';
 import { CareerService } from 'src/app/pages/college-career/services/career.service';
-import { Subject, SubjectPayload } from 'src/app/shared/models/subject.model';
 import { MyAlert } from 'src/app/shared/static-functions/myFunctions';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SubjectModalComponent } from '../subject-modal/subject-modal.component';
@@ -11,7 +11,7 @@ import { SubjectModalComponent } from '../subject-modal/subject-modal.component'
   templateUrl: './career-levels.component.html',
   styleUrls: ['./career-levels.component.scss']
 })
-export class CareerLevelsComponent implements OnInit {
+export class CareerLevelsComponent implements OnInit, OnChanges {
   @Input() levels: SubjectCategory[] = [];
   @Input() careerId: number;
   @Input() facultyId: number | null;
@@ -19,8 +19,12 @@ export class CareerLevelsComponent implements OnInit {
   @Output() levelPayload = new EventEmitter<SubjectCategoryPayload>();
   @Output() levelToDelete = new EventEmitter<number>();
   @Output() reloadTrigger = new EventEmitter<void>();
+  @Output() levelToUpdate = new EventEmitter<SubjectCategory>()
 
   subjects: Subject[] = []
+  
+  // Objeto para rastrear el estado original de cada nivel
+  private originalLevels: Map<number, SubjectCategory> = new Map();
 
   constructor(
     private careerService: CareerService,
@@ -33,6 +37,52 @@ export class CareerLevelsComponent implements OnInit {
       this.addLevel();
     }
     this.loadSubjects();
+    this.storeOriginalLevels();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Actualizar los niveles originales cuando cambien los inputs
+    if (changes['levels'] && !changes['levels'].firstChange) {
+      this.storeOriginalLevels();
+    }
+  }
+
+  // Almacenar el estado original de los niveles
+  private storeOriginalLevels(): void {
+    this.levels.forEach(level => {
+      if (level.id && !this.originalLevels.has(level.id)) {
+        this.originalLevels.set(level.id, {
+          ...level,
+          name: level.name,
+          description: level.description,
+          year: level.year
+        });
+      }
+    });
+  }
+
+  // Verificar si un nivel ha sido modificado
+  hasLevelChanged(levelIndex: number): boolean {
+    const level = this.levels[levelIndex];
+    
+    // Si no tiene ID, no puede ser actualizado (debe ser guardado primero)
+    if (!level.id) {
+      return false;
+    }
+    
+    const original = this.originalLevels.get(level.id);
+    
+    // Si no hay original, no hay cambios
+    if (!original) {
+      return false;
+    }
+    
+    // Comparar campos relevantes (trim para evitar espacios en blanco)
+    const nameChanged = (level.name || '').trim() !== (original.name || '').trim();
+    const descChanged = (level.description || '').trim() !== (original.description || '').trim();
+    const yearChanged = (level.year || '').trim() !== (original.year || '').trim();
+    
+    return nameChanged || descChanged || yearChanged;
   }
 
   loadSubjects() {
@@ -63,7 +113,6 @@ export class CareerLevelsComponent implements OnInit {
   }
 
   addLevel(): void {
-    // Crear un nuevo nivel temporal con los campos necesarios para SubjectCategoryPayload
     const newLevel: SubjectCategory = {
       id: 0,
       name: '',
@@ -81,21 +130,20 @@ export class CareerLevelsComponent implements OnInit {
   }
 
   removeLevel(levelIndex: number): void {
-    if (!(this.levels.length > 1)) return
-    
-    if (this.levels[levelIndex].id && this.levels[levelIndex].id > 0) {
-      this.levelToDelete.emit(this.levels[levelIndex].id || 0);
+    const level = this.levels[levelIndex];
+    if (level.id) {
+      this.levelToDelete.emit(level.id);
+      // Remover del mapa de originales
+      this.originalLevels.delete(level.id);
     }
-
     this.levels.splice(levelIndex, 1);
+    this.emitChanges();
   }
 
-  // Emitir cambios al componente padre
   private emitChanges(): void {
     // No emitimos todos los niveles, solo actualizamos la vista
   }
 
-  // Método para obtener un SubjectCategoryPayload a partir de un SubjectCategory
   getPayload(level: SubjectCategory): SubjectCategoryPayload {
     return {
       name: level.name,
@@ -106,20 +154,37 @@ export class CareerLevelsComponent implements OnInit {
     };
   }
 
-  // Método para guardar un nivel específico
   saveLevel(levelIndex: number): void {
     const level = this.levels[levelIndex];
     
-    // Validar que el nivel tenga nombre antes de emitirlo
     if (!level.name || level.name.trim() === '') {
-      // Aquí podrías mostrar un mensaje de error o manejar la validación
       console.error('El nombre del nivel es requerido');
       return;
     }
     
-    // Crear y emitir el payload para este nivel específico
     const payload = this.getPayload(level);
     this.levelPayload.emit(payload);
+  }
+
+  updateLevel(levelIndex: number) {
+    const level = this.levels[levelIndex];
+    
+    if (!level.name || level.name.trim() === '') {
+      console.error('El nombre del nivel es requerido');
+      return;
+    }
+    
+    this.levelToUpdate.emit(level);
+    
+    // Actualizar el estado original después de emitir la actualización
+    if (level.id) {
+      this.originalLevels.set(level.id, {
+        ...level,
+        name: level.name,
+        description: level.description,
+        year: level.year
+      });
+    }
   }
 
   addSubjectsToLevel(subjects: SubjectPayload[]): void {

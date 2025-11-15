@@ -310,6 +310,26 @@ export class CollegeCareerComponent implements OnInit {
     )
   }
 
+  updateCategory(payload:SubjectCategory) {
+    this.loading = true
+    this.careerService.putSubjectCategory({
+      name: payload.name,
+      description: payload.description,
+      year: payload.year
+    }, payload.id).subscribe(
+      () => {
+        if (!this.careerId) return 
+        this.loadSubjectCategories(this.careerId)
+        this.loading = false
+      },
+      (error) => {
+        console.error(error)
+        MyAlert.alert('ocurrio un error al crear el nivel', true)
+        this.loading = false
+      }
+    )
+  }
+
   deleteCategory(id:number) {
     this.loading = true
     this.careerService.deleteSubjectCategory(id).subscribe(
