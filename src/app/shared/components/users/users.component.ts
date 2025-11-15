@@ -138,7 +138,7 @@ export class UsersComponent implements OnInit {
 
   listCareer(){
     this.careerSv.getCareer().subscribe((data:any) =>{
-      this.careers = data.body
+      this.careers = data
     })
   }
 
