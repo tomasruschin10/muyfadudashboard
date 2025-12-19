@@ -125,7 +125,7 @@ export class OffersComponent implements OnInit {
 
   listCareer() {
     this.careerSv.getCareer().subscribe((data: any) => {
-      this.careers = data.body;
+      this.careers = data;
     });
   }
 
@@ -137,18 +137,29 @@ export class OffersComponent implements OnInit {
         const requests = this.careers.map(async (career) => {
           const formData = new FormData();
           formData.append('career_id', career.id.toString());
+          
           Object.keys(this.formOffer.controls).forEach((key) => {
             const controlValue = form[key] ?? this.formOffer.get(key)?.value;
-            if (controlValue instanceof File) {
+            
+            if (key === 'image') {
+              // Manejar múltiples imágenes
+              if (Array.isArray(controlValue)) {
+                controlValue.forEach((img, index) => {
+                  if (img.file instanceof File) {
+                    formData.append('image', img.file, img.file.name);
+                  }
+                });
+              } else if (controlValue instanceof File) {
+                formData.append('image', controlValue, controlValue.name);
+              }
+            } else if (controlValue instanceof File) {
               formData.append(key, controlValue, controlValue.name);
-            } else if (key !== 'career_id') {
+            } else if (key !== 'career_id' && key !== 'images') {
               formData.append(key, controlValue);
             }
           });
 
-          const response = await this.offertsSv
-            .postOffers(formData)
-            .toPromise();
+          const response = await this.offertsSv.postOffers(formData).toPromise();
           this.offers.unshift(response.body as Offer);
           return response;
         });
@@ -171,6 +182,7 @@ export class OffersComponent implements OnInit {
         form.offer_category_id = dataCategory?.body?.id;
         this.categoriesFilter.push(dataCategory.body);
       }
+      
       if (!form.partner_id && !id) {
         let dataPartner: any = await this.offertsSv
           .postPartner({ name: 'partner' })
@@ -178,16 +190,31 @@ export class OffersComponent implements OnInit {
         form.partner_id = dataPartner?.body?.id;
         this.partnersFilter.push(dataPartner.body);
       }
+      
       const formData = new FormData();
       if (!id) formData.append('partner_id', form.partner_id);
+      
       Object.keys(this.formOffer.controls).forEach((key) => {
         const controlValue = form[key] ?? this.formOffer.get(key)?.value;
-        if (controlValue instanceof File) {
+        
+        if (key === 'image') {
+          // Manejar múltiples imágenes
+          if (Array.isArray(controlValue)) {
+            controlValue.forEach((img, index) => {
+              if (img.file instanceof File) {
+                formData.append('image', img.file, img.file.name);
+              }
+            });
+          } else if (controlValue instanceof File) {
+            formData.append('image', controlValue, controlValue.name);
+          }
+        } else if (controlValue instanceof File) {
           formData.append(key, controlValue, controlValue.name);
-        } else {
+        } else if (key !== 'images') {
           formData.append(key, controlValue);
         }
       });
+      
       if (id) {
         this.offertsSv
           .putOffers(formData, id)
@@ -261,14 +288,13 @@ export class OffersComponent implements OnInit {
 
   addImg(event) {
     if (event.target.files && event.target.files.length > 0) {
-      const files = Array.from(event.target.files);
+      const files = Array.from(event.target.files) as File[];
       const currentImages = this.formOffer.get('image')?.value || [];
 
       const newImages = files.map(file => ({
         file: file,
         url: URL.createObjectURL(file as Blob)
       }));
-      console.log(newImages)
 
       let updatedImages;
       if (Array.isArray(currentImages)) {
@@ -279,15 +305,11 @@ export class OffersComponent implements OnInit {
         updatedImages = newImages;
       }
 
-      console.log(updatedImages)
-
       // Limitar a un máximo de 3 imágenes
       const limitedImages = updatedImages.slice(0, 3);
 
       this.formOffer.get('image')?.setValue(limitedImages);
 
-      // Actualizar la vista del carrusel
-      console.log(this.getImages())
       this.updateCarouselView();
     }
   }
