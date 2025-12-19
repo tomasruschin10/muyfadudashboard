@@ -1,7 +1,7 @@
 
 export const environment = {
   production: true,
-  API_URL: 'https://dev.api.masfadu.com',
+  API_URL: 'https://api.masfadu.com',
   firebaseConfig: {
     apiKey: 'AIzaSyBDEIpAX7mXUJDm1Xx2zW0ll58A0CgUDZE',
     authDomain: 'fadu-1c40d.firebaseapp.com',

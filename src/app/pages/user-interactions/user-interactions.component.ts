@@ -84,6 +84,7 @@ export class UserInteractionComponent implements OnInit {
     if (interaction.advertisement) return interaction.advertisement?.title || 'anuncio';
     if (interaction.modal) return interaction.modal.title || 'Título de modal'
     if (interaction.offer) return interaction.offer.title || 'Oferta sin título'
+    if (interaction.banner) return interaction.banner.title || 'Banner sin título'
     if (interaction.section_name) return interaction.section_name || 'sección sin nombre'
     return 'N/A';
   }
@@ -102,6 +103,8 @@ export class UserInteractionComponent implements OnInit {
         return 'Oferta'
       case 'button':
         return 'Botón'
+      case 'banner':
+        return 'Banner'
       default:
         return contentType;
     }

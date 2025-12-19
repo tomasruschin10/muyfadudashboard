@@ -2,6 +2,7 @@ import { Advertisement } from "./advertisement.model";
 import { IModal } from "./modal.model";
 import { Notice } from "./notice.model";
 import { Offer } from "./offer.model";
+import { PaidBanner } from "./paid-banner.model";
 import { Promotion } from "./promotion.model";
 import { User } from "./user.model";
 
@@ -19,4 +20,5 @@ export interface UserInteraction {
   modal?: IModal
   offer?: Offer
   section_name?: string
+  banner?: PaidBanner
 }
