@@ -98,6 +98,11 @@
     <div><span>Facultades</span></div>
   </a>
 
+  <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/cambio-facultades" routerLinkActive="active">
+    <i class="fas fa-exchange-alt"></i>
+    <div><span>Solicitudes de Cambio</span></div>
+  </a>
+
   <a class="d-flex gap-2 align-items-center mx-2 p-2 option my-1 rounded-1" (click)="window.innerWidth < 766 && show = !show" routerLink="/dash/banners-pagados" routerLinkActive="active">
     <i class="fas fa-money-bill-wave"></i>
     <div><span>Banners Pagados</span></div>
