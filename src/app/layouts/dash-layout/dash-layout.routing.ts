@@ -24,6 +24,7 @@ export const DashLayoutRoutes: Routes = [
     { path: 'interacciones', loadChildren: () => import('../../pages/user-interactions/user-interactions.module').then(m => m.UserInteractionModule) },
     { path: 'facultades', loadChildren: () => import('../../pages/faculties/faculties.module').then(m => m.FacultiesModule) },
     { path: 'banners-pagados', loadChildren: () => import('../../pages/paid-banners/paid-banners.module').then(m => m.PaidBannersModule) },
+    { path: 'cambio-facultades', loadChildren: () => import('../../pages/faculty-change/faculty-change.module').then(m => m.FacultyChangeModule) },
     // { path: 'objestos-perdidos', loadChildren: () => import('../../pages/lost-object/lost-object.module').then(m => m.LostObjectModule) },
     // { path: 'configuraciones', loadChildren: () => import('../../pages/settings/settings.module').then(m => m.SettingsModule) },
 ];

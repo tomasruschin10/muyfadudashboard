@@ -1,0 +1,285 @@
+<main class="px-sm-5 px-4 py-5">
+  <section class="view">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="mb-0">Solicitudes de Cambio de Facultad</h3>
+      <span class="badge bg-info">{{ totalRecords }} solicitudes</span>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4 border-0 shadow-sm">
+      <div class="card-body">
+        <div class="row g-3">
+          <!-- Status Filter -->
+          <div class="col-md-4">
+            <label for="statusFilter" class="form-label fw-500 mb-2">Filtrar por Estado</label>
+            <select
+              id="statusFilter"
+              class="form-select form-select-sm"
+              [(ngModel)]="selectedStatus"
+              (change)="onStatusFilterChange(selectedStatus)"
+            >
+              <option *ngFor="let option of statusOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Search Filter -->
+          <div class="col-md-8">
+            <label for="searchInput" class="form-label fw-500 mb-2">Buscar</label>
+            <input
+              id="searchInput"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Buscar por usuario, email o facultad..."
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange(searchTerm)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="text-muted mt-3">Cargando solicitudes...</p>
+    </div>
+
+    <!-- Table Section -->
+    <div *ngIf="!isLoading && filteredRequests.length > 0" class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th class="fw-600">Usuario</th>
+            <th class="fw-600">Email</th>
+            <th class="fw-600">Facultad Actual</th>
+            <th class="fw-600">Facultad Solicitada</th>
+            <th class="fw-600">Estado</th>
+            <th class="fw-600">Fecha de Solicitud</th>
+            <th class="fw-600 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of filteredRequests; let i = index">
+            <!-- Usuario -->
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                     style="width: 32px; height: 32px;">
+                  <i class="fas fa-user text-muted"></i>
+                </div>
+                <span class="fw-500">{{ request.user?.name || 'N/A' }}</span>
+              </div>
+            </td>
+
+            <!-- Email -->
+            <td>
+              <small class="text-muted">{{ request.user?.email || 'N/A' }}</small>
+            </td>
+
+            <!-- Facultad Actual -->
+            <td>
+              <span class="badge bg-light text-dark">
+                {{ request.currentFaculty?.title || 'N/A' }}
+              </span>
+            </td>
+
+            <!-- Facultad Solicitada -->
+            <td>
+              <span class="badge bg-primary">
+                {{ request.requestedFaculty?.title || 'N/A' }}
+              </span>
+            </td>
+
+            <!-- Estado -->
+            <td>
+              <span [ngClass]="'badge ' + getStatusBadgeClass(request.status)">
+                {{ getStatusLabel(request.status) }}
+              </span>
+            </td>
+
+            <!-- Fecha -->
+            <td>
+              <small class="text-muted">
+                {{ request.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </small>
+            </td>
+
+            <!-- Acciones -->
+            <td>
+              <div class="d-flex gap-2 justify-content-center">
+                <!-- Botón Aprobar -->
+                <button
+                  *ngIf="canShowActionButtons(request)"
+                  class="btn btn-sm btn-success"
+                  [disabled]="isProcessing"
+                  (click)="approveFacultyChange(request)"
+                  title="Aprobar solicitud"
+                >
+                  <i class="fas fa-check"></i>
+                </button>
+
+                <!-- Botón Rechazar -->
+                <button
+                  *ngIf="canShowActionButtons(request)"
+                  class="btn btn-sm btn-warning"
+                  [disabled]="isProcessing"
+                  (click)="openRejectModal(request)"
+                  title="Rechazar solicitud"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+
+                <!-- Botón Eliminar -->
+                <button
+                  class="btn btn-sm btn-danger"
+                  [disabled]="isProcessing"
+                  (click)="deleteFacultyChange(request)"
+                  title="Eliminar solicitud"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+
+                <!-- Botón Ver Detalles -->
+                <button
+                  class="btn btn-sm btn-info"
+                  title="Ver detalles"
+                  [disabled]="!request.reason"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredRequests.length === 0" class="text-center py-5">
+      <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+      <p class="text-muted mt-3">No hay solicitudes que coincidan con los filtros</p>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && totalPages > 1" class="d-flex justify-content-center mt-4">
+      <nav aria-label="Page navigation">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
+            <button
+              class="page-link"
+              (click)="onPageChange(1)"
+              [disabled]="currentPage === 1"
+            >
+              <i class="fas fa-chevron-left"></i> Primera
+            </button>
+          </li>
+
+          <li
+            *ngFor="let page of pagesArray"
+            class="page-item"
+            [ngClass]="{ active: page === currentPage }"
+          >
+            <button class="page-link" (click)="onPageChange(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <li class="page-item" [ngClass]="{ disabled: currentPage === totalPages }">
+            <button
+              class="page-link"
+              (click)="onPageChange(totalPages)"
+              [disabled]="currentPage === totalPages"
+            >
+              Última <i class="fas fa-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+  <!-- MODAL DE RECHAZO -->
+  <ng-template #rejectModalTemplate let-modal>
+    <div class="modal-header bg-danger text-white">
+      <h5 class="modal-title">
+        <i class="fas fa-times-circle me-2"></i>Rechazar Solicitud
+      </h5>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        (click)="modal.dismiss()"
+        aria-label="Close"
+      ></button>
+    </div>
+  
+    <form [formGroup]="rejectForm" (ngSubmit)="rejectFacultyChange()">
+      <div class="modal-body">
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Usuario:</strong> {{ selectedRequestForReject?.user?.name }}
+        </div>
+  
+        <div class="form-group">
+          <label for="rejectReason" class="form-label fw-500">
+            Motivo del Rechazo <span class="text-danger">*</span>
+          </label>
+          <textarea
+            id="rejectReason"
+            class="form-control"
+            formControlName="reason"
+            rows="4"
+            placeholder="Ingrese el motivo del rechazo (mínimo 10 caracteres)..."
+            [ngClass]="{ 'is-invalid': rejectForm.get('reason')?.invalid && rejectForm.get('reason')?.touched }"
+          ></textarea>
+  
+          <div
+            *ngIf="rejectForm.get('reason')?.invalid && rejectForm.get('reason')?.touched"
+            class="invalid-feedback d-block"
+          >
+            <small *ngIf="rejectForm.get('reason')?.hasError('required')">
+              <i class="fas fa-exclamation-circle me-1"></i>El motivo es requerido
+            </small>
+            <small *ngIf="rejectForm.get('reason')?.hasError('minlength')" class="d-block">
+              <i class="fas fa-exclamation-circle me-1"></i>Mínimo 10 caracteres
+            </small>
+            <small *ngIf="rejectForm.get('reason')?.hasError('maxlength')" class="d-block">
+              <i class="fas fa-exclamation-circle me-1"></i>Máximo 500 caracteres
+            </small>
+          </div>
+  
+          <small class="text-muted d-block mt-2">
+            {{ rejectForm.get('reason')?.value?.length || 0 }}/500 caracteres
+          </small>
+        </div>
+      </div>
+  
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="modal.dismiss()"
+          [disabled]="isProcessing"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-danger"
+          [disabled]="rejectForm.invalid || isProcessing"
+        >
+          <span *ngIf="!isProcessing">
+            <i class="fas fa-times me-2"></i>Rechazar
+          </span>
+          <span *ngIf="isProcessing">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Procesando...
+          </span>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</main>
