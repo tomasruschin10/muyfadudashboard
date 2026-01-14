@@ -59,3 +59,74 @@
     }
   }
 }
+
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  display: inline-block;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.badge-success {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+// ... existing styles ...
+
+.details-container {
+  .card {
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .card-header {
+      border-bottom: 1px solid #dee2e6;
+      padding: 0.75rem 1rem;
+
+      h6 {
+        color: #333;
+        font-weight: 600;
+      }
+    }
+
+    .card-body {
+      padding: 1rem;
+
+      p {
+        margin-bottom: 0.5rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      strong {
+        color: #333;
+      }
+    }
+  }
+
+  .badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
