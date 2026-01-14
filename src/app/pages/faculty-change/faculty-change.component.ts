@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { FacultyChangeService } from './services/faculty-change.service';
 import {
   FacultyChangeRequest,
@@ -15,6 +16,9 @@ import {
   styleUrls: ['./faculty-change.component.scss']
 })
 export class FacultyChangeComponent implements OnInit, OnDestroy {
+  @ViewChild('rejectModalTemplate') rejectModalTemplate!: TemplateRef<any>;
+  @ViewChild('detailsModalTemplate') detailsModalTemplate!: TemplateRef<any>;
+
   // Data
   facultyChangeRequests: FacultyChangeRequest[] = [];
   filteredRequests: FacultyChangeRequest[] = [];
@@ -31,11 +35,14 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
   // UI States
   isLoading: boolean = false;
   isProcessing: boolean = false;
-  showRejectModal: boolean = false;
   selectedRequestForReject: FacultyChangeRequest | null = null;
+  selectedRequestForDetails: FacultyChangeRequest | null = null;
 
   // Forms
   rejectForm: FormGroup;
+
+  // Modal
+  private modalRef: NgbModalRef | null = null;
 
   // Subscriptions
   private destroy$ = new Subject<void>();
@@ -51,7 +58,8 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
 
   constructor(
     private facultyChangeService: FacultyChangeService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private modalService: NgbModal
   ) {
     this.rejectForm = this.createRejectForm();
   }
@@ -63,6 +71,9 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.modalRef) {
+      this.modalRef.close();
+    }
   }
 
   /**
@@ -106,11 +117,12 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(req => req.status === this.selectedStatus);
     }
 
-    // Filtrar por búsqueda (nombre de usuario o facultad)
+    // Filtrar por búsqueda (nombre de usuario, email o facultad)
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(req =>
         req.user?.name?.toLowerCase().includes(term) ||
+        req.user?.email?.toLowerCase().includes(term) ||
         req.currentFaculty?.title?.toLowerCase().includes(term) ||
         req.requestedFaculty?.title?.toLowerCase().includes(term)
       );
@@ -184,16 +196,35 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
 
     this.selectedRequestForReject = request;
     this.rejectForm.reset();
-    this.showRejectModal = true;
+    
+    // Abre el modal
+    this.modalRef = this.modalService.open(this.rejectModalTemplate, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+
+    // Maneja el cierre del modal
+    this.modalRef.result.then(
+      () => {
+        this.closeRejectModal();
+      },
+      () => {
+        this.closeRejectModal();
+      }
+    );
   }
 
   /**
    * Cierra el modal de rechazo
    */
   closeRejectModal(): void {
-    this.showRejectModal = false;
     this.selectedRequestForReject = null;
     this.rejectForm.reset();
+    if (this.modalRef) {
+      this.modalRef.close();
+      this.modalRef = null;
+    }
   }
 
   /**
@@ -222,6 +253,36 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
           this.isProcessing = false;
         }
       });
+  }
+
+  openDetailsModal(request: FacultyChangeRequest): void {
+    this.selectedRequestForDetails = request;
+    
+    this.modalRef = this.modalService.open(this.detailsModalTemplate, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+
+    this.modalRef.result.then(
+      () => {
+        this.closeDetailsModal();
+      },
+      () => {
+        this.closeDetailsModal();
+      }
+    );
+  }
+
+  /**
+   * Cierra el modal de detalles
+   */
+  closeDetailsModal(): void {
+    this.selectedRequestForDetails = null;
+    if (this.modalRef) {
+      this.modalRef.close();
+      this.modalRef = null;
+    }
   }
 
   /**
@@ -291,7 +352,7 @@ export class FacultyChangeComponent implements OnInit, OnDestroy {
    * Obtiene el array de páginas para la paginación
    */
   get pagesArray(): number[] {
-    const pages:number[] = [];
+    const pages: number[] = [];
     for (let i = 1; i <= this.totalPages; i++) {
       pages.push(i);
     }
