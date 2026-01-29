@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -12,23 +12,29 @@ import { Career, Subject } from 'src/app/shared/models/career.model';
 import { CreateFile } from '../../shared/static-functions/myFunctions';
 import { PromotionService } from '../promotions/services/promotions.service';
 import { Promotion } from 'src/app/shared/models/promotion.model';
-declare var $: any
+import { FacultyFilterService } from 'src/app/shared/services/faculty-filter.service';
+import { Faculty } from 'src/app/shared/models/faculty.model';
+import { Subscription } from 'rxjs';
+import $ from 'jquery';
 
 @Component({
   selector: 'app-ad-page',
   templateUrl: './ad-page.component.html',
   styleUrls: ['./ad-page.component.scss']
 })
-export class AdPageComponent implements OnInit {
-  advertisements: Advertisement[] = []
-  partners: Partner[] = []
-  careers: Career[]
-  partnersFilter: Partner[]
-  formAdvertisement: FormGroup
-  form
-  advertisement: Advertisement | null
-  page: number = 1
-  promotions: Promotion[] = []
+export class AdPageComponent implements OnInit, OnDestroy {
+  advertisements: Advertisement[] = [];
+  allAdvertisements: Advertisement[] = [];
+  partners: Partner[] = [];
+  careers: Career[];
+  partnersFilter: Partner[];
+  formAdvertisement: FormGroup;
+  form;
+  advertisement: Advertisement | null;
+  page: number = 1;
+  promotions: Promotion[] = [];
+  selectedFaculty: Faculty | null = null;
+  facultySubscription: Subscription | null = null;
 
   constructor(
     private adPageSv: AdPageService,
@@ -36,23 +42,34 @@ export class AdPageComponent implements OnInit {
     private careerSv: CareerService,
     private route: Router,
     private routeActive: ActivatedRoute,
-    private promotionSv: PromotionService
-  ) { 
-    routeActive.queryParams.subscribe(data =>{
-      this.form = data.form
-      if(this.form) this.initFormAdvertisement()
-    })
+    private promotionSv: PromotionService,
+    private facultyFilterService: FacultyFilterService
+  ) {
+    routeActive.queryParams.subscribe(data => {
+      this.form = data.form;
+      if (this.form) this.initFormAdvertisement();
+    });
   }
 
   ngOnInit(): void {
-    this.listAdvertisement()
-    this.listPartner()
-    this.listCareers()
-    this.listPromotions()
+    this.listAdvertisement();
+    this.listPartner();
+    this.listCareers();
+    this.listPromotions();
+    this.facultySubscription = this.facultyFilterService.getSelectedFaculty().subscribe(faculty => {
+      this.selectedFaculty = faculty;
+      this.listAdvertisement();
+    });
   }
 
-  initFormAdvertisement(){
-    this.advertisement = null
+  ngOnDestroy(): void {
+    if (this.facultySubscription) {
+      this.facultySubscription.unsubscribe();
+    }
+  }
+
+  initFormAdvertisement() {
+    this.advertisement = null;
     this.formAdvertisement = new FormGroup({
       url: new FormControl('', Validators.required),
       title: new FormControl('', Validators.required),
@@ -63,28 +80,30 @@ export class AdPageComponent implements OnInit {
       image: new FormControl('', Validators.required),
       order: new FormControl('', Validators.required),
       promotion_id: new FormControl(null)
-    })
-    if(this.advertisements?.length > 0 && this.form != 'create' && this.form){
-      this.advertisement = this.advertisements[this.form]
+    });
+    if (this.advertisements?.length > 0 && this.form != 'create' && this.form) {
+      this.advertisement = this.advertisements[this.form];
       this.formAdvertisement.patchValue({
         ...this.advertisements[this.form],
         date_start: this.advertisements[this.form].date_start.toString().slice(0, 10),
         date_end: this.advertisements[this.form].date_end.toString().slice(0, 10),
-      })
+      });
       setTimeout(() => {
-        $('#img').attr('src', this.advertisements[this.form].image.url)
-        this.filterList()
+        $('#img').attr('src', this.advertisements[this.form].image.url);
+        this.filterList();
       }, 10);
-    }else{
-      this.partners = this.partnersFilter
+    } else {
+      this.partners = this.partnersFilter;
     }
   }
 
-  listAdvertisement(){
-    this.adPageSv.getAdvertisement().subscribe(({body}:any) =>{
-      this.advertisements = body
-      this.initFormAdvertisement()
-    })
+  listAdvertisement() {
+    const facultyId = this.selectedFaculty ? this.selectedFaculty.id : undefined;
+    this.adPageSv.getAdvertisement(facultyId).subscribe(({ body }: any) => {
+      this.allAdvertisements = body;
+      this.advertisements = body;
+      this.initFormAdvertisement();
+    });
   }
 
   listPromotions() {
@@ -122,6 +141,10 @@ export class AdPageComponent implements OnInit {
     const formdata = new FormData
     for(let [item, value] of Object.entries(form)){
       formdata.append(item, value as any)
+    }
+    // Agregar el id de la facultad seleccionada si existe
+    if (this.selectedFaculty && this.selectedFaculty.id) {
+      formdata.append('faculty_id', this.selectedFaculty.id.toString());
     }
     formdata.append("key", "home")
     try {
@@ -172,10 +195,10 @@ export class AdPageComponent implements OnInit {
 
   filterList(item?){
     this.partners = this.partnersFilter.filter( newList =>{
-      return newList.name.toUpperCase().includes(item ? item.name?.toUpperCase() : $('#partner').val()?.toUpperCase())
+      return newList.name.toUpperCase().includes(item ? item.name?.toUpperCase() : String($('#partner').val() ?? '').toUpperCase())
     })
     setTimeout(() => {
-      if(item ? item.name : $('#partner').val()?.toUpperCase() == $('.item_partner').html()?.toUpperCase()){
+      if((item ? item.name : String($('#partner').val() ?? '').toUpperCase()) == String($('.item_partner').html() ?? '').toUpperCase()){
         this.formAdvertisement.controls.partner_id.patchValue($('.item_partner').val())
         $('#partner').val($('.item_partner').html())
       }else{

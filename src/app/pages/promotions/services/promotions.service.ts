@@ -23,8 +23,12 @@ export class PromotionService {
     );
   }
 
-  getAllPromotions(): Observable<Promotion[]> {
-    return this.http.get<Promotion[]>(`${this.BASE_URL}/promotions/all`).pipe(
+  getAllPromotions(facultyId?: number): Observable<Promotion[]> {
+    let url = `${this.BASE_URL}/promotions/all`;
+    if (facultyId) {
+      url += `?faculty_id=${facultyId}`;
+    }
+    return this.http.get<Promotion[]>(url).pipe(
       map((res) => res || [])
     )
   }

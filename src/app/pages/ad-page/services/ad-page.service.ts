@@ -10,8 +10,12 @@ export class AdPageService {
     constructor(private http: HttpClient) {
       this.BASE_URL = environment.API_URL
     }
-    getAdvertisement(){
-      return this.http.get(`${this.BASE_URL}/advertisement/all`, {
+    getAdvertisement(facultyId?: number){
+      let url = `${this.BASE_URL}/advertisement/all`;
+      if (facultyId) {
+        url += `?faculty_id=${facultyId}`;
+      }
+      return this.http.get(url, {
         observe: 'response'
       })
     }

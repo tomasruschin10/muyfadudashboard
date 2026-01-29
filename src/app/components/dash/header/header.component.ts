@@ -60,8 +60,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   loadFaculties() {
     this.facultiesService.getAll().subscribe({
       next: (data) => {
+        console.log('Facultades cargadas:', data); // <-- Log para depuración
         this.faculties = data;
-        
         // Si tenemos un ID guardado, buscar la facultad completa
         const currentFaculty = this.facultyFilterService.getCurrentFaculty();
         if (currentFaculty && currentFaculty.id) {

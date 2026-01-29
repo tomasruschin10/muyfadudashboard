@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FacultyFilterService } from 'src/app/shared/services/faculty-filter.service';
+import { Faculty } from 'src/app/shared/models/faculty.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -30,10 +32,13 @@ export class PromotionsComponent implements OnInit {
   @ViewChild('promotionModal') modalElement: ElementRef;
   private modal: Modal;
 
+  selectedFaculty: Faculty | null = null;
+  facultySubscription: any;
   constructor(
     private service: PromotionService,
     private route: Router,
-    private fb:FormBuilder
+    private fb:FormBuilder,
+    private facultyFilterService: FacultyFilterService
   ){ 
     this.promotionForm = this.fb.group({
       title: ['', Validators.required],
@@ -51,7 +56,11 @@ export class PromotionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getPromotions()
+    this.getPromotions();
+    this.facultySubscription = this.facultyFilterService.getSelectedFaculty().subscribe(faculty => {
+      this.selectedFaculty = faculty;
+      this.getPromotions();
+    });
   }
 
   ngAfterViewInit() {
@@ -59,7 +68,8 @@ export class PromotionsComponent implements OnInit {
   }
 
   getPromotions() {
-    this.service.getAllPromotions().subscribe(
+    const facultyId = this.selectedFaculty ? this.selectedFaculty.id : undefined;
+    this.service.getAllPromotions(facultyId).subscribe(
       (response) => {
         this.promotions = response
       }
@@ -68,6 +78,9 @@ export class PromotionsComponent implements OnInit {
 
   savePromotion() {
     const formData = this.createFormData()
+    if (this.selectedFaculty && this.selectedFaculty.id) {
+      formData.append('faculty_id', this.selectedFaculty.id.toString());
+    }
     if (!this.isEditing) {
       this.service.createPromotion(formData).subscribe(
         () => {

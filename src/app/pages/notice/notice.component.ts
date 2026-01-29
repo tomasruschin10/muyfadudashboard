@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FacultyFilterService } from 'src/app/shared/services/faculty-filter.service';
+import { Faculty } from 'src/app/shared/models/faculty.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -23,11 +25,14 @@ export class NoticeComponent implements OnInit {
   page: number = 1
   promotions: Promotion[] = []
 
+  selectedFaculty: Faculty | null = null;
+  facultySubscription: any;
   constructor(
     private noticeSv: NoticeService,
     private route: Router,
     private routeActive: ActivatedRoute,
-    private promotionSv: PromotionService
+    private promotionSv: PromotionService,
+    private facultyFilterService: FacultyFilterService
   ) { 
     routeActive.queryParams.subscribe(data =>{
       this.form = data.form
@@ -36,8 +41,12 @@ export class NoticeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listNotice()
-    this.listPromotions()
+    this.listNotice();
+    this.listPromotions();
+    this.facultySubscription = this.facultyFilterService.getSelectedFaculty().subscribe(faculty => {
+      this.selectedFaculty = faculty;
+      this.listNotice();
+    });
   }
 
   initFormNotice(){
@@ -64,7 +73,8 @@ export class NoticeComponent implements OnInit {
   }
 
   listNotice(){
-    this.noticeSv.getNotice().subscribe((data:any) =>{
+    const facultyId = this.selectedFaculty ? this.selectedFaculty.id : undefined;
+    this.noticeSv.getNotice(facultyId).subscribe((data:any) =>{
       this.news = data.body
       this.initFormNotice()
     })
@@ -83,6 +93,9 @@ export class NoticeComponent implements OnInit {
     const formdata = new FormData
     for(let [item, value] of Object.entries(form)){
       formdata.append(item, value as any)
+    }
+    if (this.selectedFaculty && this.selectedFaculty.id) {
+      formdata.append('faculty_id', this.selectedFaculty.id.toString());
     }
     try {
       if(id){

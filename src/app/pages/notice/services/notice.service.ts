@@ -12,8 +12,12 @@ export class NoticeService {
     this.BASE_URL = environment.API_URL
   }
 
-  getNotice(){
-    return this.http.get(`${this.BASE_URL}/notice/all`, {
+  getNotice(facultyId?: number){
+    let url = `${this.BASE_URL}/notice/all`;
+    if (facultyId) {
+      url += `?faculty_id=${facultyId}`;
+    }
+    return this.http.get(url, {
       observe: 'response'
     })
   }
