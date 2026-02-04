@@ -9,12 +9,12 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
 
-# Build the Angular application
+# Build the Angular application (production)
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
