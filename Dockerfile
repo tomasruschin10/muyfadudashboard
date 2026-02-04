@@ -14,8 +14,8 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the application code
 COPY . .
 
-# Build the Angular application (production)
-RUN npm run build
+# Build the Angular application (production) con base href /dashboard/
+RUN npm run build -- --base-href=/dashboard/
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine
